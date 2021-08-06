@@ -1,17 +1,17 @@
 <template>
-  <div id="app">
-    <h1 class="title">Emote Stats</h1>
-    <EmoteList />
+  <div id="app" class="container">
+    <h1 class="title full-width">Emote Stats</h1>
+    <EmoteListWrapper />
   </div>
 </template>
 
 <script>
-import EmoteList from "./components/EmoteList.vue";
+import EmoteListWrapper from "./components/EmoteListWrapper.vue";
 
 export default {
   name: "App",
   components: {
-    EmoteList,
+    EmoteListWrapper,
   },
 };
 </script>
