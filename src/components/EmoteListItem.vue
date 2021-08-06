@@ -27,14 +27,14 @@ export default {
   height: 24px;
   font-size: 24px;
   counter-increment: count;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   line-height: 24px;
 }
 
 #emote-list-item:before {
   content: counter(count);
   text-align: right;
-  width: 40px;
+  width: 24px;
   line-height: 24px;
   position: absolute;
   left: 0px;
@@ -47,7 +47,7 @@ export default {
   position: absolute;
   display: inline-block;
   top: 0;
-  left: 60px;
+  left: 36px;
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -56,7 +56,7 @@ export default {
 .emote-count {
   position: absolute;
   display: inline-block;
-  left: 88px;
+  right: 0px;
   width: 80px;
   text-align: right;
 }
