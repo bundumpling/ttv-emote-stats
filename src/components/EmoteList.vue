@@ -1,5 +1,6 @@
 <template>
   <ol id="emote-list" class="box">
+    <h2 class="subtitle">Overall</h2>
     <EmoteListItem
       v-for="emote in randomizedCounts"
       v-bind:key="emote.name"
@@ -42,5 +43,9 @@ export default {
   margin: 0 auto;
   list-style: none;
   counter-reset: count;
+}
+
+#emote-list h2 {
+  text-align: center;
 }
 </style>
