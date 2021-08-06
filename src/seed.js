@@ -1,5 +1,3 @@
-import { triggerRef } from "vue";
-
 export const seedData = [
   {
     name: "bundumCry",
