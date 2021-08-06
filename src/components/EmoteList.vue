@@ -1,29 +1,16 @@
 <template>
-  <div id="emote-list">
-    <div
-      class="columns"
-      v-for="(emote, index) in sharedState.seedData"
+  <ol id="emote-list">
+    <EmoteListItem
+      v-for="emote in sharedState.seedData"
       v-bind:key="emote.name"
+      :emote="emote"
     >
-      <div class="column is-1">
-        {{ index + 1 }}
-      </div>
-      <div class="column is-1">
-        <img
-          class="image is-24x24"
-          v-bind:src="
-            'img/emotes/' + emote.name + (emote.animated ? '.gif' : '.png')
-          "
-        />
-      </div>
-      <div class="column is-1">
-        {{ emote.count }}
-      </div>
-    </div>
-  </div>
+    </EmoteListItem>
+  </ol>
 </template>
 
 <script>
+import EmoteListItem from "./EmoteListItem.vue";
 import { store } from "../store.js";
 
 export default {
@@ -33,8 +20,15 @@ export default {
       sharedState: store.state,
     };
   },
+  components: {
+    EmoteListItem,
+  },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+#emote-list {
+  list-style: none;
+  counter-reset: count;
+}
 </style>
