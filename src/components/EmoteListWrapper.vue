@@ -1,7 +1,13 @@
 <template>
   <div class="container columns">
     <EmoteList
-      class="column is-one-third"
+      class="column is-one-fourth"
+      :emoteListType="'Overall'"
+      :emoteList="countsSorted"
+    >
+    </EmoteList>
+    <EmoteList
+      class="column is-one-fourth"
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
       :emoteListType="emoteListType"
@@ -23,6 +29,10 @@ export default {
     };
   },
   computed: {
+    countsSorted() {
+      let clone = this.sharedState.seedData.slice();
+      return clone.sort((a, b) => b.count - a.count);
+    },
     countsSortedThenGroupedByType() {
       const result = {
         Twitch: [],
@@ -30,11 +40,9 @@ export default {
         BTTV: [],
       };
 
-      this.sharedState.seedData
-        .map((e) => {
-          e.count = Math.floor(Math.random() * 10000);
-          return e;
-        })
+      let clone = this.sharedState.seedData.slice(); // avoid side effects in computed props
+
+      clone
         .sort((a, b) => b.count - a.count)
         .forEach((e) => {
           result[e.type].push(e);
