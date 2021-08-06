@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     countsSorted() {
-      let clone = this.sharedState.seedData.slice();
+      let clone = this.sharedState.seedData.slice(); // avoid side effects in computed props
       return clone.sort((a, b) => b.count - a.count);
     },
     countsSortedThenGroupedByType() {
@@ -40,13 +40,9 @@ export default {
         BTTV: [],
       };
 
-      let clone = this.sharedState.seedData.slice(); // avoid side effects in computed props
-
-      clone
-        .sort((a, b) => b.count - a.count)
-        .forEach((e) => {
-          result[e.type].push(e);
-        });
+      this.countsSorted.forEach((e) => {
+        result[e.type].push(e);
+      });
       return result;
     },
   },
