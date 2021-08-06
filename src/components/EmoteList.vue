@@ -28,7 +28,7 @@ export default {
           e.count = Math.floor(Math.random() * 10000);
           return e;
         })
-        .sort((a, b) => a.count - b.count);
+        .sort((a, b) => b.count - a.count);
     },
   },
   components: {

@@ -2,7 +2,7 @@
   <li id="emote-list-item">
     <div class="emote-wrapper">
       <img
-        class=""
+        class="emote-thumb"
         v-bind:src="
           'img/emotes/' + emote.name + (emote.animated ? '.gif' : '.png')
         "
@@ -59,5 +59,15 @@ export default {
   right: 0px;
   width: 80px;
   text-align: right;
+}
+
+.emote-thumb {
+  position: relative;
+  display: inline-block;
+}
+
+.emote-thumb:hover {
+  transform: scale(3);
+  z-index: 2;
 }
 </style>
