@@ -53,6 +53,11 @@ export default {
   line-height: 24px;
 }
 
+.emote-wrapper:hover {
+  transform: scale(3);
+  z-index: 2;
+}
+
 .emote-count {
   position: absolute;
   display: inline-block;
@@ -64,10 +69,5 @@ export default {
 .emote-thumb {
   position: relative;
   display: inline-block;
-}
-
-.emote-thumb:hover {
-  transform: scale(3);
-  z-index: 2;
 }
 </style>
