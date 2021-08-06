@@ -2,7 +2,7 @@
   <ol id="emote-list" class="box">
     <h2 class="subtitle">Emote Stats</h2>
     <EmoteListItem
-      v-for="emote in sharedState.seedData"
+      v-for="emote in randomizedCounts"
       v-bind:key="emote.name"
       :emote="emote"
     >
@@ -20,6 +20,16 @@ export default {
     return {
       sharedState: store.state,
     };
+  },
+  computed: {
+    randomizedCounts() {
+      return this.sharedState.seedData
+        .map((e) => {
+          e.count = Math.floor(Math.random() * 10000);
+          return e;
+        })
+        .sort((a, b) => a.count - b.count);
+    },
   },
   components: {
     EmoteListItem,
