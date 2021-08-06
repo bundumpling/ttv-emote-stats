@@ -2,12 +2,10 @@
   <div class="container columns">
     <EmoteList
       class="column is-one-third"
-      v-for="emoteListType in Object.keys(
-        countsRandomizedThenSortedThenGroupedByType
-      )"
+      v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
       :emoteListType="emoteListType"
-      :emoteList="countsRandomizedThenSortedThenGroupedByType[emoteListType]"
+      :emoteList="countsSortedThenGroupedByType[emoteListType]"
     >
     </EmoteList>
   </div>
@@ -25,7 +23,7 @@ export default {
     };
   },
   computed: {
-    countsRandomizedThenSortedThenGroupedByType() {
+    countsSortedThenGroupedByType() {
       const result = {
         Twitch: [],
         FFZ: [],
