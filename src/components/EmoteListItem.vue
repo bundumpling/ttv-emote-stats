@@ -8,6 +8,9 @@
         "
       />
     </div>
+    <div class="emote-name">
+      {{ emote.name }}
+    </div>
     <div class="emote-count">
       {{ emote.count }}
     </div>
@@ -69,5 +72,12 @@ export default {
 .emote-thumb {
   position: relative;
   display: inline-block;
+}
+
+.emote-name {
+  position: absolute;
+  left: 70px;
+  font-size: 14px;
+  font-variant: small-caps;
 }
 </style>
