@@ -2,7 +2,7 @@
   <EmoteGroupingMenu />
   <div class="container columns" v-if="showAll">
     <EmoteList
-      class="column"
+      class="column is-4 is-offset-3"
       :emoteListType="'Overall'"
       :emoteList="countsSorted"
     >
@@ -10,7 +10,7 @@
   </div>
   <div class="container columns" v-if="!showAll">
     <EmoteList
-      class="column"
+      class="column is-one-third"
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
       :emoteListType="emoteListType"

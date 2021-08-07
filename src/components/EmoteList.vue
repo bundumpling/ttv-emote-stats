@@ -24,7 +24,7 @@ export default {
 
 <style lang="scss">
 #emote-list {
-  width: 200px;
+  min-width: 200px;
   margin: 0 auto;
   list-style: none;
   counter-reset: count;

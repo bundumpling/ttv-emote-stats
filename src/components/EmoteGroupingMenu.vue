@@ -1,5 +1,5 @@
 <template>
-  <div class="block">
+  <div class="button-group">
     <button
       class="button"
       :class="showAll ? 'active' : 'inactive'"
@@ -42,5 +42,10 @@ export default {
 <style>
 .active {
   font-weight: bold;
+}
+
+.button-group {
+  margin-bottom: 2em;
+  text-align: center;
 }
 </style>
