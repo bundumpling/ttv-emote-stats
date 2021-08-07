@@ -2,7 +2,7 @@
   <ol id="emote-list" class="box">
     <h2 class="subtitle">{{ emoteListType }}</h2>
     <EmoteListItem
-      v-for="emote in emoteList"
+      v-for="emote in sortByCount(emoteList)"
       v-bind:key="emote.name"
       :emote="emote"
     >
@@ -16,6 +16,11 @@ import EmoteListItem from "./EmoteListItem.vue";
 export default {
   name: "EmoteList",
   props: ["emoteListType", "emoteList"],
+  methods: {
+    sortByCount(list) {
+      return list.sort((a, b) => b.count - a.count);
+    },
+  },
   components: {
     EmoteListItem,
   },

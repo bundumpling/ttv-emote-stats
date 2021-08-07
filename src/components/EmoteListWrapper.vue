@@ -1,4 +1,5 @@
 <template>
+  <EmoteListOptionsPanel />
   <EmoteGroupingMenu />
   <div class="container columns" v-if="showAll">
     <EmoteList
@@ -22,6 +23,7 @@
 
 <script>
 import EmoteList from "./EmoteList.vue";
+import EmoteListOptionsPanel from "./EmoteListOptionsPanel.vue";
 import EmoteGroupingMenu from "./EmoteGroupingMenu.vue";
 import { store } from "../store.js";
 
@@ -56,6 +58,7 @@ export default {
   components: {
     EmoteList,
     EmoteGroupingMenu,
+    EmoteListOptionsPanel,
   },
 };
 </script>

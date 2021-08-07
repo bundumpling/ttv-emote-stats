@@ -9,5 +9,8 @@ export const store = {
   }),
   setEmoteGroupingMenuShowAll(showAll) {  
     this.state.emoteGroupingMenuShowAll = showAll
+  },
+  randomizeCounts() {
+    this.state.seedData = randomizeEmoteCounts(this.state.seedData)
   }
 }
