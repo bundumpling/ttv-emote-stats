@@ -34,10 +34,8 @@ export const store = {
       }
       cursor++;
     }
-    resultsMap.forEach((v, k) => {
+    resultsMap.forEach((v) => {
       if (v) {
-        console.log(`${k}: ${v.count}`)
-
         this.state.seedData[v.index].count += v.count;
       }
     })
