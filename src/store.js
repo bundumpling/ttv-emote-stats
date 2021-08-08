@@ -1,10 +1,11 @@
 import { seedData } from './seed.js';
 import { reactive } from 'vue';
 import randomizeEmoteCounts from '../utils/randomizeEmoteCounts';
+import zeroCounts from '../utils/zeroCounts';
 
 export const store = {
   state: reactive({
-    seedData: randomizeEmoteCounts(seedData),
+    seedData: zeroCounts(seedData),
     emoteGroupingMenuShowAll: true,
   }),
   setEmoteGroupingMenuShowAll(showAll) {  
@@ -13,14 +14,19 @@ export const store = {
   randomizeCounts() {
     this.state.seedData = randomizeEmoteCounts(this.state.seedData)
   },
+  zeroCounts() {
+    this.state.seedData = zeroCounts(this.state.seedData)
+  },
   parseLog(log) {
-    let resultsMap = new Map(seedData.map(e => [e.name, 0]));
+    let resultsMap = new Map(seedData.map((e, i) => [e.name, { index: i, count:0 }]));
     let cursor = 0;
     let word = "";
     while (cursor < log.length) {
       if (/\s/.test(log[cursor])) {
         if (resultsMap.has(word)) {
-          resultsMap.set(word, resultsMap.get(word) + 1)
+          let mapEntry = resultsMap.get(word);
+          mapEntry.count++;
+          resultsMap.set(word, resultsMap.get(word))
         }
         word = "";
       } else {
@@ -30,7 +36,9 @@ export const store = {
     }
     resultsMap.forEach((v, k) => {
       if (v) {
-        console.log(`${k}: ${v}`)
+        console.log(`${k}: ${v.count}`)
+
+        this.state.seedData[v.index].count += v.count;
       }
     })
   }

@@ -1,7 +1,8 @@
 <template>
-  <div class="block columns">
+  <div class="button-group">
     <button class="button" @click="randomizeCounts()">Randomize Counts</button>
-    <div class="file">
+    <button class="button" @click="zeroCounts()">Zero Counts</button>
+    <div class="file is-centered">
       <label class="file-label">
         <input
           id="input"
@@ -26,17 +27,15 @@
 import { store } from "../store.js";
 export default {
   name: "EmoteListOptionsPanel",
-  data() {
-    return {
-      logParserOpen: false,
-    };
-  },
   methods: {
     randomizeCounts() {
       store.randomizeCounts();
     },
+    zeroCounts() {
+      store.zeroCounts();
+    },
     logFileNames() {
-      const files = document.getElementById("input").files;
+      let files = document.getElementById("input").files;
       for (let i = 0; i < files.length; i++) {
         let reader = new FileReader();
         reader.onerror = (e) => console.log(e.target.error.name);
