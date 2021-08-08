@@ -10,7 +10,7 @@
           name="logs"
           type="file"
           multiple
-          @change="logFileNames"
+          @change="logFileNames()"
         />
         <span class="file-cta">
           <span class="file-icon">
@@ -40,11 +40,15 @@ export default {
         let reader = new FileReader();
         reader.onerror = (e) => console.log(e.target.error.name);
         reader.onload = (e) => {
-          const text = e.target.result;
+          let text = e.target.result;
           store.parseLog(text);
         };
         reader.readAsText(files[i]);
       }
+
+      // In order for the change event to fire, a different file must be uploaded.
+      // By setting the input element's value to zero, the same log file can be processed multiple times.
+      // document.getElementById("input").value = "";
     },
   },
 };
