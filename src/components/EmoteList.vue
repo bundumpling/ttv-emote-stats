@@ -4,7 +4,7 @@
       <span class="pagePrevious column is-1" @click="prevPage()"
         ><font-awesome-icon icon="chevron-left" v-if="hasPrevPage()"
       /></span>
-      <h2 class="subtitle column is-10">{{ emoteListType }}</h2>
+      <h2 class="emote-list-type subtitle column is-10">{{ emoteListType }}</h2>
       <span class="pageNext column is-1" @click="nextPage()"
         ><font-awesome-icon icon="chevron-right" v-if="hasNextPage()"
       /></span>
@@ -70,5 +70,9 @@ export default {
 
 #emote-list h2 {
   text-align: center;
+}
+
+.emote-list-type {
+  user-select: none; /* prevent text selection highlighting when clicking the adjacent pagination buttons */
 }
 </style>
