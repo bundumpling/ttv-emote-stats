@@ -1,10 +1,21 @@
 <template>
   <ol id="emote-list" class="box">
-    <h2 class="subtitle">{{ emoteListType }}</h2>
+    <div class="header columns">
+      <span class="pagePrevious column is-1" @click="prevPage()"
+        ><font-awesome-icon icon="chevron-left" v-if="hasPrevPage()"
+      /></span>
+      <h2 class="subtitle column is-10">{{ emoteListType }}</h2>
+      <span class="pageNext column is-1" @click="nextPage()"
+        ><font-awesome-icon icon="chevron-right" v-if="hasNextPage()"
+      /></span>
+    </div>
     <EmoteListItem
-      v-for="emote in sortByCount(emoteList)"
+      v-for="(emote, index) in sortByCount(emoteList)"
       v-bind:key="emote.name"
       :emote="emote"
+      :index="index + 1"
+      :rangeStart="perPage * pageNumber + 1"
+      :rangeEnd="perPage * (pageNumber + 1)"
     >
     </EmoteListItem>
   </ol>
@@ -15,10 +26,32 @@ import EmoteListItem from "./EmoteListItem.vue";
 
 export default {
   name: "EmoteList",
+  data() {
+    return {
+      perPage: 10,
+      pageNumber: 0,
+    };
+  },
   props: ["emoteListType", "emoteList"],
   methods: {
     sortByCount(list) {
       return list.sort((a, b) => b.count - a.count);
+    },
+    hasPrevPage() {
+      return this.pageNumber > 0;
+    },
+    hasNextPage() {
+      return this.emoteList.length > this.perPage * (this.pageNumber + 1);
+    },
+    prevPage() {
+      if (this.hasPrevPage()) {
+        this.pageNumber--;
+      }
+    },
+    nextPage() {
+      if (this.hasNextPage()) {
+        this.pageNumber++;
+      }
     },
   },
   components: {

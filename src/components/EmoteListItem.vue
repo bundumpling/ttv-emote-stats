@@ -1,5 +1,12 @@
 <template>
-  <li id="emote-list-item">
+  <li
+    :class="
+      'emote-list-item ' +
+      (rangeStart <= index && index <= rangeEnd
+        ? ''
+        : 'emote-list-item--hidden')
+    "
+  >
     <div class="emote-wrapper">
       <img
         class="emote-thumb"
@@ -20,12 +27,21 @@
 <script>
 export default {
   name: "EmoteListItem",
-  props: ["emote"],
+  props: {
+    emote: {
+      name: String,
+      count: Number,
+      animated: Boolean,
+    },
+    index: Number,
+    rangeStart: Number,
+    rangeEnd: Number,
+  },
 };
 </script>
 
 <style>
-#emote-list-item {
+.emote-list-item {
   position: relative;
   height: 24px;
   font-size: 24px;
@@ -34,7 +50,7 @@ export default {
   line-height: 24px;
 }
 
-#emote-list-item:before {
+.emote-list-item:before {
   content: counter(count);
   text-align: right;
   width: 24px;
@@ -44,6 +60,11 @@ export default {
   top: 0px;
   vertical-align: middle;
   font-weight: bold;
+}
+
+.emote-list-item--hidden {
+  visibility: hidden;
+  max-height: 0px;
 }
 
 .emote-wrapper {
