@@ -42,7 +42,7 @@ nav a {
   border-style: dashed;
   border-width: 1px;
   font-family: monospace;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   margin: 0 1em;
   padding: 0.25em;
   line-height: 1.25em;
