@@ -35,8 +35,11 @@ export const store = {
     };
     fetch(URL, options).then(res => res.json()).then(json => {
       console.log(json);
-      this.state.channel.name = json.login;
-      this.state.channel.twitchID = json.id;
+      this.state.channel = {
+        ...this.state.channel,
+        name: json.login,
+        twitchID: json.id
+      }
     });
   },
   parseLog(log) {

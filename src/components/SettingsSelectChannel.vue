@@ -4,7 +4,7 @@
       class="icon"
       icon="edit"
       @click="setChannelNameAndID(inputChannelData)"
-    />Channel: {{ name }} (TwitchID: {{ twitchID }})</span
+    />Channel: {{ getName }} (TwitchID: {{ getID }})</span
   >
 </template>
 
@@ -20,9 +20,13 @@ export default {
       },
     };
   },
-  props: {
-    name: String,
-    twitchID: String,
+  computed: {
+    getName() {
+      return store.state.channel.name;
+    },
+    getID() {
+      return store.state.channel.twitchID;
+    },
   },
   methods: {
     setChannelNameAndID(inputChannelData) {
