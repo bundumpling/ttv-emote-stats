@@ -3,14 +3,10 @@
 </template>
 
 <script>
+import TheHeader from "../components/TheHeader.vue";
 export default {
   name: "HomePage",
-  components: {},
-  // For some reason TheHeader component fails to resolve unless included this way:
-  beforeCreate() {
-    this.$options.components.TheHeader =
-      require("../components/TheHeader.vue").default;
-  },
+  components: { TheHeader },
 };
 </script>
 

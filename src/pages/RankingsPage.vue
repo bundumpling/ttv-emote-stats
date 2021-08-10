@@ -1,6 +1,5 @@
 <template>
   <TheHeader />
-  <EmoteListOptionsPanel />
   <EmoteGroupingMenu />
   <div class="container columns" v-if="showAll">
     <EmoteList
@@ -23,9 +22,8 @@
 </template>
 
 <script>
-import TheHeader from "../components/TheHeader";
+import TheHeader from "../components/TheHeader.vue";
 import EmoteList from "../components/EmoteList.vue";
-import EmoteListOptionsPanel from "../components/EmoteListOptionsPanel.vue";
 import EmoteGroupingMenu from "../components/EmoteGroupingMenu.vue";
 import { store } from "../store.js";
 
@@ -61,7 +59,6 @@ export default {
     TheHeader,
     EmoteList,
     EmoteGroupingMenu,
-    EmoteListOptionsPanel,
   },
 };
 </script>
