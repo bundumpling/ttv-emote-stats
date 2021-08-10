@@ -17,11 +17,10 @@ import { store } from "../store";
 export default {
   name: "SettingsPage",
   data() {
-    const { channel } = store.state;
     return {
       channel: {
-        name: channel.name,
-        twitchID: channel.twitchID,
+        name: store.state.channel.name,
+        twitchID: store.state.channel.twitchID,
       },
     };
   },

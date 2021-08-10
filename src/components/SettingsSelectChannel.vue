@@ -16,7 +16,7 @@ export default {
     return {
       inputChannelData: {
         name: "",
-        twitchID: "",
+        twitchID: "59204658",
       },
     };
   },
@@ -25,7 +25,9 @@ export default {
     twitchID: String,
   },
   methods: {
-    setChannelNameAndID: store.setChannelNameAndID,
+    setChannelNameAndID(inputChannelData) {
+      store.setChannelNameAndID(inputChannelData);
+    },
   },
 };
 </script>
