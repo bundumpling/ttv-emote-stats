@@ -5,6 +5,11 @@ import zeroCounts from '../utils/zeroCounts';
 
 export const store = {
   state: reactive({
+    channel: {
+      name: 'bundumpling',
+      twitchID: 472309577,
+      hasEmotesFrom: ['Twitch', 'BTTV', 'FFZ']
+    },
     seedData: zeroCounts(seedData),
     emoteGroupingMenuShowAll: true,
   }),
