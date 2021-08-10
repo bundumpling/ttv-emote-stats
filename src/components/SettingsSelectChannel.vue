@@ -1,16 +1,31 @@
 <template>
   <span class="channel-name"
-    ><font-awesome-icon class="icon" icon="edit" />Channel:
-    {{ name }} (TwitchID: {{ twitchID }})</span
+    ><font-awesome-icon
+      class="icon"
+      icon="edit"
+      @click="setChannelNameAndID(inputChannelData)"
+    />Channel: {{ name }} (TwitchID: {{ twitchID }})</span
   >
 </template>
 
 <script>
+import { store } from "../store";
 export default {
   name: "SettingsSelectChannel",
+  data() {
+    return {
+      inputChannelData: {
+        name: "",
+        twitchID: "",
+      },
+    };
+  },
   props: {
     name: String,
-    twitchID: Number,
+    twitchID: String,
+  },
+  methods: {
+    setChannelNameAndID: store.setChannelNameAndID,
   },
 };
 </script>
