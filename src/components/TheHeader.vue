@@ -9,8 +9,14 @@
     </a>
   </figure>
   <nav role="navigation" aria-label="main navigation">
-    <a href="/Rankings"><span>Rankings</span></a>
-    <a href="/Settings"><span>Settings</span></a>
+    <a href="/Rankings"
+      ><span
+        ><font-awesome-icon class="icon" icon="chart-bar" />Rankings</span
+      ></a
+    >
+    <a href="/Settings"
+      ><span><font-awesome-icon class="icon" icon="cogs" />Settings</span></a
+    >
   </nav>
 </template>
 
@@ -47,5 +53,9 @@ nav a {
 nav a:hover {
   border-style: solid;
   color: purple;
+}
+
+.icon {
+  margin-right: 0.15em;
 }
 </style>
