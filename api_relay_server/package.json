@@ -1,0 +1,16 @@
+{
+  "name": "api_relay_server",
+  "version": "1.0.0",
+  "description": "Simple server to handle relaying external API requests for ttv-emote-stats",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
+  }
+}
