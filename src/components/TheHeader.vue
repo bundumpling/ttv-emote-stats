@@ -38,9 +38,6 @@ nav {
 }
 
 nav a {
-  border-color: #333;
-  border-style: dashed;
-  border-width: 1px;
   font-family: monospace;
   letter-spacing: 0.05em;
   margin: 0 1em;
@@ -51,7 +48,6 @@ nav a {
 }
 
 nav a:hover {
-  border-style: solid;
   color: purple;
 }
 
