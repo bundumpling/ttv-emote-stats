@@ -1,15 +1,16 @@
 <template>
   <TheHeader />
-  <h1>404</h1>
+  <Subheader msg="404" />
   <ASCIIArtCryingBun />
 </template>
 
 <script>
 import TheHeader from "../components/TheHeader.vue";
+import Subheader from "../components/Subheader.vue";
 import ASCIIArtCryingBun from "../components/ASCIIArtCryingBun.vue";
 export default {
   name: "NotFoundPage",
-  components: { TheHeader, ASCIIArtCryingBun },
+  components: { TheHeader, Subheader, ASCIIArtCryingBun },
   // For some reason TheHeader component fails to resolve unless included this way:
   // beforeCreate() {
   //   this.$options.components.TheHeader =

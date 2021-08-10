@@ -1,5 +1,6 @@
 <template>
   <TheHeader />
+  <Subheader msg="Rankings" />
   <EmoteGroupingMenu />
   <div class="container columns" v-if="showAll">
     <EmoteList
@@ -23,6 +24,7 @@
 
 <script>
 import TheHeader from "../components/TheHeader.vue";
+import Subheader from "../components/Subheader.vue";
 import EmoteList from "../components/EmoteList.vue";
 import EmoteGroupingMenu from "../components/EmoteGroupingMenu.vue";
 import { store } from "../store.js";
@@ -57,6 +59,7 @@ export default {
   },
   components: {
     TheHeader,
+    Subheader,
     EmoteList,
     EmoteGroupingMenu,
   },
