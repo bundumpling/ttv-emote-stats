@@ -20,21 +20,32 @@ export default {
 };
 </script>
   
-<style>
+<style scoped>
+.ascii-art-banner {
+  padding-top: 0.75em;
+}
+
 nav {
-  margin: 1.2rem auto;
+  margin: 1.5rem auto;
   display: flex;
   justify-content: center;
 }
 
 nav a {
+  border-color: #333;
+  border-style: dashed;
+  border-width: 1px;
+  font-family: monospace;
+  letter-spacing: 0.1em;
   margin: 0 1em;
+  padding: 0.25em;
+  line-height: 1.25em;
   font-variant: small-caps;
-  font-size: 1.4em;
+  font-size: 2em;
 }
 
 nav a:hover {
-  text-decoration: underline;
+  border-style: solid;
   color: purple;
 }
 </style>
