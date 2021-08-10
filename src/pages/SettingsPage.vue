@@ -2,10 +2,7 @@
   <TheHeader />
   <Subheader msg="Settings" />
   <div class="container">
-    <SettingsSelectChannel
-      :channelName="channelName"
-      :channelTwitchID="channelTwitchID"
-    />
+    <SettingsSelectChannel :name="name" :twitchID="twitchID" />
     <EmoteListOptionsPanel />
   </div>
 </template>
@@ -20,9 +17,10 @@ import { store } from "../store";
 export default {
   name: "SettingsPage",
   data() {
+    const { name, twitchID } = store.state.channel;
     return {
-      channelName: store.state.channel.name,
-      channelTwitchID: store.state.channel.twitchID,
+      name: name,
+      twitchID: twitchID,
     };
   },
   components: {

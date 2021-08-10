@@ -4,11 +4,11 @@ import routes from './routes'
 import NotFoundPage from './pages/NotFoundPage'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpload, faChevronLeft, faChevronRight, faChartBar, faCogs } from '@fortawesome/free-solid-svg-icons'
+import { faUpload, faChevronLeft, faChevronRight, faChartBar, faCogs, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 
-library.add(faUpload, faChevronLeft, faChevronRight, faChartBar, faCogs)
+library.add(faUpload, faChevronLeft, faChevronRight, faChartBar, faCogs, faEdit)
 
 require('./assets/sass/main.scss');
 
