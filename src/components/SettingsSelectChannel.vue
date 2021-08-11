@@ -58,12 +58,30 @@ export default {
           this.emotes.Twitch = json;
         });
     },
+    getFFZEmotes() {
+      let URL = `http://localhost:8081/ffz/emotes?id=${this.getID}`;
+      fetch(URL, { method: "GET" })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+          this.emotes.FFZ = json;
+        });
+    },
     parseTwitchEmotes() {
       return this.emotes.Twitch.map((emote) => {
         return {
           id: emote.id,
           name: emote.name,
           image: emote.images.url_1x,
+        };
+      });
+    },
+    parseFFZEmotes() {
+      return this.emotes.FFZ.map((emote) => {
+        return {
+          id: emote.id,
+          name: emote.name,
+          image: emote.urls["1"],
         };
       });
     },
