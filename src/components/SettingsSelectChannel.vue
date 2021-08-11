@@ -20,6 +20,11 @@
       :emotes="parseBTTVEmotes()"
       :getEmotes="getBTTVEmotes"
     />
+    <SettingsEmoteAPIControl
+      name="7TV"
+      :emotes="parse7TVEmotes()"
+      :getEmotes="get7TVEmotes"
+    />
   </div>
 </template>
 
@@ -36,6 +41,7 @@ export default {
         Twitch: [],
         FFZ: [],
         BTTV: [],
+        "7TV": [],
       },
     };
   },
@@ -88,6 +94,15 @@ export default {
           this.emotes.BTTV = json;
         });
     },
+    get7TVEmotes() {
+      let URL = `http://localhost:8081/7tv/emotes?name=${this.getName}`;
+      fetch(URL, { method: "GET" })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+          this.emotes["7TV"] = json;
+        });
+    },
     parseTwitchEmotes() {
       return this.emotes.Twitch.map((emote) => {
         return {
@@ -112,6 +127,15 @@ export default {
           id: emote.id,
           name: emote.code,
           image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
+        };
+      });
+    },
+    parse7TVEmotes() {
+      return this.emotes["7TV"].map((emote) => {
+        return {
+          id: emote.id,
+          name: emote.code,
+          image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
         };
       });
     },
