@@ -58,13 +58,13 @@ app.get("/ffz/emotes", (req, res) => {
 
 app.get("/bttv/emotes", (req, res) => {
   const { id } = req.query;
-  const URL = `https://api.betterttv.net/3/cached/frankerfacez/users/twitch/${id}`;
+  const URL = `https://api.betterttv.net/3/cached/users/twitch/${id}`;
   fetch(URL, { method: 'GET' }).then(res => {
     console.log(`${res.status} ${URL}`);
     return res.json();
   }).then(json => {
     console.log(JSON.stringify(json));
-    return res.json(json);
+    return res.json(json.channelEmotes.concat(json.sharedEmotes));
   })
 })
 

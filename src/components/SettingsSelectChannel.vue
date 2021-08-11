@@ -15,6 +15,11 @@
       :emotes="parseFFZEmotes()"
       :getEmotes="getFFZEmotes"
     />
+    <SettingsEmoteAPIControl
+      name="BTTV"
+      :emotes="parseBTTVEmotes()"
+      :getEmotes="getBTTVEmotes"
+    />
   </div>
 </template>
 
@@ -80,7 +85,7 @@ export default {
         .then((res) => res.json())
         .then((json) => {
           console.log(json);
-          this.emotes.FFZ = json;
+          this.emotes.BTTV = json;
         });
     },
     parseTwitchEmotes() {
@@ -98,6 +103,15 @@ export default {
           id: emote.id,
           name: emote.name,
           image: emote.urls["1"],
+        };
+      });
+    },
+    parseBTTVEmotes() {
+      return this.emotes.BTTV.map((emote) => {
+        return {
+          id: emote.id,
+          name: emote.code,
+          image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
         };
       });
     },
