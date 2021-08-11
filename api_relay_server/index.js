@@ -68,4 +68,16 @@ app.get("/bttv/emotes", (req, res) => {
   })
 })
 
+app.get("/7tv/emotes", (req, res) => {
+  const { name } = req.query;
+  const URL = `https://api.7tv.app/v2/users/${name}/emotes`;
+  fetch(URL, { method: 'GET' }).then(res => {
+    console.log(`${res.status} ${URL}`);
+    return res.json();
+  }).then(json => {
+    console.log(JSON.stringify(json));
+    return res.json(json);
+  })
+})
+
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));
