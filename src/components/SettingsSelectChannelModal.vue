@@ -16,6 +16,7 @@
           class="input"
           type="text"
           aria-label="channel input"
+          @keyup.enter="setChannelNameAndID()"
         />
         <div class="control">
           <label for="nameOrTwitchID" class="radio">
@@ -25,7 +26,8 @@
               aria-label="radio button to select username"
               value="username"
               checked
-            />Name
+            />
+            Name
           </label>
           <label class="radio">
             <input
@@ -33,7 +35,8 @@
               name="nameOrTwitchID"
               aria-label="radio button to select Twitch ID #"
               value="twitchID"
-            />Twitch ID #
+            />
+            Twitch ID #
           </label>
         </div>
       </section>
