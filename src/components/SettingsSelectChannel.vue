@@ -10,6 +10,11 @@
       :emotes="parseTwitchEmotes()"
       :getEmotes="getTwitchEmotes"
     />
+    <SettingsEmoteAPIControl
+      name="FFZ"
+      :emotes="parseFFZEmotes()"
+      :getEmotes="getFFZEmotes"
+    />
   </div>
 </template>
 
@@ -24,6 +29,7 @@ export default {
       modalIsActive: false,
       emotes: {
         Twitch: [],
+        FFZ: [],
       },
     };
   },
