@@ -8,6 +8,7 @@ export const store = {
     channel: {
       name: 'bundumpling',
       twitchID: "472309577",
+      emotes: []
     },
     seedData: zeroCounts(seedData),
     emoteGroupingMenuShowAll: true,
