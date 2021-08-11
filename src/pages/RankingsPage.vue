@@ -12,7 +12,7 @@
   </div>
   <div class="container columns" v-if="!showAll">
     <EmoteList
-      class="column is-one-third"
+      class="column is-one-fourth"
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
       :emoteListType="emoteListType"
@@ -27,21 +27,16 @@ import TheHeader from "../components/TheHeader.vue";
 import Subheader from "../components/Subheader.vue";
 import EmoteList from "../components/EmoteList.vue";
 import EmoteGroupingMenu from "../components/EmoteGroupingMenu.vue";
-import { store } from "../store.js";
 
 export default {
   name: "RankingsPage",
-  data() {
-    return {
-      sharedState: store.state,
-    };
-  },
   computed: {
     showAll() {
-      return store.state.emoteGroupingMenuShowAll;
+      return this.$store.state.emoteGroupingMenuShowAll;
     },
     countsSorted() {
-      let clone = this.sharedState.seedData.slice(); // avoid side effects in computed props
+      // clone avoid side effects in computed props
+      let clone = this.$store.state.channel.emotes.slice();
       return clone.sort((a, b) => b.count - a.count);
     },
     countsSortedThenGroupedByType() {
@@ -66,7 +61,6 @@ export default {
   },
 };
 </script>
-
 
 <style>
 </style>

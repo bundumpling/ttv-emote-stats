@@ -24,15 +24,14 @@
 </template>
 
 <script>
-import { store } from "../store.js";
 export default {
   name: "EmoteListOptionsPanel",
   methods: {
     randomizeCounts() {
-      store.randomizeCounts();
+      this.$store.commit("randomizeCounts");
     },
     zeroCounts() {
-      store.zeroCounts();
+      this.$store.commit("zeroCounts");
     },
     logFileNames() {
       let files = document.getElementById("input").files;
@@ -41,7 +40,7 @@ export default {
         reader.onerror = (e) => console.log(e.target.error.name);
         reader.onload = (e) => {
           let text = e.target.result;
-          store.parseLog(text);
+          this.$store.commit("parseLog", text);
         };
         reader.readAsText(files[i]);
       }

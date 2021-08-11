@@ -18,22 +18,16 @@
 </template>
 
 <script>
-import { store } from "../store.js";
 export default {
   name: "EmoteGroupingMenu",
-  data() {
-    return {
-      sharedState: store.state,
-    };
-  },
   computed: {
     showAll() {
-      return store.state.emoteGroupingMenuShowAll;
+      return this.$store.state.emoteGroupingMenuShowAll;
     },
   },
   methods: {
     setShowAll(showAll) {
-      store.setEmoteGroupingMenuShowAll(showAll);
+      this.$store.commit("setEmoteGroupingMenuShowAll", showAll);
     },
   },
 };

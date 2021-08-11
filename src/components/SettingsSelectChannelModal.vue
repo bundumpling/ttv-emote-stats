@@ -51,7 +51,6 @@
 </template>
 
 <script>
-import { store } from "../store";
 export default {
   name: "SettingsSelectChannelModal",
   props: {
@@ -69,7 +68,7 @@ export default {
           params[radioButton.value] = selectChannelInput.value;
         }
       });
-      store.setChannelNameAndID(params);
+      this.$store.commit("setChannelNameAndID", params);
       this.closeModal();
       selectChannelInput.value = "";
     },

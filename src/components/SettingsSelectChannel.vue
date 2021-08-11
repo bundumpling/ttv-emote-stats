@@ -26,12 +26,13 @@
       :getEmotes="get7TVEmotes"
     />
   </div>
+  <button class="button" @click="saveAll()">Save All Emotes</button>
 </template>
 
 <script>
 import SettingsSelectChannelModal from "./SettingsSelectChannelModal.vue";
 import SettingsEmoteAPIControl from "./SettingsEmoteAPIControl.vue";
-import { store } from "../store";
+
 export default {
   name: "SettingsSelectChannel",
   data() {
@@ -51,10 +52,10 @@ export default {
   },
   computed: {
     getName() {
-      return store.state.channel.name;
+      return this.$store.state.channel.name;
     },
     getID() {
-      return store.state.channel.twitchID;
+      return this.$store.state.channel.twitchID;
     },
   },
   methods: {
@@ -138,6 +139,23 @@ export default {
           image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
         };
       });
+    },
+    saveAll() {
+      const providerToParser = {
+        Twitch: this.parseTwitchEmotes,
+        FFZ: this.parseFFZEmotes,
+        BTTV: this.parseBTTVEmotes,
+        "7TV": this.parse7TVEmotes,
+      };
+
+      let results = [];
+
+      for (let provider in this.emotes) {
+        providerToParser[provider].call().forEach((emote) => {
+          results.push({ ...emote, type: provider, count: 0 });
+        });
+      }
+      this.$store.commit("updateEmotes", results);
     },
   },
 };

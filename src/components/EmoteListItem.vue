@@ -8,12 +8,7 @@
     "
   >
     <div class="emote-wrapper">
-      <img
-        class="emote-thumb"
-        v-bind:src="
-          'img/emotes/' + emote.name + (emote.animated ? '.gif' : '.png')
-        "
-      />
+      <img class="emote-thumb" :alt="emote.name" v-bind:src="emote.image" />
     </div>
     <div class="emote-name">
       {{ emote.name }}
@@ -31,7 +26,7 @@ export default {
     emote: {
       name: String,
       count: Number,
-      animated: Boolean,
+      image: String,
     },
     index: Number,
     rangeStart: Number,
