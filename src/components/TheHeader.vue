@@ -9,20 +9,26 @@
     </a>
   </figure>
   <nav role="navigation" aria-label="main navigation">
-    <a href="/Rankings"
+    <v-link href="/Rankings"
       ><span
         ><font-awesome-icon class="icon" icon="chart-bar" />Rankings</span
-      ></a
+      ></v-link
     >
-    <a href="/Settings"
-      ><span><font-awesome-icon class="icon" icon="cogs" />Settings</span></a
+    <v-link href="/Settings"
+      ><span
+        ><font-awesome-icon class="icon" icon="cogs" />Settings</span
+      ></v-link
     >
   </nav>
 </template>
 
 <script>
+import VLink from "./VLink.vue";
 export default {
   name: "TheHeader",
+  components: {
+    VLink,
+  },
 };
 </script>
   
