@@ -7,7 +7,7 @@
   <div class="box columns emote-api-control-wrapper">
     <SettingsEmoteAPIControl
       name="Twitch"
-      :emotes="emotes.Twitch"
+      :emotes="parseTwitchEmotes()"
       :getEmotes="getTwitchEmotes"
     />
   </div>
@@ -58,7 +58,15 @@ export default {
           this.emotes.Twitch = json;
         });
     },
-    getFFZEmotes() {},
+    parseTwitchEmotes() {
+      return this.emotes.Twitch.map((emote) => {
+        return {
+          id: emote.id,
+          name: emote.name,
+          image: emote.images.url_1x,
+        };
+      });
+    },
   },
 };
 </script>

@@ -10,7 +10,7 @@
       <div class="emote-api-control-emotelist-wrapper" v-if="emotes.length">
         <ul>
           <li v-for="emote in emotes" v-bind:key="emote.id">
-            <img :src="emote.images.url_1x" :alt="emote.name" />
+            <img :src="emote.image" :alt="emote.name" />
           </li>
         </ul>
       </div>
