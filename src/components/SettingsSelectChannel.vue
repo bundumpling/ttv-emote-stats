@@ -1,15 +1,9 @@
 <template>
   <span class="channel-name"
-    ><font-awesome-icon
-      class="icon"
-      icon="edit"
-      @click="toggleModalIsActive()"
-    />Channel: {{ getName }} (TwitchID: {{ getID }})</span
+    ><font-awesome-icon class="icon" icon="edit" @click="openModal()" />Channel:
+    {{ getName }} (TwitchID: {{ getID }})</span
   >
-  <SettingsSelectChannelModal
-    :isActive="modalIsActive"
-    :closeModal="toggleModalIsActive"
-  />
+  <SettingsSelectChannelModal v-if="modalIsActive" :closeModal="closeModal" />
 </template>
 
 <script>
@@ -34,8 +28,14 @@ export default {
     },
   },
   methods: {
-    toggleModalIsActive() {
-      this.modalIsActive = !this.modalIsActive;
+    openModal() {
+      this.modalIsActive = true;
+      this.$nextTick(function () {
+        document.getElementById("settings-select-channel-input").focus();
+      });
+    },
+    closeModal() {
+      this.modalIsActive = false;
     },
   },
 };

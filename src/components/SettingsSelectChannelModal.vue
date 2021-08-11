@@ -1,5 +1,5 @@
 <template>
-  <div :class="'modal ' + (isActive ? 'is-active' : '')">
+  <div class="modal is-active">
     <div class="modal-background" @click="closeModal()"></div>
     <div class="modal-card">
       <header class="modal-card-head">
@@ -52,23 +52,23 @@ import { store } from "../store";
 export default {
   name: "SettingsSelectChannelModal",
   props: {
-    isActive: Boolean,
     closeModal: Function,
   },
   methods: {
     setChannelNameAndID() {
-      let selectChannelInputValue = document.getElementById(
+      const selectChannelInput = document.getElementById(
         "settings-select-channel-input"
-      ).value;
+      );
       let params = { username: "", twitchID: "" };
       const radioButtons = document.getElementsByName("nameOrTwitchID");
       radioButtons.forEach((radioButton) => {
         if (radioButton.checked) {
-          params[radioButton.value] = selectChannelInputValue;
+          params[radioButton.value] = selectChannelInput.value;
         }
       });
       store.setChannelNameAndID(params);
       this.closeModal();
+      selectChannelInput.value = "";
     },
   },
 };
