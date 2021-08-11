@@ -50,7 +50,7 @@ export default {
       this.modalIsActive = false;
     },
     getTwitchEmotes() {
-      let URL = `http://localhost:8081/twitch/chat/emotes?id=${this.getID}`;
+      let URL = `http://localhost:8081/twitch/emotes?id=${this.getID}`;
       fetch(URL, { method: "GET" })
         .then((res) => res.json())
         .then((json) => {
@@ -58,6 +58,7 @@ export default {
           this.emotes.Twitch = json;
         });
     },
+    getFFZEmotes() {},
   },
 };
 </script>

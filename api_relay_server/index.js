@@ -32,7 +32,7 @@ app.get("/twitch/users", (req, res) => {
   }
 })
 
-app.get("/twitch/chat/emotes", (req, res) => {
+app.get("/twitch/emotes", (req, res) => {
   const { id } = req.query;
   const URL = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${id}`;
   fetch(URL, TWITCH_OPTIONS).then(res => {
