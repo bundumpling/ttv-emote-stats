@@ -37,9 +37,6 @@ export default {
     toggleModalIsActive() {
       this.modalIsActive = !this.modalIsActive;
     },
-    setChannelNameAndID(inputChannelData) {
-      store.setChannelNameAndID(inputChannelData);
-    },
   },
 };
 </script>

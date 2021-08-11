@@ -22,13 +22,12 @@ export const store = {
   zeroCounts() {
     this.state.seedData = zeroCounts(this.state.seedData)
   },
-  setChannelNameAndID(paramsObj) {
-    const { name, twitchID } = paramsObj;
-    if (!name && !twitchID) {
-      console.error("setChannelNameAndID requires either a name or a twitchID");
+  setChannelNameAndID(username, twitchID) {
+    if (!username && !twitchID) {
+      console.error("setChannelNameAndID requires either a username or a twitchID");
       return;
     }
-    const paramsString = name ? "login="+name : "id="+twitchID;
+    const paramsString = username ? "login="+username : "id="+twitchID;
     const URL = `http://localhost:8081/twitch/users?${paramsString}`;
     const options = {
       method: 'GET'

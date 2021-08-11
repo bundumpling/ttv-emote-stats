@@ -22,8 +22,8 @@
             <input
               type="radio"
               name="nameOrTwitchID"
-              aria-label="radio butto for name or Twitch ID #"
-              value="Name"
+              aria-label="radio button to select username"
+              value="username"
               checked
             />Name
           </label>
@@ -31,14 +31,16 @@
             <input
               type="radio"
               name="nameOrTwitchID"
-              aria-label="radio butto for name or Twitch ID #"
-              value="Twitch ID #"
+              aria-label="radio button to select Twitch ID #"
+              value="twitchID"
             />Twitch ID #
           </label>
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success">Save</button>
+        <button class="button is-success" @click="setChannelNameAndID()">
+          Save
+        </button>
         <button class="button" @click="closeModal()">Cancel</button>
       </footer>
     </div>
@@ -46,11 +48,32 @@
 </template>
 
 <script>
+import { store } from "../store";
 export default {
   name: "SettingsSelectChannelModal",
   props: {
     isActive: Boolean,
     closeModal: Function,
+  },
+  methods: {
+    setChannelNameAndID() {
+      let selectChannelInputValue = document.getElementById(
+        "settings-select-channel-input"
+      ).value;
+      let radioButtonChecked = "";
+      const radioButtons = document.getElementsByName("nameOrTwitchID");
+      radioButtons.forEach((radioButton) => {
+        if (radioButton.checked) {
+          radioButtonChecked = radioButton.value;
+        }
+      });
+      let username =
+        radioButtonChecked === "username" ? selectChannelInputValue : "";
+      let twitchID =
+        radioButtonChecked === "twitchID" ? selectChannelInputValue : "";
+      store.setChannelNameAndID(username, twitchID);
+      this.closeModal();
+    },
   },
 };
 </script>
