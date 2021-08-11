@@ -22,7 +22,7 @@ export const store = {
   zeroCounts() {
     this.state.seedData = zeroCounts(this.state.seedData)
   },
-  setChannelNameAndID(username, twitchID) {
+  setChannelNameAndID({ username, twitchID }) {
     if (!username && !twitchID) {
       console.error("setChannelNameAndID requires either a username or a twitchID");
       return;

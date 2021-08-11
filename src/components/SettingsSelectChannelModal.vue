@@ -60,18 +60,14 @@ export default {
       let selectChannelInputValue = document.getElementById(
         "settings-select-channel-input"
       ).value;
-      let radioButtonChecked = "";
+      let params = { username: "", twitchID: "" };
       const radioButtons = document.getElementsByName("nameOrTwitchID");
       radioButtons.forEach((radioButton) => {
         if (radioButton.checked) {
-          radioButtonChecked = radioButton.value;
+          params[radioButton.value] = selectChannelInputValue;
         }
       });
-      let username =
-        radioButtonChecked === "username" ? selectChannelInputValue : "";
-      let twitchID =
-        radioButtonChecked === "twitchID" ? selectChannelInputValue : "";
-      store.setChannelNameAndID(username, twitchID);
+      store.setChannelNameAndID(params);
       this.closeModal();
     },
   },
