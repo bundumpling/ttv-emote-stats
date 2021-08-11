@@ -30,6 +30,7 @@ export default {
       emotes: {
         Twitch: [],
         FFZ: [],
+        BTTV: [],
       },
     };
   },
@@ -66,6 +67,15 @@ export default {
     },
     getFFZEmotes() {
       let URL = `http://localhost:8081/ffz/emotes?id=${this.getID}`;
+      fetch(URL, { method: "GET" })
+        .then((res) => res.json())
+        .then((json) => {
+          console.log(json);
+          this.emotes.FFZ = json;
+        });
+    },
+    getBTTVEmotes() {
+      let URL = `http://localhost:8081/bttv/emotes?id=${this.getID}`;
       fetch(URL, { method: "GET" })
         .then((res) => res.json())
         .then((json) => {
