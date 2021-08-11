@@ -44,4 +44,16 @@ app.get("/twitch/emotes", (req, res) => {
   })
 })
 
+app.get("/ffz/emotes", (req, res) => {
+  const { id } = req.query;
+  const URL = `https://api.frankerfacez.com/v1/room/id/${id}`;
+  fetch(URL, { method: 'GET' }).then(res => {
+    console.log(`${res.status} ${URL}`);
+    return res.json();
+  }).then(json => {
+    console.log(JSON.stringify(json));
+    return res.json(json.sets[json.room.set].emoticons);
+  })
+})
+
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));
