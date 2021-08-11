@@ -49,6 +49,7 @@ export default {
         Twitch: [],
         FFZ: [],
         BTTV: [],
+        "7TV": [],
       };
 
       this.countsSorted.forEach((e) => {
