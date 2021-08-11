@@ -3,22 +3,27 @@
     ><font-awesome-icon
       class="icon"
       icon="edit"
-      @click="setChannelNameAndID(inputChannelData)"
+      @click="toggleModalIsActive()"
     />Channel: {{ getName }} (TwitchID: {{ getID }})</span
   >
+  <SettingsSelectChannelModal
+    :isActive="modalIsActive"
+    :closeModal="toggleModalIsActive"
+  />
 </template>
 
 <script>
+import SettingsSelectChannelModal from "./SettingsSelectChannelModal.vue";
 import { store } from "../store";
 export default {
   name: "SettingsSelectChannel",
   data() {
     return {
-      inputChannelData: {
-        name: "",
-        twitchID: "59204658",
-      },
+      modalIsActive: false,
     };
+  },
+  components: {
+    SettingsSelectChannelModal,
   },
   computed: {
     getName() {
@@ -29,6 +34,9 @@ export default {
     },
   },
   methods: {
+    toggleModalIsActive() {
+      this.modalIsActive = !this.modalIsActive;
+    },
     setChannelNameAndID(inputChannelData) {
       store.setChannelNameAndID(inputChannelData);
     },
