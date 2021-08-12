@@ -5,7 +5,10 @@
     </div>
     <div class="emote-api-control-body">
       <button class="button" @click="getEmotes()">
-        <font-awesome-icon icon="download" />Emotes
+        <font-awesome-icon :icon="emotes.length ? 'redo' : 'download'" /><span
+          class="button-text"
+          >{{ emotes.length ? "Refresh" : "Download" }}</span
+        >
       </button>
       <div class="emote-api-control-emotelist-wrapper" v-if="emotes.length">
         <ul>
@@ -30,4 +33,8 @@ export default {
 </script>
 
 <style>
+.button-text {
+  padding-left: 0.25em;
+  font-variant: small-caps;
+}
 </style>
