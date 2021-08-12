@@ -2,25 +2,21 @@
   <TheHeader />
   <Subheader msg="Rankings" />
   <EmoteGroupingMenu />
-  <div class="container columns" v-if="showAll">
+  <div class="emote-list-wrapper" v-if="showAll">
     <EmoteList
-      class="column is-4 is-offset-3"
       :emotesPerPage="getEmotesPerPage"
       :emoteListType="'Overall'"
       :emoteList="countsSorted"
-    >
-    </EmoteList>
+    />
   </div>
-  <div class="container columns" v-if="!showAll">
+  <div class="emote-list-wrapper" v-if="!showAll">
     <EmoteList
-      class="column is-one-fourth"
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
       :emotesPerPage="getEmotesPerPage"
       :emoteListType="emoteListType"
       :emoteList="countsSortedThenGroupedByType[emoteListType]"
-    >
-    </EmoteList>
+    />
   </div>
 </template>
 
@@ -68,4 +64,11 @@ export default {
 </script>
 
 <style>
+.emote-list-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  align-content: flex-start;
+  align-items: stretch;
+}
 </style>

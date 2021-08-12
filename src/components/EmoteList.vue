@@ -1,11 +1,13 @@
 <template>
-  <ol id="emote-list" class="box">
-    <div class="header columns">
-      <span class="pagePrevious column is-1" @click="prevPage()"
+  <ol class="emote-list">
+    <div class="header">
+      <span class="pagePrevious" @click="prevPage()"
         ><font-awesome-icon icon="chevron-left" v-if="hasPrevPage()"
       /></span>
-      <h2 class="emote-list-type subtitle column is-10">{{ emoteListType }}</h2>
-      <span class="pageNext column is-1" @click="nextPage()"
+      <h2 class="emote-list-type">
+        {{ emoteListType }}
+      </h2>
+      <span class="pageNext" @click="nextPage()"
         ><font-awesome-icon icon="chevron-right" v-if="hasNextPage()"
       /></span>
     </div>
@@ -59,18 +61,25 @@ export default {
 };
 </script>
 
-<style lang="scss">
-#emote-list {
-  margin: 0 auto;
+<style lang="scss" scoped>
+.emote-list {
+  margin: 0 2em;
+}
+
+ol {
+  display: block;
   list-style: none;
   counter-reset: count;
 }
 
-#emote-list h2 {
-  text-align: center;
+.emote-list-type {
+  font-size: 1.2em;
+  user-select: none; /* prevent text selection highlighting when clicking the adjacent pagination buttons */
 }
 
-.emote-list-type {
-  user-select: none; /* prevent text selection highlighting when clicking the adjacent pagination buttons */
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.5em;
 }
 </style>

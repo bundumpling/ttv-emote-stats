@@ -7,14 +7,16 @@
         : 'emote-list-item--hidden')
     "
   >
-    <div class="emote-wrapper">
-      <img class="emote-thumb" :alt="emote.name" v-bind:src="emote.image" />
-    </div>
-    <div class="emote-name">
-      {{ emote.name }}
-    </div>
-    <div class="emote-count">
-      {{ emote.count }}
+    <div class="emote-data">
+      <div class="emote-image">
+        <img :alt="emote.name" v-bind:src="emote.image" />
+      </div>
+      <div class="emote-name">
+        {{ emote.name }}
+      </div>
+      <div class="emote-count">
+        {{ emote.count }}
+      </div>
     </div>
   </li>
 </template>
@@ -37,7 +39,9 @@ export default {
 
 <style>
 .emote-list-item {
-  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
   height: 24px;
   font-size: 24px;
   counter-increment: count;
@@ -48,12 +52,8 @@ export default {
 .emote-list-item:before {
   content: counter(count);
   text-align: right;
-  width: 24px;
+  width: 36px;
   line-height: 24px;
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  vertical-align: middle;
   font-weight: bold;
 }
 
@@ -62,38 +62,35 @@ export default {
   max-height: 0px;
 }
 
-.emote-wrapper {
-  position: absolute;
-  display: inline-block;
-  top: 0;
-  left: 36px;
+.emote-data {
+  display: flex;
+  min-width: 200px;
+  padding-left: 0.75em;
+  justify-content: space-between;
+  align-items: baseline;
+  align-self: stretch;
+}
+
+.emote-image {
+  align-self: flex-start;
   width: 24px;
   height: 24px;
   line-height: 24px;
 }
 
-.emote-wrapper:hover {
+.emote-:hover {
   transform: scale(3);
   z-index: 2;
 }
 
-.emote-count {
-  position: absolute;
-  display: inline-block;
-  right: 0px;
-  width: 80px;
-  text-align: right;
-}
-
-.emote-thumb {
-  position: relative;
-  display: inline-block;
-}
-
 .emote-name {
-  position: absolute;
-  left: 70px;
   font-size: 14px;
   font-variant: small-caps;
+}
+
+.emote-count {
+  align-self: flex-end;
+  text-align: right;
+  font-family: monospace;
 }
 </style>
