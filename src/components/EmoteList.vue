@@ -90,6 +90,7 @@ ol {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   padding-bottom: 1em;
 }
 
