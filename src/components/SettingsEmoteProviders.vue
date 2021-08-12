@@ -2,24 +2,28 @@
   <button class="button" @click="saveAll()">Save All Emotes</button>
   <div class="emote-api-control-wrapper">
     <SettingsEmoteAPIControl
-      name="Twitch"
+      provider="Twitch"
       :emotes="parseTwitchEmotes()"
-      :getEmotes="getTwitchEmotes"
+      :getProviderEmotes="getProviderEmotes"
+      :providerIsAvailable="checkProviderAvailability"
     />
     <SettingsEmoteAPIControl
-      name="FFZ"
+      provider="FFZ"
       :emotes="parseFFZEmotes()"
-      :getEmotes="getFFZEmotes"
+      :getProviderEmotes="getProviderEmotes"
+      :providerIsAvailable="checkProviderAvailability"
     />
     <SettingsEmoteAPIControl
-      name="BTTV"
+      provider="BTTV"
       :emotes="parseBTTVEmotes()"
-      :getEmotes="getBTTVEmotes"
+      :getProviderEmotes="getProviderEmotes"
+      :providerIsAvailable="checkProviderAvailability"
     />
     <SettingsEmoteAPIControl
-      name="7TV"
+      provider="7TV"
       :emotes="parse7TVEmotes()"
-      :getEmotes="get7TVEmotes"
+      :getProviderEmotes="getProviderEmotes"
+      :providerIsAvailable="checkProviderAvailability"
     />
   </div>
 </template>
@@ -42,43 +46,36 @@ export default {
     SettingsEmoteAPIControl,
   },
   methods: {
-    getTwitchEmotes() {
-      let URL = `http://localhost:8081/twitch/emotes?id=${this.$store.state.channel.twitchID}`;
-      fetch(URL, { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
-          this.emotes.Twitch = json;
-        });
+    checkProviderAvailability(provider) {
+      return this.$store.state.providerAvailability[provider];
     },
-    getFFZEmotes() {
-      let URL = `http://localhost:8081/ffz/emotes?id=${this.$store.state.channel.twitchID}`;
-      fetch(URL, { method: "GET" })
+    getProviderEmotes(provider) {
+      const URLS = {
+        Twitch: `http://localhost:8081/twitch/emotes?id=${this.$store.state.channel.twitchID}`,
+        FFZ: `http://localhost:8081/ffz/emotes?id=${this.$store.state.channel.twitchID}`,
+        BTTV: `http://localhost:8081/bttv/emotes?id=${this.$store.state.channel.twitchID}`,
+        "7TV": `http://localhost:8081/7tv/emotes?name=${this.$store.state.channel.name}`,
+      };
+
+      fetch(URLS[provider], { method: "GET" })
         .then((res) => res.json())
         .then((json) => {
+          if (json.error) {
+            throw new Error(json.error);
+          }
           console.log(json);
-          this.emotes.FFZ = json;
-        });
-    },
-    getBTTVEmotes() {
-      let URL = `http://localhost:8081/bttv/emotes?id=${this.$store.state.channel.twitchID}`;
-      fetch(URL, { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
-          this.emotes.BTTV = json;
-        });
-    },
-    get7TVEmotes() {
-      let URL = `http://localhost:8081/7tv/emotes?name=${this.$store.state.channel.name}`;
-      fetch(URL, { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
-          this.emotes["7TV"] = json;
+          this.emotes[provider] = json;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.$store.commit("setProviderAvailability", {
+            provider,
+            isAvailable: false,
+          });
         });
     },
     parseTwitchEmotes() {
+      if (!this.emotes.Twitch.length) return [];
       return this.emotes.Twitch.map((emote) => {
         return {
           id: emote.id,
@@ -88,6 +85,7 @@ export default {
       });
     },
     parseFFZEmotes() {
+      if (!this.emotes.FFZ.length) return [];
       return this.emotes.FFZ.map((emote) => {
         return {
           id: emote.id,
@@ -97,6 +95,7 @@ export default {
       });
     },
     parseBTTVEmotes() {
+      if (!this.emotes.BTTV.length) return [];
       return this.emotes.BTTV.map((emote) => {
         return {
           id: emote.id,
@@ -106,6 +105,7 @@ export default {
       });
     },
     parse7TVEmotes() {
+      if (!this.emotes["7TV"].length) return [];
       return this.emotes["7TV"].map((emote) => {
         return {
           id: emote.id,

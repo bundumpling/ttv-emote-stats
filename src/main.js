@@ -36,10 +36,19 @@ const store = createStore({
         twitchID: "472309577",
         emotes: []
       },
+      providerAvailability: {
+        'Twitch': true,
+        'FFZ': true,
+        'BTTV': true,
+        '7TV': true
+      },
       emoteGroupingMenuShowAll: true,
     }
   },
   mutations: {
+    setProviderAvailability(state, { provider, isAvailable }) {
+      state.providerAvailability[provider] = isAvailable;
+    },
     setEmoteGroupingMenuShowAll(state, showAll) {  
       state.emoteGroupingMenuShowAll = showAll
     },

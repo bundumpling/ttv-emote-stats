@@ -1,8 +1,8 @@
 <template>
   <div class="emote-api-control">
     <div class="emote-api-control-header">
-      <div class="emote-api-control-header-provider">{{ name }}</div>
-      <button class="button" @click="getEmotes()">
+      <div class="emote-api-control-header-provider">{{ provider }}</div>
+      <button class="button" @click="getProviderEmotes(provider)">
         <font-awesome-icon :icon="emotes.length ? 'redo' : 'download'" /><span
           class="button-text"
           >{{ emotes.length ? "Refresh" : "Download" }}</span
@@ -10,6 +10,12 @@
       </button>
     </div>
     <div class="emote-api-control-body">
+      <div
+        class="emote-api-control-unavailable"
+        v-if="!providerIsAvailable(provider)"
+      >
+        Unable to retrieve emotes.
+      </div>
       <div class="emote-api-control-emotelist-wrapper" v-if="emotes.length">
         <div v-for="emote in emotes" v-bind:key="emote.id">
           <img :src="emote.image" :alt="emote.name" />
@@ -23,9 +29,10 @@
 export default {
   name: "SettingsEmoteApiControl",
   props: {
-    name: String,
+    provider: String,
     emotes: Array,
-    getEmotes: Function,
+    getProviderEmotes: Function,
+    providerIsAvailable: Function,
   },
 };
 </script>
