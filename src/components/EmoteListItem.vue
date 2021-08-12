@@ -63,9 +63,23 @@ export default {
   margin-bottom: 0px;
 }
 
+.emote-list-item:hover {
+  background-color: #ddd;
+
+  .emote-data {
+    .emote-name {
+      text-overflow: clip;
+      white-space: normal;
+      word-break: break-all;
+      z-index: 2;
+      background-color: #ddd;
+    }
+  }
+}
+
 .emote-data {
   display: flex;
-  min-width: 200px;
+  min-width: 12em;
   padding-left: 0.75em;
   justify-content: space-between;
   align-items: baseline;
@@ -79,18 +93,20 @@ export default {
   line-height: 24px;
 }
 
-.emote-:hover {
+.emote-image:hover {
   transform: scale(3);
   z-index: 2;
 }
 
 .emote-name {
-  max-width: 10em;
+  max-width: 12em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 14px;
-  font-variant: small-caps;
+  font-size: 0.75em;
+  z-index: 1;
+  font-family: monospace;
+  padding: 0 0.25em;
 }
 
 .emote-count {
