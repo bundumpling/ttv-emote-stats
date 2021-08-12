@@ -5,6 +5,7 @@
   <div class="container columns" v-if="showAll">
     <EmoteList
       class="column is-4 is-offset-3"
+      :emotesPerPage="getEmotesPerPage"
       :emoteListType="'Overall'"
       :emoteList="countsSorted"
     >
@@ -15,6 +16,7 @@
       class="column is-one-fourth"
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
+      :emotesPerPage="getEmotesPerPage"
       :emoteListType="emoteListType"
       :emoteList="countsSortedThenGroupedByType[emoteListType]"
     >
@@ -33,6 +35,9 @@ export default {
   computed: {
     showAll() {
       return this.$store.state.emoteGroupingMenuShowAll;
+    },
+    getEmotesPerPage() {
+      return this.$store.state.emotesPerPage;
     },
     countsSorted() {
       // clone avoid side effects in computed props

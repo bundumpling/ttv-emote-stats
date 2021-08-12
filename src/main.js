@@ -45,6 +45,7 @@ const store = createStore({
         '7TV': true
       },
       emoteGroupingMenuShowAll: true,
+      emotesPerPage: 10
     }
   },
   mutations: {
@@ -53,6 +54,9 @@ const store = createStore({
     },
     setEmoteGroupingMenuShowAll(state, showAll) {  
       state.emoteGroupingMenuShowAll = showAll
+    },
+    setEmotesPerPage(state, emotesPerPage) {
+      state.emotesPerPage = Number(emotesPerPage);
     },
     updateEmotes(state, emotes) {
       state.channel.emotes = emotes;

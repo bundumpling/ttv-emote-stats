@@ -14,8 +14,8 @@
       v-bind:key="emote.name"
       :emote="emote"
       :index="index + 1"
-      :rangeStart="perPage * pageNumber + 1"
-      :rangeEnd="perPage * (pageNumber + 1)"
+      :rangeStart="emotesPerPage * pageNumber + 1"
+      :rangeEnd="emotesPerPage * (pageNumber + 1)"
     >
     </EmoteListItem>
   </ol>
@@ -28,11 +28,10 @@ export default {
   name: "EmoteList",
   data() {
     return {
-      perPage: 10,
       pageNumber: 0,
     };
   },
-  props: ["emoteListType", "emoteList"],
+  props: ["emoteListType", "emoteList", "emotesPerPage"],
   methods: {
     sortByCount(list) {
       return list.sort((a, b) => b.count - a.count);
@@ -41,7 +40,7 @@ export default {
       return this.pageNumber > 0;
     },
     hasNextPage() {
-      return this.emoteList.length > this.perPage * (this.pageNumber + 1);
+      return this.emoteList.length > this.emotesPerPage * (this.pageNumber + 1);
     },
     prevPage() {
       if (this.hasPrevPage()) {
