@@ -2,6 +2,8 @@ import { createApp, h } from 'vue'
 import { createStore } from 'vuex'
 import routes from './routes'
 
+import devtools from '@vue/devtools'
+
 import NotFoundPage from './pages/NotFoundPage'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -122,4 +124,4 @@ const store = createStore({
   }
 })
 
-createApp(Router).component("font-awesome-icon", FontAwesomeIcon).use(store).mount('#app')
+createApp(Router).component("font-awesome-icon", FontAwesomeIcon).use(store).use(devtools).mount('#app')
