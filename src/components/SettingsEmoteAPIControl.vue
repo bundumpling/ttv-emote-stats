@@ -1,5 +1,5 @@
 <template>
-  <div class="column emote-api-control">
+  <div class="emote-api-control">
     <div class="emote-api-control-header">
       <div class="emote-api-control-header-provider">{{ name }}</div>
       <button class="button" @click="getEmotes()">
@@ -36,14 +36,21 @@ export default {
   font-variant: small-caps;
 }
 
+.emote-api-control {
+  margin: 0 1em;
+  width: 25%;
+}
+
 .emote-api-control-header {
   display: flex;
   justify-content: space-between;
   align-content: center;
+  border-bottom: 4px solid #333;
+  padding-bottom: 0.5em;
 }
 
 .emote-api-control-header-provider {
-  font-size: 1.5em;
+  font-size: 1.75em;
   font-weight: bold;
 }
 
