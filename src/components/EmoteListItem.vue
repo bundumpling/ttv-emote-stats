@@ -12,7 +12,7 @@
         <img :alt="emote.name" v-bind:src="emote.image" />
       </div>
       <div class="emote-name">
-        {{ emote.name }}
+        <span>{{ emote.name }}</span>
       </div>
       <div class="emote-count">
         {{ emote.count }}
@@ -37,7 +37,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .emote-list-item {
   display: flex;
   flex-wrap: nowrap;
@@ -45,14 +45,14 @@ export default {
   height: 24px;
   font-size: 24px;
   counter-increment: count;
-  margin-bottom: 10px;
   line-height: 24px;
+  margin-bottom: 0.25em;
 }
 
 .emote-list-item:before {
   content: counter(count);
-  text-align: right;
-  width: 36px;
+  text-align: center;
+  width: 32px;
   line-height: 24px;
   font-weight: bold;
 }
@@ -60,6 +60,7 @@ export default {
 .emote-list-item--hidden {
   visibility: hidden;
   max-height: 0px;
+  margin-bottom: 0px;
 }
 
 .emote-data {
@@ -84,6 +85,10 @@ export default {
 }
 
 .emote-name {
+  max-width: 10em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 14px;
   font-variant: small-caps;
 }

@@ -66,7 +66,7 @@ export default {
 <style>
 .emote-list-wrapper {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   align-content: flex-start;
   align-items: stretch;

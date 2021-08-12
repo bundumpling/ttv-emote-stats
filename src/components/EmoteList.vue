@@ -1,14 +1,20 @@
 <template>
-  <ol class="emote-list">
+  <ol class="emote-list box">
     <div class="header">
-      <span class="pagePrevious" @click="prevPage()"
-        ><font-awesome-icon icon="chevron-left" v-if="hasPrevPage()"
+      <span
+        class="pagePrevious"
+        :class="hasPrevPage() ? '' : 'hidden'"
+        @click="hasPrevPage() ? prevPage() : null"
+        ><font-awesome-icon icon="chevron-left"
       /></span>
       <h2 class="emote-list-type">
         {{ emoteListType }}
       </h2>
-      <span class="pageNext" @click="nextPage()"
-        ><font-awesome-icon icon="chevron-right" v-if="hasNextPage()"
+      <span
+        class="pageNext"
+        :class="hasNextPage() ? '' : 'hidden'"
+        @click="hasNextPage() ? nextPage() : null"
+        ><font-awesome-icon icon="chevron-right"
       /></span>
     </div>
     <EmoteListItem
@@ -63,7 +69,9 @@ export default {
 
 <style lang="scss" scoped>
 .emote-list {
-  margin: 0 2em;
+  h2 {
+    font-weight: bold;
+  }
 }
 
 ol {
@@ -78,8 +86,13 @@ ol {
 }
 
 .header {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  padding-bottom: 0.5em;
+  padding-bottom: 1em;
+}
+
+.hidden {
+  visibility: hidden;
 }
 </style>
