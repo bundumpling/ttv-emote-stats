@@ -2,11 +2,24 @@
   <div class="emote-api-control">
     <div class="emote-api-control-header">
       <div class="emote-api-control-header-provider">{{ provider }}</div>
-      <button class="button" @click="getProviderEmotes(provider)">
-        <font-awesome-icon :icon="emotes.length ? 'redo' : 'download'" /><span
-          class="button-text"
-          >{{ emotes.length ? "Refresh" : "Download" }}</span
-        >
+      <button
+        class="button is-outlined"
+        :class="!providerIsAvailable(provider) ? 'is-danger' : 'is-success'"
+        @click="getProviderEmotes(provider)"
+      >
+        <font-awesome-icon
+          :icon="
+            emotes.length || !providerIsAvailable(provider)
+              ? 'redo'
+              : 'download'
+          "
+        /><span class="button-text">{{
+          emotes.length
+            ? "Refresh"
+            : !providerIsAvailable(provider)
+            ? "Retry"
+            : "Download"
+        }}</span>
       </button>
     </div>
     <div class="emote-api-control-body">
