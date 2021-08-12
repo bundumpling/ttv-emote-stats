@@ -109,7 +109,7 @@ export default {
       return this.emotes["7TV"].map((emote) => {
         return {
           id: emote.id,
-          name: emote.code,
+          name: emote.name,
           image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
         };
       });
