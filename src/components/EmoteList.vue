@@ -69,6 +69,7 @@ export default {
 
 <style lang="scss" scoped>
 .emote-list {
+  align-self: stretch;
   h2 {
     font-weight: bold;
   }
@@ -94,5 +95,9 @@ ol {
 
 .hidden {
   visibility: hidden;
+}
+
+.box:last-child {
+  margin-bottom: 1.5rem; /* bulma applies this bottom margin to not(:last-child) so this evens out box sizing */
 }
 </style>
