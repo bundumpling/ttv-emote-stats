@@ -118,6 +118,9 @@ const store = createStore({
           for (let emoteListType in state.emoteListPageNumbers) {
             state.emoteListPageNumbers[emoteListType] = 0;
           }
+          for (let provider in state.providerAvailability) {
+            state.providerAvailability[provider] = true;
+          }
         }
       });
     },
