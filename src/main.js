@@ -44,6 +44,12 @@ const store = createStore({
         'BTTV': true,
         '7TV': true
       },
+      providerAPIResults: {
+        'Twitch': [],
+        'FFZ': [],
+        'BTTV': [],
+        '7TV': []
+      },
       emoteGroupingMenuShowAll: true,
       emoteListPageNumbers: {
         "Overall": 0,
