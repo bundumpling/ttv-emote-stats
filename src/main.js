@@ -115,11 +115,17 @@ const store = createStore({
             name: json.login,
             twitchID: json.id
           }
+          // Reset ranking pagination
           for (let emoteListType in state.emoteListPageNumbers) {
             state.emoteListPageNumbers[emoteListType] = 0;
           }
+          // Reset provider availability
           for (let provider in state.providerAvailability) {
             state.providerAvailability[provider] = true;
+          }
+          // Reset provider API results
+          for (let provider in state.providerAPIResults) {
+            state.providerAPIResults[provider] = [];
           }
         }
       });
