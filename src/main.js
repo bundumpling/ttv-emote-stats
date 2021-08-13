@@ -100,16 +100,16 @@ const store = createStore({
         method: 'GET'
       };
       fetch(URL, options).then(res => res.json()).then(json => {
-        console.log(json);
-        state.channel = {
-          ...state.channel,
-          name: json.login,
-          twitchID: json.id
+        if (state.channel.twitchID !== json.id) {
+          state.channel = {
+            ...state.channel,
+            name: json.login,
+            twitchID: json.id
+          }
+          for (let emoteListType in state.emoteListPageNumbers) {
+            state.emoteListPageNumbers[emoteListType] = 0;
+          }
         }
-        
-      for (let emoteListType in state.emoteListPageNumbers) {
-        state.emoteListPageNumbers[emoteListType] = 0;
-      }
       });
     },
     parseLog(state, log) {
