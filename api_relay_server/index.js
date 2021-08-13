@@ -43,6 +43,9 @@ app.get("/twitch/emotes", (req, res) => {
     return response.json();
   }).then(json => {
     console.log(JSON.stringify(json));
+    if (!json.data.length) {
+      throw new Error(`Twitch does not have any emotes for this channel`);
+    }
     return res.json(json.data);
   }).catch(error => {
     console.error(error)
