@@ -129,9 +129,8 @@ export default {
 
 <style>
 .emote-api-control-wrapper {
-  margin: 1em auto;
   display: flex;
-  justify-content: space-between;
-  align-items: stretch;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 </style>

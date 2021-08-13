@@ -58,7 +58,7 @@ export default {
 
 .emote-api-control {
   margin: 0 1em;
-  width: 25%;
+  max-width: 260px;
 }
 
 .emote-api-control-header {
@@ -66,19 +66,21 @@ export default {
   justify-content: space-between;
   align-content: center;
   border-bottom: 4px solid #333;
-  padding-bottom: 0.5em;
+  padding-bottom: 0.25em;
 }
 
 .emote-api-control-header-provider {
   font-size: 1.75em;
   font-weight: bold;
+  padding-right: 0.5em;
 }
 
 .emote-api-control-emotelist-wrapper {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-around;
   align-content: flex-start;
+  padding-top: 0.25em;
 }
 
 .emote-api-control-unavailable {
