@@ -24,10 +24,10 @@
     </div>
     <div class="emote-api-control-body">
       <div
-        class="emote-api-control-unavailable"
+        class="emote-api-control-unavailable has-text-danger"
         v-if="!providerIsAvailable(provider)"
       >
-        Unable to retrieve emotes.
+        No Emotes Available
       </div>
       <div class="emote-api-control-emotelist-wrapper" v-if="emotes.length">
         <div v-for="emote in emotes" v-bind:key="emote.id">
@@ -79,5 +79,11 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   align-content: flex-start;
+}
+
+.emote-api-control-unavailable {
+  font-size: 1.5em;
+  text-align: center;
+  font-variant: small-caps;
 }
 </style>
