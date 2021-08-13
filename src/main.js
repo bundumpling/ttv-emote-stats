@@ -65,6 +65,9 @@ const store = createStore({
     setProviderAvailability(state, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
     },
+    setProviderAPIResults(state, { provider, emotes }) {
+      state.providerAPIResults[provider] = emotes;
+    },
     setEmoteGroupingMenuShowAll(state, showAll) {  
       state.emoteGroupingMenuShowAll = showAll
     },

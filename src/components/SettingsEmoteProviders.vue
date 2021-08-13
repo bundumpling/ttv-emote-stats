@@ -32,16 +32,6 @@
 import SettingsEmoteAPIControl from "./SettingsEmoteAPIControl.vue";
 export default {
   name: "SettingsEmoteProviders",
-  data() {
-    return {
-      emotes: {
-        Twitch: [],
-        FFZ: [],
-        BTTV: [],
-        "7TV": [],
-      },
-    };
-  },
   components: {
     SettingsEmoteAPIControl,
   },
@@ -63,8 +53,10 @@ export default {
           if (json.error) {
             throw new Error(json.error);
           }
-          console.log(json);
-          this.emotes[provider] = json;
+          this.$store.commit("setProviderAPIResults", {
+            provider,
+            emotes: json,
+          });
         })
         .catch((error) => {
           console.error(error);
@@ -75,8 +67,8 @@ export default {
         });
     },
     parseTwitchEmotes() {
-      if (!this.emotes.Twitch.length) return [];
-      return this.emotes.Twitch.map((emote) => {
+      if (!this.$store.state.providerAPIResults["Twitch"].length) return [];
+      return this.$store.state.providerAPIResults["Twitch"].map((emote) => {
         return {
           id: emote.id,
           name: emote.name,
@@ -85,8 +77,8 @@ export default {
       });
     },
     parseFFZEmotes() {
-      if (!this.emotes.FFZ.length) return [];
-      return this.emotes.FFZ.map((emote) => {
+      if (!this.$store.state.providerAPIResults["FFZ"].length) return [];
+      return this.$store.state.providerAPIResults["FFZ"].map((emote) => {
         return {
           id: emote.id,
           name: emote.name,
@@ -95,8 +87,8 @@ export default {
       });
     },
     parseBTTVEmotes() {
-      if (!this.emotes.BTTV.length) return [];
-      return this.emotes.BTTV.map((emote) => {
+      if (!this.$store.state.providerAPIResults["BTTV"].length) return [];
+      return this.$store.state.providerAPIResults["BTTV"].map((emote) => {
         return {
           id: emote.id,
           name: emote.code,
@@ -105,8 +97,8 @@ export default {
       });
     },
     parse7TVEmotes() {
-      if (!this.emotes["7TV"].length) return [];
-      return this.emotes["7TV"].map((emote) => {
+      if (!this.$store.state.providerAPIResults["7TV"].length) return [];
+      return this.$store.state.providerAPIResults["7TV"].map((emote) => {
         return {
           id: emote.id,
           name: emote.name,
@@ -124,7 +116,7 @@ export default {
 
       let results = [];
 
-      for (let provider in this.emotes) {
+      for (let provider in this.$store.state.providerAPIResults) {
         providerToParser[provider].call().forEach((emote) => {
           results.push({ ...emote, type: provider, count: 0 });
         });
