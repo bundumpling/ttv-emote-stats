@@ -64,6 +64,9 @@ app.get("/ffz/emotes", (req, res) => {
     return response.json();
   }).then(json => {
     console.log(JSON.stringify(json));
+    if (!json.sets[json.room.set].emoticons.length){
+      throw new Error('FFZ does not have any emotes for this channel');
+    }
     return res.json(json.sets[json.room.set].emoticons);
   }).catch(error => {
     console.error(error)
@@ -82,7 +85,11 @@ app.get("/bttv/emotes", (req, res) => {
     return response.json();
   }).then(json => {
     console.log(JSON.stringify(json));
-    return res.json(json.channelEmotes.concat(json.sharedEmotes));
+    let emotes = json.channelEmotes.concat(json.sharedEmotes);
+    if (!emotes.length) {
+      throw new Error('BTTV does not have any emotes for this channel');
+    }
+    return res.json(emotes);
   }).catch(error => {
     console.error(error)
     return res.send({ error: error.message });
