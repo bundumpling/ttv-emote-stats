@@ -153,6 +153,35 @@ const store = createStore({
         }
       })
     }
+  },
+  actions: {
+    fetchEmotesFromProvider({ commit, state }, provider) {
+      const URLS = {
+        Twitch: `http://localhost:8081/twitch/emotes?id=${state.channel.twitchID}`,
+        FFZ: `http://localhost:8081/ffz/emotes?id=${state.channel.twitchID}`,
+        BTTV: `http://localhost:8081/bttv/emotes?id=${state.channel.twitchID}`,
+        "7TV": `http://localhost:8081/7tv/emotes?name=${state.channel.name}`,
+      };
+
+      fetch(URLS[provider], { method: "GET" })
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.error) {
+            throw new Error(json.error);
+          }
+          commit("setProviderAPIResults", {
+            provider,
+            emotes: json,
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          commit("setProviderAvailability", {
+            provider,
+            isAvailable: false,
+          });
+        });
+    },
   }
 })
 

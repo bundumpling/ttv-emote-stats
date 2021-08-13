@@ -2,7 +2,7 @@
   <button
     class="button is-outlined"
     :class="!isAvailable ? 'is-danger' : 'is-success'"
-    @click="getProviderEmotes(provider)"
+    @click="fetchEmotesFromProvider(provider)"
   >
     <font-awesome-icon
       :icon="hasEmotes || !isAvailable ? 'redo' : 'download'"
@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "SettingsAPIControlButton",
   props: {
@@ -27,33 +29,7 @@ export default {
     },
   },
   methods: {
-    getProviderEmotes(provider) {
-      const URLS = {
-        Twitch: `http://localhost:8081/twitch/emotes?id=${this.$store.state.channel.twitchID}`,
-        FFZ: `http://localhost:8081/ffz/emotes?id=${this.$store.state.channel.twitchID}`,
-        BTTV: `http://localhost:8081/bttv/emotes?id=${this.$store.state.channel.twitchID}`,
-        "7TV": `http://localhost:8081/7tv/emotes?name=${this.$store.state.channel.name}`,
-      };
-
-      fetch(URLS[provider], { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.error) {
-            throw new Error(json.error);
-          }
-          this.$store.commit("setProviderAPIResults", {
-            provider,
-            emotes: json,
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          this.$store.commit("setProviderAvailability", {
-            provider,
-            isAvailable: false,
-          });
-        });
-    },
+    ...mapActions(["fetchEmotesFromProvider"]),
   },
 };
 </script>
