@@ -76,16 +76,6 @@ const store = createStore({
     },
     updateEmotes(state, emotes) {
       state.channel.emotes = emotes;
-      console.log("updated emotes")
-      // console.log(`Prior count: ${this.state.channel.emotes.length}`)
-      // this.state = {
-      //   ...this.state, 
-      //   channel: { 
-      //     ...this.state.channel, 
-      //     emotes: emotes 
-      //   } 
-      // };
-      // console.log(`Updated count: ${this.state.channel.emotes.length}\nExample: ${JSON.stringify(this.state.channel.emotes[0])}\n\n`)
     },
     randomizeCounts(state) {
       state.channel.emotes = state.channel.emotes.map(e => {
