@@ -4,6 +4,7 @@
   <EmoteGroupingMenu />
   <div class="emote-list-wrapper" v-if="showAll">
     <EmoteList
+      :pageNumber="getPageNumber('Overall')"
       :emotesPerPage="getEmotesPerPage"
       :emoteListType="'Overall'"
       :emoteList="countsSorted"
@@ -13,6 +14,7 @@
     <EmoteList
       v-for="emoteListType in Object.keys(countsSortedThenGroupedByType)"
       v-bind:key="emoteListType"
+      :pageNumber="getPageNumber(emoteListType)"
       :emotesPerPage="getEmotesPerPage"
       :emoteListType="emoteListType"
       :emoteList="countsSortedThenGroupedByType[emoteListType]"
@@ -52,6 +54,11 @@ export default {
         result[e.type].push(e);
       });
       return result;
+    },
+  },
+  methods: {
+    getPageNumber(emoteListType) {
+      return this.$store.state.emoteListPageNumbers[emoteListType];
     },
   },
   components: {

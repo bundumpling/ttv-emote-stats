@@ -34,30 +34,29 @@ import EmoteListItem from "./EmoteListItem.vue";
 
 export default {
   name: "EmoteList",
-  data() {
-    return {
-      pageNumber: 0,
-    };
-  },
-  props: ["emoteListType", "emoteList", "emotesPerPage"],
+  props: ["emoteListType", "emoteList", "pageNumber", "emotesPerPage"],
   methods: {
     sortByCount(list) {
       return list.sort((a, b) => b.count - a.count);
     },
     hasPrevPage() {
-      return this.pageNumber > 0;
+      return this.$store.state.emoteListPageNumbers[this.emoteListType] > 0;
     },
     hasNextPage() {
-      return this.emoteList.length > this.emotesPerPage * (this.pageNumber + 1);
+      return (
+        this.emoteList.length >
+        this.$store.state.emotesPerPage *
+          (this.$store.state.emoteListPageNumbers[this.emoteListType] + 1)
+      );
     },
     prevPage() {
       if (this.hasPrevPage()) {
-        this.pageNumber--;
+        this.$store.commit("prevPage", this.emoteListType);
       }
     },
     nextPage() {
       if (this.hasNextPage()) {
-        this.pageNumber++;
+        this.$store.commit("nextPage", this.emoteListType);
       }
     },
   },

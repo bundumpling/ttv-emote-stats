@@ -45,6 +45,13 @@ const store = createStore({
         '7TV': true
       },
       emoteGroupingMenuShowAll: true,
+      emoteListPageNumbers: {
+        "Overall": 0,
+        "Twitch": 0,
+        "FFZ": 0,
+        "BTTV": 0,
+        "7TV": 0
+      },
       emotesPerPage: 10
     }
   },
@@ -57,6 +64,15 @@ const store = createStore({
     },
     setEmotesPerPage(state, emotesPerPage) {
       state.emotesPerPage = Number(emotesPerPage);
+      for (let emoteListType in state.emoteListPageNumbers) {
+        state.emoteListPageNumbers[emoteListType] = 0;
+      }
+    },
+    nextPage(state, emoteListType) {
+      state.emoteListPageNumbers[emoteListType]++;
+    },
+    prevPage(state, emoteListType) {
+      state.emoteListPageNumbers[emoteListType]--;
     },
     updateEmotes(state, emotes) {
       state.channel.emotes = emotes;
@@ -100,6 +116,10 @@ const store = createStore({
           name: json.login,
           twitchID: json.id
         }
+        
+      for (let emoteListType in state.emoteListPageNumbers) {
+        state.emoteListPageNumbers[emoteListType] = 0;
+      }
       });
     },
     parseLog(state, log) {
