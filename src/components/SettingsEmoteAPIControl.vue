@@ -2,30 +2,12 @@
   <div class="emote-api-control">
     <div class="emote-api-control-header">
       <div class="emote-api-control-header-provider">{{ provider }}</div>
-      <button
-        class="button is-outlined"
-        :class="!providerIsAvailable(provider) ? 'is-danger' : 'is-success'"
-        @click="getProviderEmotes(provider)"
-      >
-        <font-awesome-icon
-          :icon="
-            emotes.length || !providerIsAvailable(provider)
-              ? 'redo'
-              : 'download'
-          "
-        /><span class="button-text">{{
-          emotes.length
-            ? "Refresh"
-            : !providerIsAvailable(provider)
-            ? "Retry"
-            : "Download"
-        }}</span>
-      </button>
+      <SettingsAPIControlButton :provider="provider" />
     </div>
     <div class="emote-api-control-body">
       <div
         class="emote-api-control-unavailable has-text-danger"
-        v-if="!providerIsAvailable(provider)"
+        v-if="!isAvailable"
       >
         No Emotes Available
       </div>
@@ -39,23 +21,25 @@
 </template>
 
 <script>
+import SettingsAPIControlButton from "./SettingsAPIControlButton.vue";
 export default {
   name: "SettingsEmoteApiControl",
   props: {
     provider: String,
     emotes: Array,
-    getProviderEmotes: Function,
-    providerIsAvailable: Function,
+  },
+  components: {
+    SettingsAPIControlButton,
+  },
+  computed: {
+    isAvailable() {
+      return this.$store.state.providerAvailability[this.provider];
+    },
   },
 };
 </script>
 
 <style>
-.button-text {
-  padding-left: 0.25em;
-  font-variant: small-caps;
-}
-
 .emote-api-control {
   margin: 0 1em;
   max-width: 260px;

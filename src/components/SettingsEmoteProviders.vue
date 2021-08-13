@@ -1,30 +1,10 @@
 <template>
   <button class="button" @click="saveAll()">Save All Emotes</button>
   <div class="emote-api-control-wrapper">
-    <SettingsEmoteAPIControl
-      provider="Twitch"
-      :emotes="parseTwitchEmotes()"
-      :getProviderEmotes="getProviderEmotes"
-      :providerIsAvailable="checkProviderAvailability"
-    />
-    <SettingsEmoteAPIControl
-      provider="FFZ"
-      :emotes="parseFFZEmotes()"
-      :getProviderEmotes="getProviderEmotes"
-      :providerIsAvailable="checkProviderAvailability"
-    />
-    <SettingsEmoteAPIControl
-      provider="BTTV"
-      :emotes="parseBTTVEmotes()"
-      :getProviderEmotes="getProviderEmotes"
-      :providerIsAvailable="checkProviderAvailability"
-    />
-    <SettingsEmoteAPIControl
-      provider="7TV"
-      :emotes="parse7TVEmotes()"
-      :getProviderEmotes="getProviderEmotes"
-      :providerIsAvailable="checkProviderAvailability"
-    />
+    <SettingsEmoteAPIControl provider="Twitch" :emotes="parseTwitchEmotes()" />
+    <SettingsEmoteAPIControl provider="FFZ" :emotes="parseFFZEmotes()" />
+    <SettingsEmoteAPIControl provider="BTTV" :emotes="parseBTTVEmotes()" />
+    <SettingsEmoteAPIControl provider="7TV" :emotes="parse7TVEmotes()" />
   </div>
 </template>
 
@@ -36,36 +16,6 @@ export default {
     SettingsEmoteAPIControl,
   },
   methods: {
-    checkProviderAvailability(provider) {
-      return this.$store.state.providerAvailability[provider];
-    },
-    getProviderEmotes(provider) {
-      const URLS = {
-        Twitch: `http://localhost:8081/twitch/emotes?id=${this.$store.state.channel.twitchID}`,
-        FFZ: `http://localhost:8081/ffz/emotes?id=${this.$store.state.channel.twitchID}`,
-        BTTV: `http://localhost:8081/bttv/emotes?id=${this.$store.state.channel.twitchID}`,
-        "7TV": `http://localhost:8081/7tv/emotes?name=${this.$store.state.channel.name}`,
-      };
-
-      fetch(URLS[provider], { method: "GET" })
-        .then((res) => res.json())
-        .then((json) => {
-          if (json.error) {
-            throw new Error(json.error);
-          }
-          this.$store.commit("setProviderAPIResults", {
-            provider,
-            emotes: json,
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          this.$store.commit("setProviderAvailability", {
-            provider,
-            isAvailable: false,
-          });
-        });
-    },
     parseTwitchEmotes() {
       if (!this.$store.state.providerAPIResults["Twitch"].length) return [];
       return this.$store.state.providerAPIResults["Twitch"].map((emote) => {
