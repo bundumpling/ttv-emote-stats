@@ -43,14 +43,12 @@ export default {
       return clone.sort((a, b) => b.count - a.count);
     },
     countsSortedThenGroupedByType() {
-      const result = {
-        Twitch: [],
-        FFZ: [],
-        BTTV: [],
-        "7TV": [],
-      };
+      let result = {};
 
       this.countsSorted.forEach((e) => {
+        if (!result[e.type]) {
+          result[e.type] = [];
+        }
         result[e.type].push(e);
       });
       return result;
