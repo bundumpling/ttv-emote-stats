@@ -1,20 +1,4 @@
 <template>
-  <div class="button-group">
-    <button
-      class="button"
-      :class="showAll ? 'active' : 'inactive'"
-      @click="setShowAll(true)"
-    >
-      All
-    </button>
-    <button
-      class="button"
-      :class="showAll ? 'inactive' : 'active'"
-      @click="setShowAll(false)"
-    >
-      Categorical
-    </button>
-  </div>
   <div class="emotes-per-page">
     <label>Emotes per page: </label>
     <div class="select is-small">
@@ -35,16 +19,8 @@
 
 <script>
 export default {
-  name: "EmoteGroupingMenu",
-  computed: {
-    showAll() {
-      return this.$store.state.emoteGroupingMenuShowAll;
-    },
-  },
+  name: "RankingsEmotesPerPageSelect",
   methods: {
-    setShowAll(showAll) {
-      this.$store.commit("setEmoteGroupingMenuShowAll", showAll);
-    },
     isSelected(value) {
       return this.$store.state.emotesPerPage === value;
     },
@@ -65,13 +41,5 @@ export default {
   label {
     padding-right: 0.5em;
   }
-}
-.active {
-  font-weight: bold;
-}
-
-.button-group {
-  margin-bottom: 2em;
-  text-align: center;
 }
 </style>

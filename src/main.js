@@ -36,7 +36,13 @@ const store = createStore({
       channel: {
         name: 'bundumpling',
         twitchID: "472309577",
-        emotes: []
+        emotes: [],
+        hasEmotesFrom: {
+          'Twitch': false,
+          'FFZ': false,
+          'BTTV': false,
+          '7TV': false
+        }
       },
       rankings: {
         activeTab: 'Overall'

@@ -2,7 +2,6 @@
   <div class="tabs is-large is-centered">
     <ul>
       <RankingsTab tabName="Overall" />
-      <RankingsTab tabName="Categorical" />
       <RankingsTab v-if="showTab('Twitch')" tabName="Twitch" />
       <RankingsTab v-if="showTab('FFZ')" tabName="FFZ" />
       <RankingsTab v-if="showTab('BTTV')" tabName="BTTV" />
