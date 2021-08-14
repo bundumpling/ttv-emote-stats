@@ -1,7 +1,7 @@
 <template>
   <button
     class="button is-outlined"
-    :class="!isAvailable ? 'is-danger' : 'is-success'"
+    :class="classStylingFromStatus"
     @click="fetchEmotesFromProvider(provider)"
   >
     <font-awesome-icon
@@ -19,6 +19,7 @@ export default {
   name: "SettingsAPIControlButton",
   props: {
     provider: String,
+    buttonStatus: String,
   },
   computed: {
     isAvailable() {
@@ -26,6 +27,23 @@ export default {
     },
     hasEmotes() {
       return this.$store.state.providerAPIResults[this.provider].length;
+    },
+    classStylingFromStatus() {
+      let buttonStatus = "";
+      switch (this.buttonStatus) {
+        case "Loading":
+          buttonStatus = "is-warning is-loading";
+          break;
+        case "Success":
+          buttonStatus = "is-success";
+          break;
+        case "Error":
+          buttonStatus = "is-danger";
+          break;
+        default:
+          buttonStatus = "is-success";
+      }
+      return buttonStatus;
     },
   },
   methods: {

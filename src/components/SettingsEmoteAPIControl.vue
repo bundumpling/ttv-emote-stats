@@ -2,7 +2,10 @@
   <div class="emote-api-control">
     <div class="emote-api-control-header">
       <div class="emote-api-control-header-provider">{{ provider }}</div>
-      <SettingsAPIControlButton :provider="provider" />
+      <SettingsAPIControlButton
+        :provider="provider"
+        :buttonStatus="buttonStatus"
+      />
     </div>
     <div class="emote-api-control-body">
       <div
@@ -34,6 +37,9 @@ export default {
   computed: {
     isAvailable() {
       return this.$store.state.providerAvailability[this.provider];
+    },
+    buttonStatus() {
+      return this.$store.state.emoteFetchButtons[this.provider].status;
     },
   },
 };

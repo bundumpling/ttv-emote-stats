@@ -44,6 +44,12 @@ const store = createStore({
         'BTTV': true,
         '7TV': true
       },
+      emoteFetchButtons: {
+        'Twitch': { status: '' },
+        'FFZ': { status: '' },
+        'BTTV': { status: '' },
+        '7TV': { status: '' }
+      },
       providerAPIResults: {
         'Twitch': [],
         'FFZ': [],
@@ -64,6 +70,9 @@ const store = createStore({
   mutations: {
     setProviderAvailability(state, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
+    },
+    setEmoteFetchButtonStatus(state, { provider, status }) {
+      state.emoteFetchButtons[provider].status = status;
     },
     setProviderAPIResults(state, { provider, emotes }) {
       state.providerAPIResults[provider] = emotes;
@@ -156,6 +165,7 @@ const store = createStore({
   },
   actions: {
     fetchEmotesFromProvider({ commit, state }, provider) {
+      commit('setEmoteFetchButtonStatus', { provider, status: 'Loading' })
       const URLS = {
         Twitch: `http://localhost:8081/twitch/emotes?id=${state.channel.twitchID}`,
         FFZ: `http://localhost:8081/ffz/emotes?id=${state.channel.twitchID}`,
@@ -169,6 +179,7 @@ const store = createStore({
           if (json.error) {
             throw new Error(json.error);
           }
+          commit('setEmoteFetchButtonStatus', { provider, status: 'Success' })
           commit("setProviderAPIResults", {
             provider,
             emotes: json,
@@ -176,6 +187,7 @@ const store = createStore({
         })
         .catch((error) => {
           console.error(error);
+          commit('setEmoteFetchButtonStatus', { provider, status: 'Error' })
           commit("setProviderAvailability", {
             provider,
             isAvailable: false,
