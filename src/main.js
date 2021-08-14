@@ -159,7 +159,7 @@ const store = createStore({
     }
   },
   actions: {
-    fetchChannelUsernameAndIDFromTwitch({ commit, state }, { username, twitchID }) {
+    fetchChannelUsernameAndIDFromTwitch({ dispatch, commit, state }, { username, twitchID }) {
       if (!username && !twitchID) {
         console.error("setChannelNameAndID requires either a username or a twitchID");
         return;
@@ -184,6 +184,10 @@ const store = createStore({
           commit('resetProviderAPIResults')
         }).then(() => {
           commit('resetEmoteFetchButtons')
+        }).then(() => {
+          ['Twitch', 'FFZ', 'BTTV', '7TV'].forEach(provider => {
+            dispatch('fetchEmotesFromProvider', provider);
+          });
         }).catch((error) => {
           console.log(error);
         })
