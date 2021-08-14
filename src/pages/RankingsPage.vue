@@ -2,6 +2,7 @@
   <TheHeader />
   <Subheader msg="Rankings" />
   <EmoteGroupingMenu />
+  <RankingsTabsContainer />
   <div class="emote-list-wrapper" v-if="showAll">
     <EmoteList
       :pageNumber="getPageNumber('Overall')"
@@ -25,6 +26,7 @@
 <script>
 import TheHeader from "../components/TheHeader.vue";
 import Subheader from "../components/Subheader.vue";
+import RankingsTabsContainer from "../components/RankingsTabsContainer.vue";
 import EmoteList from "../components/EmoteList.vue";
 import EmoteGroupingMenu from "../components/EmoteGroupingMenu.vue";
 
@@ -62,6 +64,7 @@ export default {
   components: {
     TheHeader,
     Subheader,
+    RankingsTabsContainer,
     EmoteList,
     EmoteGroupingMenu,
   },

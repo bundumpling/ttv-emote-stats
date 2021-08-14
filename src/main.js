@@ -38,6 +38,9 @@ const store = createStore({
         twitchID: "472309577",
         emotes: []
       },
+      rankings: {
+        activeTab: 'Overall'
+      },
       providerAvailability: {
         'Twitch': true,
         'FFZ': true,
