@@ -1,10 +1,7 @@
 <template>
   <div class="emote-list-container">
     <EmoteList
-      v-for="emoteListProvider in [
-        'Overall',
-        ...Object.keys(countsSortedThenGroupedByProvider),
-      ]"
+      v-for="emoteListProvider in ['Overall', ...filterEmoteLists]"
       v-bind:key="emoteListProvider"
       :pageNumber="getPageNumber(emoteListProvider)"
       :emotesPerPage="getEmotesPerPage"
@@ -26,6 +23,11 @@ export default {
     EmoteList,
   },
   computed: {
+    filterEmoteLists() {
+      return ["Twitch", "FFZ", "BTTV", "7TV"].filter(
+        (provider) => this.$store.state.channel.hasEmotesFrom[provider] === true
+      );
+    },
     getEmotesPerPage() {
       return this.$store.state.emotesPerPage;
     },
