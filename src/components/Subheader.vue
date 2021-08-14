@@ -11,11 +11,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&display=swap");
 h2 {
-  margin-bottom: 0.5em;
-  font-size: 3.5em;
-  font-weight: bold;
+  font-family: "Inconsolata", monospace;
+  padding-bottom: 0.75em;
+  font-size: 2.2em;
+  font-weight: 500;
   text-align: center;
 }
 </style>

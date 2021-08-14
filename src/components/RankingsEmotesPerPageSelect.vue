@@ -36,7 +36,6 @@ export default {
   display: flex;
   justify-content: center;
   align-items: baseline;
-  margin-bottom: 2em;
 
   label {
     padding-right: 0.5em;

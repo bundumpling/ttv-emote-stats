@@ -1,6 +1,6 @@
 <template>
   <TheHeader />
-  <Subheader msg="Rankings" />
+  <Subheader :msg="`Channel Emote Rankings for ${channelName}`" />
   <RankingsEmotesPerPageSelect />
   <TabsContainer />
   <EmoteListContainer />
@@ -21,6 +21,11 @@ export default {
     RankingsEmotesPerPageSelect,
     TabsContainer,
     EmoteListContainer,
+  },
+  computed: {
+    channelName() {
+      return this.$store.state.channel.name;
+    },
   },
 };
 </script>

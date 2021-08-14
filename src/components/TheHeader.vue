@@ -38,7 +38,7 @@ export default {
 }
 
 nav {
-  margin: 1.5rem auto;
+  margin: 0.5rem auto;
   display: flex;
   justify-content: center;
 }
