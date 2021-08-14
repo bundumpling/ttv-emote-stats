@@ -2,10 +2,11 @@
   <div class="tabs is-large is-centered">
     <ul>
       <RankingsTab tabName="Overall" />
-      <RankingsTab v-if="showTab('Twitch')" tabName="Twitch" />
-      <RankingsTab v-if="showTab('FFZ')" tabName="FFZ" />
-      <RankingsTab v-if="showTab('BTTV')" tabName="BTTV" />
-      <RankingsTab v-if="showTab('7TV')" tabName="7TV" />
+      <RankingsTab
+        v-for="provider in filterTabs"
+        v-bind:key="provider"
+        :tabName="provider"
+      />
     </ul>
   </div>
 </template>
@@ -14,9 +15,11 @@
 import RankingsTab from "./RankingsTab.vue";
 export default {
   name: "RankingsTabsContainer",
-  methods: {
-    showTab(tabName) {
-      return this.$store.state.providerAvailability[tabName] === true;
+  computed: {
+    filterTabs() {
+      return ["Twitch", "FFZ", "BTTV", "7TV"].filter(
+        (provider) => this.$store.state.channel.hasEmotesFrom[provider] === true
+      );
     },
   },
   components: {

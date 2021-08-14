@@ -1,18 +1,18 @@
 <template>
   <div class="emote-list-container">
     <EmoteList
-      v-for="emoteListType in [
+      v-for="emoteListProvider in [
         'Overall',
-        ...Object.keys(countsSortedThenGroupedByType),
+        ...Object.keys(countsSortedThenGroupedByProvider),
       ]"
-      v-bind:key="emoteListType"
-      :pageNumber="getPageNumber(emoteListType)"
+      v-bind:key="emoteListProvider"
+      :pageNumber="getPageNumber(emoteListProvider)"
       :emotesPerPage="getEmotesPerPage"
-      :emoteListType="emoteListType"
+      :emoteListProvider="emoteListProvider"
       :emoteList="
-        emoteListType === 'Overall'
+        emoteListProvider === 'Overall'
           ? countsSorted
-          : countsSortedThenGroupedByType[emoteListType]
+          : countsSortedThenGroupedByProvider[emoteListProvider]
       "
     />
   </div>
@@ -34,21 +34,21 @@ export default {
       let clone = this.$store.state.channel.emotes.slice();
       return clone.sort((a, b) => b.count - a.count);
     },
-    countsSortedThenGroupedByType() {
+    countsSortedThenGroupedByProvider() {
       let result = {};
 
       this.countsSorted.forEach((e) => {
-        if (!result[e.type]) {
-          result[e.type] = [];
+        if (!result[e.provider]) {
+          result[e.provider] = [];
         }
-        result[e.type].push(e);
+        result[e.provider].push(e);
       });
       return result;
     },
   },
   methods: {
-    getPageNumber(emoteListType) {
-      return this.$store.state.emoteListPageNumbers[emoteListType];
+    getPageNumber(emoteListProvider) {
+      return this.$store.state.emoteListPageNumbers[emoteListProvider];
     },
   },
 };

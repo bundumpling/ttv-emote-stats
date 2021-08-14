@@ -81,7 +81,13 @@ const store = createStore({
       state.channel = {
         name,
         twitchID,
-        emotes: []  // Clear emotes
+        emotes: [], // reset emotes
+        hasEmotesFrom: {
+          'Twitch': false,
+          'FFZ': false,
+          'BTTV': false,
+          '7TV': false
+        }
       }
     },
     resetEmoteListPagination(state) {
@@ -118,18 +124,21 @@ const store = createStore({
     },
     setEmotesPerPage(state, emotesPerPage) {
       state.emotesPerPage = Number(emotesPerPage);
-      for (let emoteListType in state.emoteListPageNumbers) {
-        state.emoteListPageNumbers[emoteListType] = 0;
+      for (let emoteListProvider in state.emoteListPageNumbers) {
+        state.emoteListPageNumbers[emoteListProvider] = 0;
       }
     },
-    nextPage(state, emoteListType) {
-      state.emoteListPageNumbers[emoteListType]++;
+    nextPage(state, emoteListProvider) {
+      state.emoteListPageNumbers[emoteListProvider]++;
     },
-    prevPage(state, emoteListType) {
-      state.emoteListPageNumbers[emoteListType]--;
+    prevPage(state, emoteListProvider) {
+      state.emoteListPageNumbers[emoteListProvider]--;
     },
     updateEmotes(state, emotes) {
       state.channel.emotes = emotes;
+      for (let provider in state.channel.hasEmotesFrom) {
+        state.channel.hasEmotesFrom[provider] = emotes.find(emote => emote.provider === provider) ? true : false;
+      }
     },
     randomizeCounts(state) {
       state.channel.emotes = state.channel.emotes.map(e => {

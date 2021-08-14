@@ -68,7 +68,7 @@ export default {
 
       for (let provider in this.$store.state.providerAPIResults) {
         providerToParser[provider].call().forEach((emote) => {
-          results.push({ ...emote, type: provider, count: 0 });
+          results.push({ ...emote, provider, count: 0 });
         });
       }
       this.$store.commit("updateEmotes", results);

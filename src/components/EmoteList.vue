@@ -8,7 +8,7 @@
         ><font-awesome-icon icon="chevron-left"
       /></span>
       <h2 class="emote-list-type">
-        {{ emoteListType }}
+        {{ emoteListProvider }}
       </h2>
       <span
         class="pageNext"
@@ -34,29 +34,29 @@ import EmoteListItem from "./EmoteListItem.vue";
 
 export default {
   name: "EmoteList",
-  props: ["emoteListType", "emoteList", "pageNumber", "emotesPerPage"],
+  props: ["emoteListProvider", "emoteList", "pageNumber", "emotesPerPage"],
   methods: {
     sortByCount(list) {
       return list.sort((a, b) => b.count - a.count);
     },
     hasPrevPage() {
-      return this.$store.state.emoteListPageNumbers[this.emoteListType] > 0;
+      return this.$store.state.emoteListPageNumbers[this.emoteListProvider] > 0;
     },
     hasNextPage() {
       return (
         this.emoteList.length >
         this.$store.state.emotesPerPage *
-          (this.$store.state.emoteListPageNumbers[this.emoteListType] + 1)
+          (this.$store.state.emoteListPageNumbers[this.emoteListProvider] + 1)
       );
     },
     prevPage() {
       if (this.hasPrevPage()) {
-        this.$store.commit("prevPage", this.emoteListType);
+        this.$store.commit("prevPage", this.emoteListProvider);
       }
     },
     nextPage() {
       if (this.hasNextPage()) {
-        this.$store.commit("nextPage", this.emoteListType);
+        this.$store.commit("nextPage", this.emoteListProvider);
       }
     },
   },
