@@ -135,7 +135,7 @@ export default {
           params[radioButton.value] = selectChannelInput.value;
         }
       });
-      this.$store.commit("setChannelNameAndID", params);
+      this.$store.dispatch("fetchChannelUsernameAndIDFromTwitch", params);
       this.closeModal();
       selectChannelInput.value = "";
     },

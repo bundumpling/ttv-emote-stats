@@ -68,6 +68,33 @@ const store = createStore({
     }
   },
   mutations: {
+    setChannelNameAndTwitchID(state, { name, twitchID }) {
+      state.channel = {
+        name,
+        twitchID,
+        emotes: []  // Clear emotes
+      }
+    },
+    resetEmoteListPagination(state) {
+      for (let provider in state.emoteListPageNumbers) {
+        state.emoteListPageNumbers[provider] = 0;
+      }
+    },
+    resetProviderAvailability(state) {
+      for (let provider in state.providerAvailability) {
+        state.providerAvailability[provider] = true;
+      }
+    },
+    resetProviderAPIResults(state) {
+      for (let provider in state.providerAPIResults) {
+        state.providerAPIResults[provider] = [];
+      }
+    },
+    resetEmoteFetchButtons(state) {
+      for (let provider in state.emoteFetchButtons) {
+        state.emoteFetchButtons[provider] = { status: '' };
+      }
+    },
     setProviderAvailability(state, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
     },
@@ -107,38 +134,6 @@ const store = createStore({
         return e
       })
     },
-    setChannelNameAndID(state, { username, twitchID }) {
-      if (!username && !twitchID) {
-        console.error("setChannelNameAndID requires either a username or a twitchID");
-        return;
-      }
-      const paramsString = username ? "login="+username : "id="+twitchID;
-      const URL = `http://localhost:8081/twitch/users?${paramsString}`;
-      const options = {
-        method: 'GET'
-      };
-      fetch(URL, options).then(res => res.json()).then(json => {
-        if (state.channel.twitchID !== json.id) {
-          state.channel = {
-            ...state.channel,
-            name: json.login,
-            twitchID: json.id
-          }
-          // Reset ranking pagination
-          for (let emoteListType in state.emoteListPageNumbers) {
-            state.emoteListPageNumbers[emoteListType] = 0;
-          }
-          // Reset provider availability
-          for (let provider in state.providerAvailability) {
-            state.providerAvailability[provider] = true;
-          }
-          // Reset provider API results
-          for (let provider in state.providerAPIResults) {
-            state.providerAPIResults[provider] = [];
-          }
-        }
-      });
-    },
     parseLog(state, log) {
       let resultsMap = new Map(state.channel.emotes.map((e, i) => [e.name, { index: i, count:0 }]));
       let cursor = 0;
@@ -164,6 +159,36 @@ const store = createStore({
     }
   },
   actions: {
+    fetchChannelUsernameAndIDFromTwitch({ commit, state }, { username, twitchID }) {
+      if (!username && !twitchID) {
+        console.error("setChannelNameAndID requires either a username or a twitchID");
+        return;
+      }
+      const paramsString = username ? "login="+username : "id="+twitchID;
+      const URL = `http://localhost:8081/twitch/users?${paramsString}`;
+      const options = {
+        method: 'GET'
+      };
+      fetch(URL, options).then(res => res.json())
+        .then(json => {
+          if (state.channel.twitchID !== json.id) {
+            commit('setChannelNameAndTwitchID', { name: json.login, twitchID: json.id });
+          } else {
+            throw new Error(`TwitchID is the same as what's currently stored in channel state.`);
+          }
+        }).then(() => {
+          commit('resetEmoteListPagination')
+        }).then(() => {
+          commit('resetProviderAvailability')
+        }).then(() => {
+          commit('resetProviderAPIResults')
+        }).then(() => {
+          commit('resetEmoteFetchButtons')
+        }).catch((error) => {
+          console.log(error);
+        })
+      
+    },
     fetchEmotesFromProvider({ commit, state }, provider) {
       commit('setEmoteFetchButtonStatus', { provider, status: 'Loading' })
       const URLS = {
