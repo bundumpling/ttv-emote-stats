@@ -18,14 +18,16 @@
       /></span>
     </div>
     <EmoteListItem
-      v-for="emote in sortedByCountFilteredByRank"
+      v-for="emote in filteredByRank"
       v-bind:key="emote.name"
       :name="emote.name"
       :rank="emote.rank"
       :image="emote.image"
       :count="emote.count"
-    >
-    </EmoteListItem>
+    />
+    <div class="placeholder" v-if="!filteredByRank.length">
+      <span>No Results</span>
+    </div>
   </ul>
 </template>
 
@@ -41,19 +43,16 @@ export default {
     emotesPerPage: Number,
     rangeStart: Number,
     rangeEnd: Number,
+    searchInputValue: String,
   },
   components: {
     EmoteListItem,
   },
   computed: {
-    sortedByCountFilteredByRank() {
-      return this.emoteList
-        .slice()
-        .sort((a, b) => b.count - a.count)
-        .map((emote, rank) => {
-          return { ...emote, rank };
-        })
-        .filter((_, rank) => this.rangeStart <= rank && rank <= this.rangeEnd);
+    filteredByRank() {
+      return this.emoteList.filter(
+        (_, rank) => this.rangeStart <= rank && rank <= this.rangeEnd
+      );
     },
   },
   methods: {
@@ -82,6 +81,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.placeholder {
+  width: 20em;
+  text-align: center;
+
+  span {
+    font-size: 1.5em;
+    color: red;
+    font-variant: small-caps;
+  }
+}
 .emote-list {
   align-self: stretch;
   h2 {

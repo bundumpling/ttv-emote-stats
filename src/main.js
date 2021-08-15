@@ -45,7 +45,8 @@ const store = createStore({
         }
       },
       rankings: {
-        activeTab: 'Overall'
+        activeTab: 'Overall',
+        searchInput: ''
       },
       providerAvailability: {
         'Twitch': true,
@@ -112,6 +113,9 @@ const store = createStore({
     },
     setActiveTab(state, tabName) {
       state.rankings.activeTab = tabName;
+    },
+    setSearchInput(state, value) {
+      state.rankings.searchInput = value;
     },
     setProviderAvailability(state, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
