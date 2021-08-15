@@ -18,7 +18,7 @@
       /></span>
     </div>
     <EmoteListItem
-      v-for="(emote, index) in sortByCount(emoteList)"
+      v-for="(emote, index) in emoteList"
       v-bind:key="emote.name"
       :emote="emote"
       :index="index + 1"
@@ -36,9 +36,6 @@ export default {
   name: "EmoteList",
   props: ["emoteListProvider", "emoteList", "pageNumber", "emotesPerPage"],
   methods: {
-    sortByCount(list) {
-      return list.sort((a, b) => b.count - a.count);
-    },
     hasPrevPage() {
       return this.$store.state.emoteListPageNumbers[this.emoteListProvider] > 0;
     },

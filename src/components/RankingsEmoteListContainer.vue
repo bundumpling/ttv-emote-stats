@@ -8,8 +8,8 @@
       :emoteListProvider="emoteListProvider"
       :emoteList="
         emoteListProvider === 'Overall'
-          ? countsSorted
-          : countsSortedThenGroupedByProvider[emoteListProvider]
+          ? emotes
+          : emotesByProvider[emoteListProvider]
       "
     />
   </div>
@@ -36,21 +36,21 @@ export default {
     getEmotesPerPage() {
       return this.$store.state.emotesPerPage;
     },
-    countsSorted() {
-      // clone avoid side effects in computed props
-      let clone = this.$store.state.channel.emotes.slice();
-      return clone.sort((a, b) => b.count - a.count);
+    emotes() {
+      return this.$store.state.channel.emotes
+        .slice()
+        .sort((a, b) => b.count - a.count);
     },
-    countsSortedThenGroupedByProvider() {
+    emotesByProvider() {
       let result = {};
 
-      this.countsSorted.forEach((e) => {
+      this.emotes.forEach((e) => {
         if (!result[e.provider]) {
           result[e.provider] = [];
         }
         result[e.provider].push(e);
       });
-      return result;
+      return Object.freeze(result);
     },
   },
   methods: {
