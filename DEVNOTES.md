@@ -68,8 +68,4 @@ Emote usage data by specific users in a channel would ideally have the option to
   - For existing emote codes update with new art or provider (if previous one was removed)
   
 ## ***Current Tasks***
-  - Add **search component** that filters emotes according to input. Can be used on both Rankings and Settings pages.
   - Add **detailed view** for provider api results.
-  - Add **Tabs** to Rankings page where default view shows Overall rankings
-    - Each provider needs its own tab with a detailed view.
-  - Improve performance rendering sorted lists.
