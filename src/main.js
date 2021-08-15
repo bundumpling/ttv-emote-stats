@@ -110,6 +110,9 @@ const store = createStore({
         state.emoteFetchButtons[provider] = { status: '' };
       }
     },
+    setActiveTab(state, tabName) {
+      state.rankings.activeTab = tabName;
+    },
     setProviderAvailability(state, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
     },

@@ -1,6 +1,6 @@
 <template>
   <li :class="isActive ? 'is-active' : ''">
-    <a>{{ tabName }} </a>
+    <a @click="setActiveTab()">{{ tabName }} </a>
   </li>
 </template>
 
@@ -13,6 +13,11 @@ export default {
   computed: {
     isActive() {
       return this.$store.state.rankings.activeTab === this.tabName;
+    },
+  },
+  methods: {
+    setActiveTab() {
+      this.$store.commit("setActiveTab", this.tabName);
     },
   },
 };
