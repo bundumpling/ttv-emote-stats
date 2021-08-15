@@ -99,7 +99,7 @@ export default {
 }
 
 .emote-name {
-  max-width: 12em;
+  max-width: 10em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
