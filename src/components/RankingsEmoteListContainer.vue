@@ -79,12 +79,12 @@ export default {
       let sortedByProvider = clone
         .sort((a, b) => b.count - a.count)
         .reduce(
-          (result, emote) => {
-            result[emote.provider].push({
+          (acc, emote) => {
+            acc[emote.provider].push({
               ...emote,
-              rank: result[emote.provider].length,
+              rank: acc[emote.provider].length + 1,
             });
-            return result;
+            return acc;
           },
           {
             Twitch: [],

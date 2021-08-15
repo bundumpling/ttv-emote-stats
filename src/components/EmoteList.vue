@@ -51,7 +51,7 @@ export default {
   computed: {
     filteredByRank() {
       return this.emoteList.filter(
-        (_, rank) => this.rangeStart <= rank && rank <= this.rangeEnd
+        (_, rank) => this.rangeStart <= rank + 1 && rank < this.rangeEnd
       );
     },
   },
