@@ -96,6 +96,9 @@ const store = createStore({
         state.emoteListPageNumbers[provider] = 0;
       }
     },
+    resetSearchInput(state) {
+      state.rankings.searchInput = '';
+    },
     resetProviderAvailability(state) {
       for (let provider in state.providerAvailability) {
         state.providerAvailability[provider] = true;
@@ -203,6 +206,8 @@ const store = createStore({
           }
         }).then(() => {
           commit('resetEmoteListPagination')
+        }).then(() => {
+          commit('resetSearchInput')
         }).then(() => {
           commit('resetProviderAvailability')
         }).then(() => {
