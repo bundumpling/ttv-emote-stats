@@ -18,12 +18,12 @@
       /></span>
     </div>
     <EmoteListItem
-      v-for="(emote, index) in sortByCount(emoteList)"
+      v-for="emote in sortedByCountFilteredByRank"
       v-bind:key="emote.name"
-      :emote="emote"
-      :index="index + 1"
-      :rangeStart="emotesPerPage * pageNumber + 1"
-      :rangeEnd="emotesPerPage * (pageNumber + 1)"
+      :name="emote.name"
+      :rank="emote.rank"
+      :image="emote.image"
+      :count="emote.count"
     >
     </EmoteListItem>
   </ul>
@@ -34,11 +34,29 @@ import EmoteListItem from "./EmoteListItem.vue";
 
 export default {
   name: "EmoteList",
-  props: ["emoteListProvider", "emoteList", "pageNumber", "emotesPerPage"],
-  methods: {
-    sortByCount(list) {
-      return list.sort((a, b) => b.count - a.count);
+  props: {
+    emoteListProvider: String,
+    emoteList: Array,
+    pageNumber: Number,
+    emotesPerPage: Number,
+    rangeStart: Number,
+    rangeEnd: Number,
+  },
+  components: {
+    EmoteListItem,
+  },
+  computed: {
+    sortedByCountFilteredByRank() {
+      return this.emoteList
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .map((emote, rank) => {
+          return { ...emote, rank };
+        })
+        .filter((_, rank) => this.rangeStart <= rank && rank <= this.rangeEnd);
     },
+  },
+  methods: {
     hasPrevPage() {
       return this.$store.state.emoteListPageNumbers[this.emoteListProvider] > 0;
     },
@@ -59,9 +77,6 @@ export default {
         this.$store.commit("nextPage", this.emoteListProvider);
       }
     },
-  },
-  components: {
-    EmoteListItem,
   },
 };
 </script>

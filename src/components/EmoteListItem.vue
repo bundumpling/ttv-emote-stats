@@ -1,22 +1,15 @@
 <template>
-  <li
-    :class="
-      'emote-list-item ' +
-      (rangeStart <= index && index <= rangeEnd
-        ? ''
-        : 'emote-list-item--hidden')
-    "
-  >
-    <div class="emote-index">{{ index }}</div>
+  <li class="emote-list-item">
+    <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
-        <img :alt="emote.name" v-bind:src="emote.image" />
+        <img :alt="name" v-bind:src="image" />
       </div>
       <div class="emote-name">
-        <span>{{ emote.name }}</span>
+        <span>{{ name }}</span>
       </div>
       <div class="emote-count">
-        {{ emote.count }}
+        {{ count }}
       </div>
     </div>
   </li>
@@ -26,14 +19,10 @@
 export default {
   name: "EmoteListItem",
   props: {
-    emote: {
-      name: String,
-      count: Number,
-      image: String,
-    },
-    index: Number,
-    rangeStart: Number,
-    rangeEnd: Number,
+    name: String,
+    count: Number,
+    image: String,
+    rank: Number,
   },
 };
 </script>
@@ -49,7 +38,7 @@ export default {
   margin-bottom: 0.25em;
 }
 
-.emote-index {
+.emote-rank {
   align-self: flex-start;
   text-align: center;
   width: 32px;
@@ -79,7 +68,7 @@ export default {
 
 .emote-data {
   display: flex;
-  min-width: 11em;
+  min-width: 12em;
   padding-left: 0.75em;
   justify-content: space-between;
   align-items: baseline;

@@ -4,7 +4,9 @@
       v-for="emoteListProvider in filterEmoteLists"
       v-bind:key="emoteListProvider"
       :pageNumber="getPageNumber(emoteListProvider)"
-      :emotesPerPage="getEmotesPerPage"
+      :emotesPerPage="emotesPerPage"
+      :rangeStart="getRangeStart(emoteListProvider)"
+      :rangeEnd="getRangeEnd(emoteListProvider)"
       :emoteListProvider="emoteListProvider"
       :emoteList="
         emoteListProvider === 'Overall'
@@ -33,7 +35,7 @@ export default {
           )
         : [this.$store.state.rankings.activeTab];
     },
-    getEmotesPerPage() {
+    emotesPerPage() {
       return this.$store.state.emotesPerPage;
     },
     countsSorted() {
@@ -56,6 +58,19 @@ export default {
   methods: {
     getPageNumber(emoteListProvider) {
       return this.$store.state.emoteListPageNumbers[emoteListProvider];
+    },
+    getRangeStart(emoteListProvider) {
+      return (
+        this.$store.state.emotesPerPage *
+          this.$store.state.emoteListPageNumbers[emoteListProvider] +
+        1
+      );
+    },
+    getRangeEnd(emoteListProvider) {
+      return (
+        this.$store.state.emotesPerPage *
+        (this.$store.state.emoteListPageNumbers[emoteListProvider] + 1)
+      );
     },
   },
 };
