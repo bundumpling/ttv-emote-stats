@@ -2,11 +2,11 @@
   <div class="search-input-wrapper">
     <label>Search: </label>
     <input
-      id="search-input"
+      name="search"
+      v-model="search"
       class="input"
       type="text"
       aria-label="search input"
-      v-model.trim="search"
     />
   </div>
 </template>
@@ -14,14 +14,14 @@
 <script>
 export default {
   name: "EmoteListSearchInput",
-  data() {
-    return {
-      search: "",
-    };
-  },
-  watch: {
-    search(value) {
-      this.$store.commit("setSearchInput", value);
+  computed: {
+    search: {
+      set(value) {
+        this.$store.commit("setSearchInput", value);
+      },
+      get() {
+        return this.$store.state.rankings.searchInput;
+      },
     },
   },
 };
