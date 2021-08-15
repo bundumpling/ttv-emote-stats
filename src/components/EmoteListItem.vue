@@ -7,6 +7,7 @@
         : 'emote-list-item--hidden')
     "
   >
+    <div class="emote-index">{{ index }}</div>
     <div class="emote-data">
       <div class="emote-image">
         <img :alt="emote.name" v-bind:src="emote.image" />
@@ -44,13 +45,12 @@ export default {
   align-items: baseline;
   height: 24px;
   font-size: 24px;
-  counter-increment: count;
   line-height: 24px;
   margin-bottom: 0.25em;
 }
 
-.emote-list-item:before {
-  content: counter(count);
+.emote-index {
+  align-self: flex-start;
   text-align: center;
   width: 32px;
   line-height: 24px;
@@ -79,7 +79,7 @@ export default {
 
 .emote-data {
   display: flex;
-  min-width: 12em;
+  min-width: 11em;
   padding-left: 0.75em;
   justify-content: space-between;
   align-items: baseline;

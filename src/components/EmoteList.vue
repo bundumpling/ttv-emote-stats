@@ -1,5 +1,5 @@
 <template>
-  <ol class="emote-list box">
+  <ul class="emote-list box">
     <div class="header">
       <span
         class="pagePrevious"
@@ -26,7 +26,7 @@
       :rangeEnd="emotesPerPage * (pageNumber + 1)"
     >
     </EmoteListItem>
-  </ol>
+  </ul>
 </template>
 
 <script>
@@ -71,10 +71,9 @@ export default {
   }
 }
 
-ol {
+ul {
   display: block;
   list-style: none;
-  counter-reset: count;
 }
 
 .emote-list-type {
