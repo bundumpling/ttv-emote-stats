@@ -48,7 +48,7 @@ export default {
       return clone
         .sort((a, b) => b.count - a.count)
         .map((emote, rank) => {
-          return { ...emote, rank };
+          return { ...emote, rank: rank + 1 };
         })
         .filter((emote) =>
           this.searchInputValue.length
