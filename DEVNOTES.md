@@ -71,6 +71,5 @@ Emote usage data by specific users in a channel would ideally have the option to
   - Add **search component** that filters emotes according to input. Can be used on both Rankings and Settings pages.
   - Add **detailed view** for provider api results.
   - Add **Tabs** to Rankings page where default view shows Overall rankings
-    - Use Bulma Tabs component.
-    - Decide on whether the Overall Rankings view has only the combined rankings, or should also show individual provider rankings.
     - Each provider needs its own tab with a detailed view.
+  - Improve performance rendering sorted lists.
