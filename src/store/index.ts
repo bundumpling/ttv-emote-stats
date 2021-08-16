@@ -1,83 +1,99 @@
-import { createApp, h } from 'vue'
-import { createStore } from 'vuex'
-import routes from './routes'
+import { InjectionKey } from "@vue/runtime-core";
+import { createStore, Store, MutationTree, ActionTree } from "vuex";
 
-import devtools from '@vue/devtools'
-
-import NotFoundPage from './pages/NotFoundPage'
-
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUpload, faDownload, faRedo, faChevronLeft, faChevronRight, faChartBar, faCogs, faEdit } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-
-library.add(faUpload, faDownload, faRedo, faChevronLeft, faChevronRight, faChartBar, faCogs, faEdit)
-
-require('./assets/sass/main.scss');
-
-const Router = {
-  data: () => ({
-    currentRoute: window.location.pathname
-  }),
-  computed: {
-    CurrentComponent() {
-      return routes[this.currentRoute] || NotFoundPage
+export interface State {
+  channel: {
+    name: string,
+    twitchID: string,
+    emotes: Array<any>,
+    hasEmotesFrom: {
+      'Twitch': boolean,
+      'FFZ': boolean,
+      'BTTV': boolean,
+      '7TV': boolean
     }
   },
-  render() {
-    console.log(window.location.pathname)
-    return h(this.CurrentComponent)
-  }
+  rankings: {
+    activeTab: string,
+    searchInput: string
+  },
+  providerAvailability: {
+    'Twitch': boolean,
+    'FFZ': boolean,
+    'BTTV': boolean,
+    '7TV': boolean
+  },
+  emoteFetchButtons: {
+    'Twitch': { status: string },
+    'FFZ': { status: string },
+    'BTTV': { status: string },
+    '7TV': { status: string }
+  },
+  providerAPIResults: {
+    'Twitch': Array<any>,
+    'FFZ': Array<any>,
+    'BTTV': Array<any>,
+    '7TV': Array<any>
+  },
+  emoteGroupingMenuShowAll: boolean,
+  emoteListPageNumbers: {
+    "Overall": number,
+    "Twitch": number,
+    "FFZ": number,
+    "BTTV": number,
+    "7TV": number
+  },
+  emotesPerPage: number
 }
 
-const store = createStore({
-  state() {
-    return {
-      channel: {
-        name: 'bundumpling',
-        twitchID: "472309577",
-        emotes: [],
-        hasEmotesFrom: {
-          'Twitch': false,
-          'FFZ': false,
-          'BTTV': false,
-          '7TV': false
-        }
-      },
-      rankings: {
-        activeTab: 'Overall',
-        searchInput: ''
-      },
-      providerAvailability: {
-        'Twitch': true,
-        'FFZ': true,
-        'BTTV': true,
-        '7TV': true
-      },
-      emoteFetchButtons: {
-        'Twitch': { status: '' },
-        'FFZ': { status: '' },
-        'BTTV': { status: '' },
-        '7TV': { status: '' }
-      },
-      providerAPIResults: {
-        'Twitch': [],
-        'FFZ': [],
-        'BTTV': [],
-        '7TV': []
-      },
-      emoteGroupingMenuShowAll: true,
-      emoteListPageNumbers: {
-        "Overall": 0,
-        "Twitch": 0,
-        "FFZ": 0,
-        "BTTV": 0,
-        "7TV": 0
-      },
-      emotesPerPage: 10
-    }
+export const key: InjectionKey<Store<State>> = Symbol();
+
+export const store = createStore<State>({
+  state: {
+    channel: {
+      name: 'bundumpling',
+      twitchID: "472309577",
+      emotes: [],
+      hasEmotesFrom: {
+        'Twitch': false,
+        'FFZ': false,
+        'BTTV': false,
+        '7TV': false
+      }
+    },
+    rankings: {
+      activeTab: 'Overall',
+      searchInput: ''
+    },
+    providerAvailability: {
+      'Twitch': true,
+      'FFZ': true,
+      'BTTV': true,
+      '7TV': true
+    },
+    emoteFetchButtons: {
+      'Twitch': { status: '' },
+      'FFZ': { status: '' },
+      'BTTV': { status: '' },
+      '7TV': { status: '' }
+    },
+    providerAPIResults: {
+      'Twitch': [],
+      'FFZ': [],
+      'BTTV': [],
+      '7TV': []
+    },
+    emoteGroupingMenuShowAll: true,
+    emoteListPageNumbers: {
+      "Overall": 0,
+      "Twitch": 0,
+      "FFZ": 0,
+      "BTTV": 0,
+      "7TV": 0
+    },
+    emotesPerPage: 10
   },
-  mutations: {
+  mutations: <MutationTree<State>>{
     setChannelNameAndTwitchID(state, { name, twitchID }) {
       state.channel = {
         name,
@@ -91,26 +107,26 @@ const store = createStore({
         }
       }
     },
-    resetEmoteListPagination(state) {
-      for (let provider in state.emoteListPageNumbers) {
+    resetEmoteListPagination(state: any) {
+      for (const provider in state.emoteListPageNumbers) {
         state.emoteListPageNumbers[provider] = 0;
       }
     },
     resetSearchInput(state) {
       state.rankings.searchInput = '';
     },
-    resetProviderAvailability(state) {
-      for (let provider in state.providerAvailability) {
+    resetProviderAvailability(state: any) {
+      for (const provider in state.providerAvailability) {
         state.providerAvailability[provider] = true;
       }
     },
-    resetProviderAPIResults(state) {
-      for (let provider in state.providerAPIResults) {
+    resetProviderAPIResults(state: any) {
+      for (const provider in state.providerAPIResults) {
         state.providerAPIResults[provider] = [];
       }
     },
-    resetEmoteFetchButtons(state) {
-      for (let provider in state.emoteFetchButtons) {
+    resetEmoteFetchButtons(state: any) {
+      for (const provider in state.emoteFetchButtons) {
         state.emoteFetchButtons[provider] = { status: '' };
       }
     },
@@ -120,40 +136,40 @@ const store = createStore({
     setSearchInput(state, value) {
       state.rankings.searchInput = value;
     },
-    setProviderAvailability(state, { provider, isAvailable }) {
+    setProviderAvailability(state: any, { provider, isAvailable }) {
       state.providerAvailability[provider] = isAvailable;
     },
-    setEmoteFetchButtonStatus(state, { provider, status }) {
+    setEmoteFetchButtonStatus(state: any, { provider, status }) {
       state.emoteFetchButtons[provider].status = status;
     },
-    setProviderAPIResults(state, { provider, emotes }) {
+    setProviderAPIResults(state: any, { provider, emotes }) {
       state.providerAPIResults[provider] = emotes;
     },
-    setEmoteGroupingMenuShowAll(state, showAll) {  
+    setEmoteGroupingMenuShowAll(state, showAll) {
       state.emoteGroupingMenuShowAll = showAll
     },
-    setEmotesPerPage(state, emotesPerPage) {
+    setEmotesPerPage(state: any, emotesPerPage) {
       state.emotesPerPage = Number(emotesPerPage);
-      for (let emoteListProvider in state.emoteListPageNumbers) {
+      for (const emoteListProvider in state.emoteListPageNumbers) {
         state.emoteListPageNumbers[emoteListProvider] = 0;
       }
     },
-    nextPage(state, emoteListProvider) {
+    nextPage(state: any, emoteListProvider) {
       state.emoteListPageNumbers[emoteListProvider]++;
     },
-    prevPage(state, emoteListProvider) {
+    prevPage(state: any, emoteListProvider) {
       state.emoteListPageNumbers[emoteListProvider]--;
     },
-    updateEmotes(state, emotes) {
+    updateEmotes(state: any, emotes) {
       state.channel.emotes = emotes;
-      for (let provider in state.channel.hasEmotesFrom) {
+      for (const provider in state.channel.hasEmotesFrom) {
         state.channel.hasEmotesFrom[provider] = emotes.find(emote => emote.provider === provider) ? true : false;
       }
     },
     randomizeCounts(state) {
       state.channel.emotes = state.channel.emotes.map(e => {
         e.count = Math.floor(Math.random() * 10000)
-      return e;
+        return e;
       })
     },
     zeroCounts(state) {
@@ -163,13 +179,13 @@ const store = createStore({
       })
     },
     parseLog(state, log) {
-      let resultsMap = new Map(state.channel.emotes.map((e, i) => [e.name, { index: i, count:0 }]));
+      const resultsMap = new Map(state.channel.emotes.map((e, i) => [e.name, { index: i, count: 0 }]));
       let cursor = 0;
       let word = "";
       while (cursor < log.length) {
         if (/\s/.test(log[cursor])) {
           if (resultsMap.has(word)) {
-            let mapEntry = resultsMap.get(word);
+            const mapEntry = resultsMap.get(word);
             mapEntry.count++;
             resultsMap.set(word, resultsMap.get(word))
           }
@@ -192,7 +208,7 @@ const store = createStore({
         console.error("setChannelNameAndID requires either a username or a twitchID");
         return;
       }
-      const paramsString = username ? "login="+username : "id="+twitchID;
+      const paramsString = username ? "login=" + username : "id=" + twitchID;
       const URL = `http://localhost:8081/twitch/users?${paramsString}`;
       const options = {
         method: 'GET'
@@ -221,7 +237,7 @@ const store = createStore({
         }).catch((error) => {
           console.log(error);
         })
-      
+
     },
     fetchEmotesFromProvider({ commit, state }, provider) {
       commit('setEmoteFetchButtonStatus', { provider, status: 'Loading' })
@@ -255,5 +271,3 @@ const store = createStore({
     },
   }
 })
-
-createApp(Router).component("font-awesome-icon", FontAwesomeIcon).use(store).use(devtools).mount('#app')

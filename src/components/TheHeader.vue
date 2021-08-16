@@ -1,35 +1,32 @@
 <template>
   <figure class="container" role="img" aria-labelledby="TTV EMOTE STATS LOGO">
-    <a href="/"
+    <router-link to="/"
       ><img
         src="/img/logo.png"
         class="ascii-art-banner"
         alt="ASCII block art logo for TTV Emote Stats"
       />
-    </a>
+    </router-link>
   </figure>
   <nav role="navigation" aria-label="main navigation">
-    <v-link href="/Rankings"
+    <router-link to="/Rankings"
       ><span
         ><font-awesome-icon class="icon" icon="chart-bar" />Rankings</span
-      ></v-link
+      ></router-link
     >
-    <v-link href="/Settings"
+    <router-link to="/Settings"
       ><span
         ><font-awesome-icon class="icon" icon="cogs" />Settings</span
-      ></v-link
+      ></router-link
     >
   </nav>
 </template>
 
-<script>
-import VLink from "./VLink.vue";
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
   name: "TheHeader",
-  components: {
-    VLink,
-  },
-};
+});
 </script>
   
 <style scoped>
