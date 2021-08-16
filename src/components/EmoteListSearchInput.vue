@@ -7,6 +7,7 @@
       class="input"
       type="text"
       aria-label="search input"
+      autocomplete="off"
     />
   </div>
 </template>
