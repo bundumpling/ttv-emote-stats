@@ -46,12 +46,6 @@ export default {
   font-weight: bold;
 }
 
-.emote-list-item--hidden {
-  visibility: hidden;
-  max-height: 0px;
-  margin-bottom: 0px;
-}
-
 .emote-list-item:hover {
   background-color: #ddd;
 
