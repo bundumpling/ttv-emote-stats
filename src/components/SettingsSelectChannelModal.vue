@@ -13,13 +13,9 @@
       <section class="modal-card-body">
         <div
           class="validation-msg"
-          :class="
-            validation.channel.valid ? 'has-text-success' : 'has-text-danger'
-          "
+          :class="isValid ? 'has-text-success' : 'has-text-danger'"
         >
-          {{
-            (validation.channel.valid ? "✓ " : "✘ ") + validation.channel.msg
-          }}
+          {{ (isValid ? "✓ " : "✘ ") + validationMsg }}
         </div>
         <input
           id="settings-select-channel-input"
@@ -27,11 +23,12 @@
           type="text"
           v-model.trim="channel"
           aria-label="channel input"
-          @keyup.enter="validation.channel.valid ? setChannelNameAndID() : null"
+          @keyup.enter="isValid ? setChannelNameAndID() : null"
         />
         <div class="control">
           <label for="nameOrTwitchID" class="radio">
             <input
+              class="radioButton"
               type="radio"
               name="nameOrTwitchID"
               v-model="nameOrTwitchID"
@@ -43,6 +40,7 @@
           </label>
           <label class="radio">
             <input
+              class="radioButton"
               type="radio"
               name="nameOrTwitchID"
               v-model="nameOrTwitchID"
@@ -56,8 +54,8 @@
       <footer class="modal-card-foot">
         <button
           class="button is-success"
-          :disabled="!validation.channel.valid"
-          @click="validation.channel.valid ? setChannelNameAndID() : null"
+          :disabled="!isValid"
+          @click="isValid ? setChannelNameAndID() : null"
         >
           Save
         </button>
@@ -67,80 +65,81 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, watchEffect, ref } from "vue";
+import { useStore } from "../store";
+
 const twitchUsernameRequirements =
   "Name must be 4-25 alphanumeric characters (underscores (_) allowed)";
 const twitchIDRequirements = "Twitch ID must be 8 digits";
-export default {
+
+export default defineComponent({
   name: "SettingsSelectChannelModal",
-  data() {
-    return {
-      channel: "",
-      nameOrTwitchID: "username",
-      validation: {
-        channel: {
-          valid: false,
-          msg: twitchUsernameRequirements,
-        },
-      },
-    };
-  },
   props: {
     closeModal: Function,
   },
-  watch: {
-    channel(value) {
-      this.channel = value;
-      this.validateChannel(value);
-    },
-    nameOrTwitchID() {
-      this.validateChannel(this.channel);
-    },
-  },
-  methods: {
-    validateChannel(value) {
+  setup(props) {
+    const store = useStore();
+
+    const channel = ref("");
+    const nameOrTwitchID = ref("username");
+    const isValid = ref(false);
+    const validationMsg = ref(`${twitchUsernameRequirements}`);
+
+    function validateChannel(value) {
       let trimmedValue = value.trim();
-      if (this.nameOrTwitchID === "username") {
+      if (nameOrTwitchID.value === "username") {
+        validationMsg.value = `${twitchUsernameRequirements}`;
         if (trimmedValue[0] === "_") {
-          this.validation.channel.valid = false;
-          this.validation.channel.msg =
-            "Name cannot start with an underscore (_)";
+          isValid.value = false;
+          validationMsg.value = "Name cannot start with an underscore (_)";
         } else {
-          this.validation.channel.msg = twitchUsernameRequirements;
           if (!/^[a-zA-Z0-9_]{4,25}$/.test(trimmedValue)) {
-            this.validation.channel.valid = false;
+            isValid.value = false;
           } else {
-            this.validation.channel.valid = true;
+            isValid.value = true;
           }
         }
       }
 
-      if (this.nameOrTwitchID === "twitchID") {
-        if (!/^[0-9]{8}$/.test(trimmedValue)) {
-          this.validation.channel.valid = false;
-          this.validation.channel.msg = twitchIDRequirements;
+      if (nameOrTwitchID.value === "twitchID") {
+        validationMsg.value = twitchIDRequirements;
+        if (!/^[0-9]{6,9}$/.test(trimmedValue)) {
+          isValid.value = false;
         } else {
-          this.validation.channel.valid = true;
+          isValid.value = true;
         }
       }
-    },
-    setChannelNameAndID() {
-      const selectChannelInput = document.getElementById(
-        "settings-select-channel-input"
-      );
+    }
+
+    function setChannelNameAndID() {
       let params = { username: "", twitchID: "" };
-      const radioButtons = document.getElementsByName("nameOrTwitchID");
+      const radioButtons =
+        document.querySelectorAll<HTMLInputElement>(".radioButton");
       radioButtons.forEach((radioButton) => {
-        if (radioButton.checked) {
-          params[radioButton.value] = selectChannelInput.value;
+        if (radioButton.value === nameOrTwitchID.value) {
+          params[radioButton.value] = channel.value;
         }
       });
-      this.$store.dispatch("fetchChannelUsernameAndIDFromTwitch", params);
-      this.closeModal();
-      selectChannelInput.value = "";
-    },
+      store.dispatch("fetchChannelUsernameAndIDFromTwitch", params);
+      props.closeModal();
+      channel.value = "";
+    }
+
+    watchEffect(() => {
+      validateChannel(channel.value);
+    });
+
+    return {
+      channel,
+      nameOrTwitchID,
+      isValid,
+      validationMsg,
+      validateChannel,
+      setChannelNameAndID,
+    };
   },
-};
+});
 </script>
 
 <style scoped>

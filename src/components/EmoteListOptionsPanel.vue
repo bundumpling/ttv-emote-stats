@@ -23,24 +23,32 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+import { useStore } from "../store";
+import { MutationType } from "../store/mutations";
+
+export default defineComponent({
   name: "EmoteListOptionsPanel",
-  methods: {
-    randomizeCounts() {
-      this.$store.commit("randomizeCounts");
-    },
-    zeroCounts() {
-      this.$store.commit("zeroCounts");
-    },
-    logFileNames() {
-      let files = document.getElementById("input").files;
+  setup() {
+    const store = useStore();
+
+    const randomizeCounts = () => {
+      store.commit(MutationType.RandomizeCounts, null);
+    };
+
+    const zeroCounts = () => {
+      store.commit(MutationType.ZeroCounts, null);
+    };
+
+    function logFileNames() {
+      let files = (document.getElementById("input") as HTMLInputElement).files;
       for (let i = 0; i < files.length; i++) {
         let reader = new FileReader();
         reader.onerror = (e) => console.log(e.target.error.name);
         reader.onload = (e) => {
           let text = e.target.result;
-          this.$store.commit("parseLog", text);
+          store.commit(MutationType.ParseLog, text);
         };
         reader.readAsText(files[i]);
       }
@@ -48,9 +56,15 @@ export default {
       // In order for the change event to fire, a different file must be uploaded.
       // By setting the input element's value to zero, the same log file can be processed multiple times.
       // document.getElementById("input").value = "";
-    },
+    }
+
+    return {
+      randomizeCounts,
+      zeroCounts,
+      logFileNames,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss">

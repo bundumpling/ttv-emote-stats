@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { store, key } from './store/'
+import { store } from './store/'
 import App from "@/App.vue"
 import router from '@/router'
 
@@ -12,5 +12,5 @@ library.add(faUpload, faDownload, faRedo, faChevronLeft, faChevronRight, faChart
 
 require('./assets/sass/main.scss');
 
-const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon).use(router).use(store, key);
+const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon).use(router).use(store);
 app.mount('#app')

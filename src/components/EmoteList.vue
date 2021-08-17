@@ -3,8 +3,8 @@
     <div class="header">
       <span
         class="pagePrevious"
-        :class="hasPrevPage() ? '' : 'hidden'"
-        @click="hasPrevPage() ? prevPage() : null"
+        :class="hasPrevPage ? '' : 'hidden'"
+        @click="hasPrevPage ? prevPage() : null"
         ><font-awesome-icon icon="chevron-left"
       /></span>
       <h2 class="emote-list-type">
@@ -12,8 +12,8 @@
       </h2>
       <span
         class="pageNext"
-        :class="hasNextPage() ? '' : 'hidden'"
-        @click="hasNextPage() ? nextPage() : null"
+        :class="hasNextPage ? '' : 'hidden'"
+        @click="hasNextPage ? nextPage() : null"
         ><font-awesome-icon icon="chevron-right"
       /></span>
     </div>
@@ -31,10 +31,14 @@
   </ul>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
+import { MutationType } from "../store/mutations";
+
 import EmoteListItem from "./EmoteListItem.vue";
 
-export default {
+export default defineComponent({
   name: "EmoteList",
   props: {
     emoteListProvider: String,
@@ -48,36 +52,38 @@ export default {
   components: {
     EmoteListItem,
   },
-  computed: {
-    filteredByRank() {
-      return this.emoteList.filter(
-        (_, rank) => this.rangeStart <= rank + 1 && rank < this.rangeEnd
+  setup(props) {
+    const store = useStore();
+    const hasPrevPage = computed(
+      () => store.state.emoteListPageNumbers[props.emoteListProvider] > 0
+    );
+    const hasNextPage = computed(
+      () =>
+        props.emoteList.length >
+        store.state.emotesPerPage *
+          (store.state.emoteListPageNumbers[props.emoteListProvider] + 1)
+    );
+    const filteredByRank = computed(() => {
+      return props.emoteList.filter(
+        (_, rank) => props.rangeStart <= rank + 1 && rank < props.rangeEnd
       );
-    },
+    });
+    const prevPage = () => {
+      store.commit(MutationType.PrevPage, props.emoteListProvider);
+    };
+    const nextPage = () => {
+      store.commit(MutationType.NextPage, props.emoteListProvider);
+    };
+
+    return {
+      filteredByRank,
+      hasPrevPage,
+      hasNextPage,
+      prevPage,
+      nextPage,
+    };
   },
-  methods: {
-    hasPrevPage() {
-      return this.$store.state.emoteListPageNumbers[this.emoteListProvider] > 0;
-    },
-    hasNextPage() {
-      return (
-        this.emoteList.length >
-        this.$store.state.emotesPerPage *
-          (this.$store.state.emoteListPageNumbers[this.emoteListProvider] + 1)
-      );
-    },
-    prevPage() {
-      if (this.hasPrevPage()) {
-        this.$store.commit("prevPage", this.emoteListProvider);
-      }
-    },
-    nextPage() {
-      if (this.hasNextPage()) {
-        this.$store.commit("nextPage", this.emoteListProvider);
-      }
-    },
-  },
-};
+});
 </script>
 
 <style lang="scss" scoped>

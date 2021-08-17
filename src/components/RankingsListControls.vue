@@ -5,16 +5,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import EmotesPerPageSelect from "./EmotesPerPageSelect.vue";
 import EmoteListSearchInput from "./EmoteListSearchInput.vue";
-export default {
+export default defineComponent({
   name: "RankingsListControls",
   components: {
     EmotesPerPageSelect,
     EmoteListSearchInput,
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

@@ -11,21 +11,30 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
 import RankingsTab from "./RankingsTab.vue";
-export default {
+
+export default defineComponent({
   name: "RankingsTabsContainer",
-  computed: {
-    filterTabs() {
-      return ["Twitch", "FFZ", "BTTV", "7TV"].filter(
-        (provider) => this.$store.state.channel.hasEmotesFrom[provider] === true
-      );
-    },
-  },
   components: {
     RankingsTab,
   },
-};
+  setup() {
+    const store = useStore();
+
+    const filterTabs = computed(() => {
+      return ["Twitch", "FFZ", "BTTV", "7TV"].filter(
+        (provider) => store.state.channel.hasEmotesFrom[provider] === true
+      );
+    });
+
+    return {
+      filterTabs,
+    };
+  },
+});
 </script>
 
 <style>

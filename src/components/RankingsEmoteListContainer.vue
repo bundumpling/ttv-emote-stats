@@ -18,64 +18,71 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
 import EmoteList from "./EmoteList.vue";
-export default {
+export default defineComponent({
   name: "RankingsEmoteListContainer",
   components: {
     EmoteList,
   },
-  computed: {
-    filterEmoteLists() {
-      return this.$store.state.rankings.activeTab === "Overall"
+  setup() {
+    const store = useStore();
+
+    const filterEmoteLists = computed(() => {
+      return store.state.rankings.activeTab === "Overall"
         ? ["Overall"].concat(
             ["Twitch", "FFZ", "BTTV", "7TV"].filter(
-              (provider) =>
-                this.$store.state.channel.hasEmotesFrom[provider] === true
+              (provider) => store.state.channel.hasEmotesFrom[provider] === true
             )
           )
-        : [this.$store.state.rankings.activeTab];
-    },
-    searchInputValue() {
-      return this.$store.state.rankings.searchInput;
-    },
-    emotesPerPage() {
-      return this.$store.state.emotesPerPage;
-    },
-    countsSorted() {
+        : [store.state.rankings.activeTab];
+    });
+
+    const searchInputValue = computed(() => {
+      return store.state.rankings.searchInput;
+    });
+
+    const emotesPerPage = computed(() => {
+      return store.state.emotesPerPage;
+    });
+
+    const countsSorted = computed(() => {
       // clone avoid side effects in computed props
-      let clone = this.$store.state.channel.emotes.slice();
+      let clone = store.state.channel.emotes.slice();
       return clone
         .sort((a, b) => b.count - a.count)
         .map((emote, rank) => {
           return { ...emote, rank: rank + 1 };
         })
         .filter((emote) =>
-          this.searchInputValue.length
+          searchInputValue.value.length
             ? emote.name
                 .toLowerCase()
-                .includes(this.searchInputValue.toLowerCase())
+                .includes(searchInputValue.value.toLowerCase())
             : emote
         );
-    },
-    countsSortedThenGroupedByProvider() {
-      let result = {
-        Twitch: [],
-        FFZ: [],
-        BTTV: [],
-        "7TV": [],
-      };
+    });
 
-      this.countsSorted.forEach((e) => {
-        if (!result[e.provider]) {
-          result[e.provider] = [];
-        }
-        result[e.provider].push(e);
-      });
-      return result;
-    },
-    countsByProviderSorted() {
-      let clone = this.$store.state.channel.emotes.slice();
+    // const countsSortedThenGroupedByProvider = computed(() => {
+    //   let result = {
+    //     Twitch: [],
+    //     FFZ: [],
+    //     BTTV: [],
+    //     "7TV": [],
+    //   };
+    //   countsSorted.value.forEach((e) => {
+    //     if (!result[e.provider]) {
+    //       result[e.provider] = [];
+    //     }
+    //     result[e.provider].push(e);
+    //   });
+    //   return result;
+    // });
+
+    const countsByProviderSorted = computed(() => {
+      let clone = store.state.channel.emotes.slice();
       let sortedByProvider = clone
         .sort((a, b) => b.count - a.count)
         .reduce(
@@ -96,35 +103,48 @@ export default {
       let result = {};
       Object.keys(sortedByProvider).forEach((provider) => {
         result[provider] = sortedByProvider[provider].filter((emote) =>
-          this.searchInputValue.length
+          searchInputValue.value.length
             ? emote.name
                 .toLowerCase()
-                .includes(this.searchInputValue.toLowerCase())
+                .includes(searchInputValue.value.toLowerCase())
             : emote
         );
       });
       return result;
-    },
-  },
-  methods: {
-    getPageNumber(emoteListProvider) {
-      return this.$store.state.emoteListPageNumbers[emoteListProvider];
-    },
-    getRangeStart(emoteListProvider) {
+    });
+
+    function getPageNumber(emoteListProvider) {
+      return store.state.emoteListPageNumbers[emoteListProvider];
+    }
+
+    function getRangeStart(emoteListProvider) {
       return (
-        this.$store.state.emotesPerPage *
-          this.$store.state.emoteListPageNumbers[emoteListProvider] +
+        store.state.emotesPerPage *
+          store.state.emoteListPageNumbers[emoteListProvider] +
         1
       );
-    },
-    getRangeEnd(emoteListProvider) {
+    }
+
+    function getRangeEnd(emoteListProvider) {
       return (
-        this.$store.state.emotesPerPage *
-        (this.$store.state.emoteListPageNumbers[emoteListProvider] + 1)
+        store.state.emotesPerPage *
+        (store.state.emoteListPageNumbers[emoteListProvider] + 1)
       );
-    },
+    }
+
+    return {
+      filterEmoteLists,
+      searchInputValue,
+      emotesPerPage,
+      countsSorted,
+      // countsSortedThenGroupedByProvider,
+      countsByProviderSorted,
+      getPageNumber,
+      getRangeStart,
+      getRangeEnd,
+    };
   },
-};
+});
 </script>
 
 <style>

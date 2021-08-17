@@ -9,39 +9,48 @@
   <SettingsSelectChannelModal v-if="modalIsActive" :closeModal="closeModal" />
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref, computed } from "vue";
+import { useStore } from "../store";
 import SettingsSelectChannelModal from "./SettingsSelectChannelModal.vue";
 
-export default {
+export default defineComponent({
   name: "SettingsSelectChannel",
-  data() {
-    return {
-      modalIsActive: false,
-    };
-  },
   components: {
     SettingsSelectChannelModal,
   },
-  computed: {
-    getName() {
-      return this.$store.state.channel.name;
-    },
-    getID() {
-      return this.$store.state.channel.twitchID;
-    },
-  },
-  methods: {
-    openModal() {
-      this.modalIsActive = true;
+  setup() {
+    const store = useStore();
+
+    const modalIsActive = ref(false);
+
+    const getName = computed(() => {
+      return store.state.channel.name;
+    });
+    const getID = computed(() => {
+      return store.state.channel.twitchID;
+    });
+
+    function openModal() {
+      modalIsActive.value = true;
       this.$nextTick(function () {
         document.getElementById("settings-select-channel-input").focus();
       });
-    },
-    closeModal() {
-      this.modalIsActive = false;
-    },
+    }
+
+    function closeModal() {
+      modalIsActive.value = false;
+    }
+
+    return {
+      modalIsActive,
+      getName,
+      getID,
+      openModal,
+      closeModal,
+    };
   },
-};
+});
 </script>
 
 <style scoped>

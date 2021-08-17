@@ -15,8 +15,9 @@
   </li>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
   name: "EmoteListItem",
   props: {
     name: String,
@@ -24,7 +25,7 @@ export default {
     image: String,
     rank: Number,
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

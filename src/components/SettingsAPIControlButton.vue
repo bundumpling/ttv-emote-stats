@@ -12,25 +12,29 @@
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
 import { mapActions } from "vuex";
 
-export default {
+export default defineComponent({
   name: "SettingsAPIControlButton",
   props: {
     provider: String,
     buttonStatus: String,
   },
-  computed: {
-    isAvailable() {
-      return this.$store.state.providerAvailability[this.provider];
-    },
-    hasEmotes() {
-      return this.$store.state.providerAPIResults[this.provider].length;
-    },
-    classStylingFromStatus() {
+  setup(props) {
+    const store = useStore();
+    const isAvailable = computed(() => {
+      return store.state.providerAvailability[props.provider];
+    });
+    const hasEmotes = computed(() => {
+      return store.state.providerAPIResults[props.provider].length;
+    });
+
+    const classStylingFromStatus = computed(() => {
       let buttonStatus = "";
-      switch (this.buttonStatus) {
+      switch (props.buttonStatus) {
         case "Loading":
           buttonStatus = "is-warning is-loading";
           break;
@@ -44,12 +48,16 @@ export default {
           buttonStatus = "is-success";
       }
       return buttonStatus;
-    },
+    });
+
+    return {
+      isAvailable,
+      hasEmotes,
+      classStylingFromStatus,
+      ...mapActions(["fetchEmotesFromProvider"]),
+    };
   },
-  methods: {
-    ...mapActions(["fetchEmotesFromProvider"]),
-  },
-};
+});
 </script>
 
 <style lang="scss" scoped>

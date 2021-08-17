@@ -1,24 +1,34 @@
 <template>
   <li :class="isActive ? 'is-active' : ''">
-    <a @click="setActiveTab()">{{ tabName }} </a>
+    <a @click="setActiveTab(tabName)">{{ tabName }} </a>
   </li>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
+import { MutationType } from "../store/mutations";
+
+export default defineComponent({
   name: "RankingsTab",
   props: {
     tabName: String,
   },
-  computed: {
-    isActive() {
-      return this.$store.state.rankings.activeTab === this.tabName;
-    },
+  setup(props) {
+    const store = useStore();
+
+    const isActive = computed(() => {
+      return store.state.rankings.activeTab === props.tabName;
+    });
+
+    function setActiveTab(tabName) {
+      store.commit(MutationType.SetActiveTab, tabName);
+    }
+
+    return {
+      isActive,
+      setActiveTab,
+    };
   },
-  methods: {
-    setActiveTab() {
-      this.$store.commit("setActiveTab", this.tabName);
-    },
-  },
-};
+});
 </script>

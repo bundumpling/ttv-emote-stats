@@ -17,18 +17,29 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+import { useStore } from "../store";
+import { MutationType } from "../store/mutations";
+export default defineComponent({
   name: "RankingsEmotesPerPageSelect",
-  methods: {
-    isSelected(value) {
-      return this.$store.state.emotesPerPage === value;
-    },
-    switchSelect(event) {
-      this.$store.commit("setEmotesPerPage", event.target.value);
-    },
+  setup() {
+    const store = useStore();
+
+    function isSelected(value) {
+      return store.state.emotesPerPage === value;
+    }
+
+    function switchSelect(event) {
+      store.commit(MutationType.SetEmotesPerPage, event.target.value);
+    }
+
+    return {
+      isSelected,
+      switchSelect,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>

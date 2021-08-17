@@ -23,9 +23,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
 import SettingsAPIControlButton from "./SettingsAPIControlButton.vue";
-export default {
+export default defineComponent({
   name: "SettingsEmoteApiControl",
   props: {
     provider: String,
@@ -34,15 +36,21 @@ export default {
   components: {
     SettingsAPIControlButton,
   },
-  computed: {
-    isAvailable() {
-      return this.$store.state.providerAvailability[this.provider];
-    },
-    buttonStatus() {
-      return this.$store.state.emoteFetchButtons[this.provider].status;
-    },
+  setup(props) {
+    const store = useStore();
+    const isAvailable = computed(
+      () => store.state.providerAvailability[props.provider]
+    );
+    const buttonStatus = computed(
+      () => store.state.emoteFetchButtons[props.provider].status
+    );
+
+    return {
+      isAvailable,
+      buttonStatus,
+    };
   },
-};
+});
 </script>
 
 <style>

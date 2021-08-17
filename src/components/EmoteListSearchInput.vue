@@ -12,20 +12,27 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, computed } from "vue";
+import { useStore } from "../store";
+import { MutationType } from "../store/mutations";
+
+export default defineComponent({
   name: "EmoteListSearchInput",
-  computed: {
-    search: {
+  setup() {
+    const store = useStore();
+    const search = computed({
+      get: () => store.state.rankings.searchInput,
       set(value) {
-        this.$store.commit("setSearchInput", value);
+        store.commit(MutationType.SetSearchInput, value);
       },
-      get() {
-        return this.$store.state.rankings.searchInput;
-      },
-    },
+    });
+
+    return {
+      search,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
