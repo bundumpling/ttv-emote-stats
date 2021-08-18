@@ -31,10 +31,15 @@ export default defineComponent({
       return store.state.channel.twitchID;
     });
 
-    function openModal() {
+    function openModal(this: any) {
       modalIsActive.value = true;
-      this.$nextTick(function () {
-        document.getElementById("settings-select-channel-input").focus();
+      this.$nextTick(() => {
+        const element = document.getElementById(
+          "settings-select-channel-input"
+        );
+        if (element) {
+          element.focus();
+        }
       });
     }
 

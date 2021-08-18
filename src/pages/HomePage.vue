@@ -1,12 +1,10 @@
 <template>
-  <TheHeader />
+  <span></span>
 </template>
 
 <script>
-import TheHeader from "../components/TheHeader.vue";
 export default {
   name: "HomePage",
-  components: { TheHeader },
 };
 </script>
 

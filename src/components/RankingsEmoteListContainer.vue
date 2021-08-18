@@ -21,6 +21,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
+import { IEmote, IEmoteInList } from "../types";
 import EmoteList from "./EmoteList.vue";
 export default defineComponent({
   name: "RankingsEmoteListContainer",
@@ -52,11 +53,11 @@ export default defineComponent({
       // clone avoid side effects in computed props
       let clone = store.state.channel.emotes.slice();
       return clone
-        .sort((a, b) => b.count - a.count)
-        .map((emote, rank) => {
+        .sort((a: IEmote, b: IEmote) => b.count - a.count)
+        .map((emote: IEmote, rank: number) => {
           return { ...emote, rank: rank + 1 };
         })
-        .filter((emote) =>
+        .filter((emote: IEmoteInList) =>
           searchInputValue.value.length
             ? emote.name
                 .toLowerCase()
@@ -82,11 +83,14 @@ export default defineComponent({
     // });
 
     const countsByProviderSorted = computed(() => {
+      type tResult = {
+        [key: string]: IEmoteInList[];
+      };
       let clone = store.state.channel.emotes.slice();
       let sortedByProvider = clone
-        .sort((a, b) => b.count - a.count)
+        .sort((a: IEmote, b: IEmote) => b.count - a.count)
         .reduce(
-          (acc, emote) => {
+          (acc: tResult, emote: IEmote) => {
             acc[emote.provider].push({
               ...emote,
               rank: acc[emote.provider].length + 1,
@@ -100,9 +104,9 @@ export default defineComponent({
             "7TV": [],
           }
         );
-      let result = {};
+      let result: tResult = {};
       Object.keys(sortedByProvider).forEach((provider) => {
-        result[provider] = sortedByProvider[provider].filter((emote) =>
+        result[provider] = sortedByProvider[provider].filter((emote: IEmote) =>
           searchInputValue.value.length
             ? emote.name
                 .toLowerCase()
@@ -113,11 +117,11 @@ export default defineComponent({
       return result;
     });
 
-    function getPageNumber(emoteListProvider) {
+    function getPageNumber(emoteListProvider: string) {
       return store.state.emoteListPageNumbers[emoteListProvider];
     }
 
-    function getRangeStart(emoteListProvider) {
+    function getRangeStart(emoteListProvider: string) {
       return (
         store.state.emotesPerPage *
           store.state.emoteListPageNumbers[emoteListProvider] +
@@ -125,7 +129,7 @@ export default defineComponent({
       );
     }
 
-    function getRangeEnd(emoteListProvider) {
+    function getRangeEnd(emoteListProvider: string) {
       return (
         store.state.emotesPerPage *
         (store.state.emoteListPageNumbers[emoteListProvider] + 1)

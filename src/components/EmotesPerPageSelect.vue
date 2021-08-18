@@ -26,12 +26,14 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    function isSelected(value) {
+    function isSelected(value: number) {
       return store.state.emotesPerPage === value;
     }
 
-    function switchSelect(event) {
-      store.commit(MutationType.SetEmotesPerPage, event.target.value);
+    function switchSelect(event: Event) {
+      const target = event.target as HTMLInputElement;
+      const value = Number(target.value);
+      store.commit(MutationType.SetEmotesPerPage, value);
     }
 
     return {

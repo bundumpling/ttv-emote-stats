@@ -1,12 +1,13 @@
 // import { InjectionKey } from "@vue/runtime-core";
 import { createStore, Store as VuexStore, CommitOptions } from "vuex";
 import { Mutations, mutations, MutationType } from "./mutations";
+import { IEmote } from "../types"
 
 export interface State {
   channel: {
     name: string,
     twitchID: string,
-    emotes: Array<any>,
+    emotes: Array<IEmote>,
     hasEmotesFrom: {
       'Twitch': boolean,
       'FFZ': boolean,
@@ -130,9 +131,12 @@ export const store = createStore<State>({
         })
 
     },
-    fetchEmotesFromProvider({ commit, state }, provider) {
+    fetchEmotesFromProvider({ commit, state }, provider: string) {
       commit(MutationType.SetEmoteFetchButtonStatus, { provider, status: 'Loading' })
-      const URLS = {
+      type tURLS = {
+        [key: string]: string
+      }
+      const URLS: tURLS = {
         Twitch: `http://localhost:8081/twitch/emotes?id=${state.channel.twitchID}`,
         FFZ: `http://localhost:8081/ffz/emotes?id=${state.channel.twitchID}`,
         BTTV: `http://localhost:8081/bttv/emotes?id=${state.channel.twitchID}`,

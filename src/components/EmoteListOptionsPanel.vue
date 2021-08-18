@@ -34,30 +34,37 @@ export default defineComponent({
     const store = useStore();
 
     const randomizeCounts = () => {
-      store.commit(MutationType.RandomizeCounts, null);
+      store.commit(MutationType.RandomizeCounts, undefined);
     };
 
     const zeroCounts = () => {
-      store.commit(MutationType.ZeroCounts, null);
+      store.commit(MutationType.ZeroCounts, undefined);
     };
 
     function logFileNames() {
-      let files = (document.getElementById("input") as HTMLInputElement).files;
-      for (let i = 0; i < files.length; i++) {
-        let reader = new FileReader();
-        reader.onerror = (e) => console.log(e.target.error.name);
-        reader.onload = (e) => {
-          let text = e.target.result;
-          store.commit(MutationType.ParseLog, text);
-        };
-        reader.readAsText(files[i]);
+      let fileInput = document.getElementById("input") as HTMLInputElement;
+      if (fileInput.files) {
+        let files: FileList = fileInput.files;
+        for (let i = 0; i < files.length; i++) {
+          let reader = new FileReader();
+          reader.onerror = (e) => {
+            if (e.target && e.target.error) {
+              console.log(e.target.error.name);
+            }
+          };
+          reader.onload = (e) => {
+            if (e.target && e.target.result) {
+              let text = e.target.result;
+              store.commit(MutationType.ParseLog, text);
+            }
+          };
+          reader.readAsText(files[i]);
+        }
       }
-
-      // In order for the change event to fire, a different file must be uploaded.
-      // By setting the input element's value to zero, the same log file can be processed multiple times.
-      // document.getElementById("input").value = "";
     }
-
+    // In order for the change event to fire, a different file must be uploaded.
+    // By setting the input element's value to zero, the same log file can be processed multiple times.
+    // document.getElementById("input").value = "";
     return {
       randomizeCounts,
       zeroCounts,

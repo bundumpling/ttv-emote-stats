@@ -12,7 +12,10 @@ import { MutationType } from "../store/mutations";
 export default defineComponent({
   name: "RankingsTab",
   props: {
-    tabName: String,
+    tabName: {
+      type: String,
+      required: false,
+    },
   },
   setup(props) {
     const store = useStore();
@@ -21,8 +24,8 @@ export default defineComponent({
       return store.state.rankings.activeTab === props.tabName;
     });
 
-    function setActiveTab(tabName) {
-      store.commit(MutationType.SetActiveTab, tabName);
+    function setActiveTab(tabName: string | undefined) {
+      store.commit(MutationType.SetActiveTab, tabName || "");
     }
 
     return {

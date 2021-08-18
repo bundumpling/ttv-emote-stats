@@ -1,5 +1,7 @@
 import { MutationTree } from "vuex";
 
+import { IEmote } from '../types';
+
 export enum MutationType {
   SetChannelNameAndTwitchID = "SET_CHANNEL_NAME_AND_TWITCHID",
   ResetEmoteListPagination = "RESET_EMOTELIST_PAGINATION",
@@ -80,7 +82,7 @@ export const mutations: MutationTree<any> & Mutations = {
     }
   },
   [MutationType.SetActiveTab](state, tabName) {
-    state.rankings.activeTab = tabName;
+    if (tabName) { state.rankings.activeTab = tabName }
   },
   [MutationType.SetSearchInput](state, value) {
     state.rankings.searchInput = value;
@@ -94,7 +96,7 @@ export const mutations: MutationTree<any> & Mutations = {
   [MutationType.SetProviderAPIResults](state, { provider, emotes }) {
     state.providerAPIResults[provider] = emotes;
   },
-  [MutationType.SetEmotesPerPage](state, emotesPerPage) {
+  [MutationType.SetEmotesPerPage](state, emotesPerPage: number) {
     state.emotesPerPage = Number(emotesPerPage);
     for (const emoteListProvider in state.emoteListPageNumbers) {
       state.emoteListPageNumbers[emoteListProvider] = 0;
@@ -113,19 +115,19 @@ export const mutations: MutationTree<any> & Mutations = {
     }
   },
   [MutationType.RandomizeCounts](state) {
-    state.channel.emotes = state.channel.emotes.map(e => {
+    state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
       e.count = Math.floor(Math.random() * 10000)
       return e;
     })
   },
   [MutationType.ZeroCounts](state) {
-    state.channel.emotes = state.channel.emotes.map(e => {
+    state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
       e.count = 0;
       return e
     })
   },
   [MutationType.ParseLog](state, log) {
-    const resultsMap = new Map<any, any>(state.channel.emotes.map((e, i) => [e.name, { index: i, count: 0 }]));
+    const resultsMap = new Map<any, any>(state.channel.emotes.map((e: IEmote, i: number) => [e.name, { index: i, count: 0 }]));
     let cursor = 0;
     let word = "";
     while (cursor < log.length) {
