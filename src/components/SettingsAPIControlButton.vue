@@ -12,7 +12,7 @@
   </button>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import { mapActions } from "vuex";

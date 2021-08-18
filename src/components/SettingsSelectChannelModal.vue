@@ -65,7 +65,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, watchEffect, ref } from "vue";
 import { useStore } from "../store";
 
@@ -114,8 +114,7 @@ export default defineComponent({
 
     function setChannelNameAndID() {
       let params = { username: "", twitchID: "" };
-      const radioButtons =
-        document.querySelectorAll<HTMLInputElement>(".radioButton");
+      const radioButtons = document.querySelectorAll(".radioButton");
       radioButtons.forEach((radioButton) => {
         if (radioButton.value === nameOrTwitchID.value) {
           params[radioButton.value] = channel.value;
