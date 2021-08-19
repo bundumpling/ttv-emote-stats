@@ -20,7 +20,7 @@ export enum MutationType {
   UpdateEmotes = "UPDATE_EMOTES",
   RandomizeCounts = "RANDOMIZE_COUNTS",
   ZeroCounts = "ZERO_COUNTS",
-  ParseLog = "PARSE_LOG"
+  SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
 }
 
 export type Mutations = {
@@ -41,7 +41,7 @@ export type Mutations = {
   [MutationType.UpdateEmotes](state: any, emotes: Array<any>): void;
   [MutationType.RandomizeCounts](state: any): void;
   [MutationType.ZeroCounts](state: any): void;
-  [MutationType.ParseLog](state: any, log: any): void;
+  [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
 }
 
 export const mutations: MutationTree<any> & Mutations = {
@@ -126,27 +126,20 @@ export const mutations: MutationTree<any> & Mutations = {
       return e
     })
   },
-  [MutationType.ParseLog](state, log) {
-    const resultsMap = new Map<any, any>(state.channel.emotes.map((e: IEmote, i: number) => [e.name, { index: i, count: 0 }]));
-    let cursor = 0;
-    let word = "";
-    while (cursor < log.length) {
-      if (/\s/.test(log[cursor])) {
-        if (resultsMap.has(word)) {
-          const mapEntry = resultsMap.get(word);
-          mapEntry.count++;
-          resultsMap.set(word, resultsMap.get(word))
-        }
-        word = "";
-      } else {
-        word += log[cursor];
-      }
-      cursor++;
-    }
-    resultsMap.forEach((v) => {
+  [MutationType.SaveLogParserResults](state, resultsMap) {
+    console.log("in SaveLogParserResults")
+    resultsMap.forEach((v: any) => {
       if (v) {
         state.channel.emotes[v.index].count += v.count;
+        // eslint-disable-next-line
+        for (let user in v.usedBy) {
+          if (state.channel.emotes[v.index].usedBy[user] === undefined) {
+            state.channel.emotes[v.index].usedBy[user] = v.usedBy[user];
+          } else {
+            state.channel.emotes[v.index].usedBy[user] += v.usedBy[user];
+          }
+        }
       }
     })
-  }
+  },
 }

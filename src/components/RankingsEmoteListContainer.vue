@@ -55,7 +55,11 @@ export default defineComponent({
       return clone
         .sort((a: IEmote, b: IEmote) => b.count - a.count)
         .map((emote: IEmote, rank: number) => {
-          return { ...emote, rank: rank + 1 };
+          return {
+            ...emote,
+            rank: rank + 1,
+            usedBySorted: sortByUsed(emote.usedBy),
+          };
         })
         .filter((emote: IEmoteInList) =>
           searchInputValue.value.length
@@ -65,6 +69,13 @@ export default defineComponent({
             : emote
         );
     });
+
+    const sortByUsed = (usedByObj: any) => {
+      let arr = Array.from(
+        Object.keys(usedByObj).map((key) => [key, usedByObj[key]])
+      );
+      return arr.sort((a, b) => b[1] - a[1]);
+    };
 
     // const countsSortedThenGroupedByProvider = computed(() => {
     //   let result = {

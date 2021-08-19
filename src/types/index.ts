@@ -3,7 +3,8 @@ export interface IEmote {
   name: string,
   provider: string,
   image: string,
-  count: number
+  count: number,
+  usedBy: object
 }
 
 export interface IEmoteInList extends IEmote {

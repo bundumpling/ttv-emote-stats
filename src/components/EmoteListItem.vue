@@ -24,6 +24,7 @@ export default defineComponent({
     count: Number,
     image: String,
     rank: Number,
+    usedBy: Object,
   },
 });
 </script>

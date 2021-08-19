@@ -1,5 +1,4 @@
 <template>
-  <button class="button" @click="saveAll()">Save All Emotes</button>
   <div class="emote-api-control-wrapper">
     <SettingsEmoteAPIControl provider="Twitch" :emotes="parseTwitchEmotes" />
     <SettingsEmoteAPIControl provider="FFZ" :emotes="parseFFZEmotes" />
@@ -11,9 +10,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
-import { MutationType } from "../store/mutations";
 import {
-  IEmote,
   IEmoteFromTwitchAPI,
   IEmoteFromFFZAPI,
   IEmoteFromBTTVAPI,
@@ -77,33 +74,12 @@ export default defineComponent({
         }
       );
     });
-    function saveAll(this: any) {
-      type tProviderToParser = {
-        [key: string]: IEmote[];
-      };
-      const providerToParser: tProviderToParser = {
-        Twitch: this.parseTwitchEmotes,
-        FFZ: this.parseFFZEmotes,
-        BTTV: this.parseBTTVEmotes,
-        "7TV": this.parse7TVEmotes,
-      };
-
-      let results: IEmote[] = [];
-
-      for (let provider in store.state.providerAPIResults) {
-        providerToParser[provider].forEach((emote: IEmote) => {
-          results.push({ ...emote, provider, count: 0 });
-        });
-      }
-      store.commit(MutationType.UpdateEmotes, results);
-    }
 
     return {
       parseTwitchEmotes,
       parseFFZEmotes,
       parseBTTVEmotes,
       parse7TVEmotes,
-      saveAll,
     };
   },
 });

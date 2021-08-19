@@ -2,8 +2,8 @@
   <Subheader msg="Settings" />
   <div class="container">
     <SettingsSelectChannel />
+    <SettingsOptionsPanel />
     <SettingsEmoteProviders />
-    <EmoteListOptionsPanel />
   </div>
 </template>
 
@@ -11,7 +11,7 @@
 import Subheader from "../components/Subheader.vue";
 import SettingsSelectChannel from "../components/SettingsSelectChannel.vue";
 import SettingsEmoteProviders from "../components/SettingsEmoteProviders.vue";
-import EmoteListOptionsPanel from "../components/EmoteListOptionsPanel.vue";
+import SettingsOptionsPanel from "../components/SettingsOptionsPanel.vue";
 
 export default {
   name: "SettingsPage",
@@ -19,7 +19,7 @@ export default {
     Subheader,
     SettingsSelectChannel,
     SettingsEmoteProviders,
-    EmoteListOptionsPanel,
+    SettingsOptionsPanel,
   },
 };
 </script>
