@@ -56,9 +56,13 @@ export default defineComponent({
         .sort((a: IEmote, b: IEmote) => b.count - a.count)
         .map((emote: IEmote, rank: number) => {
           return {
-            ...emote,
+            id: emote.id,
+            name: emote.name,
+            provider: emote.provider,
+            image: emote.image,
+            count: emote.count,
             rank: rank + 1,
-            usedBySorted: sortByUsed(emote.usedBy),
+            // usedBySorted: sortByUsed(emote.usedBy),
           };
         })
         .filter((emote: IEmoteInList) =>
@@ -70,6 +74,7 @@ export default defineComponent({
         );
     });
 
+    //eslint-disable-next-line
     const sortByUsed = (usedByObj: any) => {
       let arr = Array.from(
         Object.keys(usedByObj).map((key) => [key, usedByObj[key]])

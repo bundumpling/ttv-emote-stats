@@ -25,7 +25,6 @@
       :image="emote.image"
       :count="emote.count"
       :usedBy="emote.usedBy"
-      :usedBySorted="emote.usedBySorted"
     />
     <div class="placeholder" v-if="!filteredByRank.length">
       <span>No Results</span>
