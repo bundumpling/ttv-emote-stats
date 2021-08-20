@@ -127,7 +127,6 @@ export const mutations: MutationTree<any> & Mutations = {
     })
   },
   [MutationType.SaveLogParserResults](state, resultsMap) {
-    console.log("in SaveLogParserResults")
     resultsMap.forEach((v: any) => {
       if (v) {
         state.channel.emotes[v.index].count += v.count;
