@@ -1,7 +1,10 @@
 import { IEmote } from "../types";
 
 export default async function logParser(log: string, emotes: IEmote[]) {
-  console.log(log.slice(0, 60)); // first line of log
+
+  // Print first line of log to display date and time logging started
+  // console.log(log.slice(0, 60)); 
+
   const resultsMap = new Map<any, any>(
     emotes.map((e: IEmote, i: number) =>
       [
