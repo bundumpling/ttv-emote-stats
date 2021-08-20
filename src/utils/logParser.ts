@@ -46,9 +46,10 @@ export default async function logParser(log: string, emotes: IEmote[]) {
         mapEntry.count++;
 
         if (mapEntry.usedBy[username] === undefined) {
-          if (username.startsWith('[')) {
-            console.log(username, word)
-          }
+          // NOTE: This is a good check for a log being corrupted since timestamps will appear in strange places
+          // if (username.startsWith('[')) {
+          //   console.log(username, word)
+          // }
           mapEntry.usedBy[username] = 1;
         } else {
           mapEntry.usedBy[username]++;
