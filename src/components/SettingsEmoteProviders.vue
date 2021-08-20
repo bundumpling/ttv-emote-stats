@@ -11,11 +11,11 @@
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import {
-  IEmoteFromTwitchAPI,
-  IEmoteFromFFZAPI,
-  IEmoteFromBTTVAPI,
-  IEmoteFrom7TVAPI,
-} from "../types";
+  fromTwitch,
+  fromFFZ,
+  fromBTTV,
+  from7TV,
+} from "../utils/parseEmotesByProvider";
 
 import SettingsEmoteAPIControl from "./SettingsEmoteAPIControl.vue";
 export default defineComponent({
@@ -26,54 +26,10 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const parseTwitchEmotes = computed(() => {
-      if (!store.state.providerAPIResults["Twitch"].length) return [];
-      return store.state.providerAPIResults["Twitch"].map(
-        (emote: IEmoteFromTwitchAPI) => {
-          return {
-            id: emote.id,
-            name: emote.name,
-            image: emote.images.url_1x,
-          };
-        }
-      );
-    });
-    const parseFFZEmotes = computed(() => {
-      if (!store.state.providerAPIResults["FFZ"].length) return [];
-      return store.state.providerAPIResults["FFZ"].map(
-        (emote: IEmoteFromFFZAPI) => {
-          return {
-            id: emote.id,
-            name: emote.name,
-            image: emote.urls["1"],
-          };
-        }
-      );
-    });
-    const parseBTTVEmotes = computed(() => {
-      if (!store.state.providerAPIResults["BTTV"].length) return [];
-      return store.state.providerAPIResults["BTTV"].map(
-        (emote: IEmoteFromBTTVAPI) => {
-          return {
-            id: emote.id,
-            name: emote.code,
-            image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
-          };
-        }
-      );
-    });
-    const parse7TVEmotes = computed(() => {
-      if (!store.state.providerAPIResults["7TV"].length) return [];
-      return store.state.providerAPIResults["7TV"].map(
-        (emote: IEmoteFrom7TVAPI) => {
-          return {
-            id: emote.id,
-            name: emote.name,
-            image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
-          };
-        }
-      );
-    });
+    const parseTwitchEmotes = computed(() => fromTwitch(store.state));
+    const parseFFZEmotes = computed(() => fromFFZ(store.state));
+    const parseBTTVEmotes = computed(() => fromBTTV(store.state));
+    const parse7TVEmotes = computed(() => from7TV(store.state));
 
     return {
       parseTwitchEmotes,
