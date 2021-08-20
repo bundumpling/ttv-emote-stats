@@ -2,7 +2,7 @@
   <ul class="emote-list box">
     <div class="header">
       <span
-        class="pagePrevious"
+        class="pagePrevious is-clickable"
         :class="hasPrevPage ? '' : 'hidden'"
         @click="hasPrevPage ? prevPage() : null"
         ><font-awesome-icon icon="chevron-left"
@@ -11,7 +11,7 @@
         {{ emoteListProvider }}
       </h2>
       <span
-        class="pageNext"
+        class="pageNext is-clickable"
         :class="hasNextPage ? '' : 'hidden'"
         @click="hasNextPage ? nextPage() : null"
         ><font-awesome-icon icon="chevron-right"

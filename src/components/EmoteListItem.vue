@@ -44,6 +44,10 @@ export default defineComponent({
   font-size: 24px;
   line-height: 24px;
   margin-bottom: 0.25em;
+
+  & > * {
+    cursor: pointer;
+  }
 }
 
 .emote-rank {
