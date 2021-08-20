@@ -94,3 +94,19 @@ export interface IEmoteFrom7TVAPI {
     urls: [string[]]
   }
 }
+
+export enum ParserStatus {
+  IDLE = "IDLE",
+  PARSING = "PARSING",
+  SAVING = "SAVING",
+  DONE = "DONE",
+}
+
+export type tLogParserProgressData = {
+  filenames: string[];
+  activeIndex: number | null;
+  numParsed: number;
+  status: ParserStatus;
+  errors: string[];
+  reset: () => void;
+};

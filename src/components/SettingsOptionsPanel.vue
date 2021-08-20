@@ -3,34 +3,75 @@
     <button class="button" @click="saveAll()">Save All Emotes</button>
     <button class="button" @click="randomizeCounts()">Randomize Counts</button>
     <button class="button" @click="zeroCounts()">Zero Counts</button>
-    <input
-      id="input"
-      class="file-input"
-      name="logs"
-      type="file"
-      multiple
-      @change="logFileNames()"
-    />
-    <span class="file-cta">
-      <span class="file-icon">
-        <font-awesome-icon icon="upload" />
-      </span>
-      <span class="file-label">Parse Logfile(s)</span>
-    </span>
+    <div class="file">
+      <label class="file-label">
+        <input
+          id="input"
+          class="file-input"
+          name="logs"
+          type="file"
+          multiple
+          @change="logFileNames()"
+        />
+        <span class="file-cta">
+          <span class="file-icon">
+            <font-awesome-icon icon="upload" />
+          </span>
+          <span class="file-label">Parse Logfile(s)</span>
+        </span>
+      </label>
+    </div>
   </div>
+  <SettingsLogParserModal
+    v-if="logParserModalIsActive"
+    :progressData="logParserProgressData"
+    :closeModal="closeModal"
+  />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
-import { IEmote } from "../types";
+import { IEmote, ParserStatus, tLogParserProgressData } from "../types";
+import {
+  fromTwitch,
+  fromFFZ,
+  fromBTTV,
+  from7TV,
+} from "../utils/parseEmotesByProvider";
 import logParser from "../utils/logParser";
+import SettingsLogParserModal from "./SettingsLogParserModal.vue";
 
 export default defineComponent({
   name: "EmoteListOptionsPanel",
+  components: {
+    SettingsLogParserModal,
+  },
   setup() {
     const store = useStore();
+
+    const logParserModalIsActive = ref(false);
+
+    const logParserProgressData: tLogParserProgressData = reactive({
+      filenames: [],
+      activeIndex: null,
+      numParsed: 0,
+      status: ParserStatus.IDLE,
+      errors: [],
+      reset: function () {
+        (this.filenames = []),
+          (this.activeIndex = null),
+          (this.numParsed = 0),
+          (this.status = ParserStatus.IDLE),
+          (this.errors = []);
+      },
+    });
+
+    function closeModal(): void {
+      logParserModalIsActive.value = false;
+      logParserProgressData.reset();
+    }
 
     const randomizeCounts = () => {
       store.commit(MutationType.RandomizeCounts, undefined);
@@ -41,7 +82,6 @@ export default defineComponent({
     };
 
     async function readLogFile(log: string | ArrayBuffer) {
-      console.log(`in readLogFile`);
       const resultsMap: Map<any, any> = await logParser(
         log as string,
         store.state.channel.emotes
@@ -50,48 +90,63 @@ export default defineComponent({
     }
 
     function logFileNames() {
+      logParserModalIsActive.value = true;
       let fileInput = document.getElementById("input") as HTMLInputElement;
       if (fileInput.files) {
         let files: FileList = fileInput.files;
+        logParserProgressData.filenames.length = files.length;
         for (let i = 0; i < files.length; i++) {
           let reader = new FileReader();
           reader.onerror = (e) => {
             if (e.target && e.target.error) {
-              console.log(e.target.error.name);
+              const errorMessage = `${e.target.error.name} reading ${files[i].name}`;
+              console.log(errorMessage);
+              logParserProgressData.errors.push(errorMessage);
+              logParserProgressData.numParsed++;
             }
           };
           reader.onload = async (e) => {
             if (e.target && e.target.result) {
               let text = e.target.result;
-              // store.commit(MutationType.ParseLog, text);
+              logParserProgressData.activeIndex = i;
+              logParserProgressData.status = ParserStatus.PARSING;
               const resultsMap = await readLogFile(text);
               store.commit(MutationType.SaveLogParserResults, resultsMap);
+              logParserProgressData.numParsed++;
+              if (
+                logParserProgressData.numParsed ===
+                logParserProgressData.filenames.length
+              ) {
+                logParserProgressData.status = ParserStatus.DONE;
+              }
             }
           };
-          console.log(`About to readAsText: ${files[i].name}`);
+          logParserProgressData.filenames[i] = files[i].name;
           reader.readAsText(files[i]);
         }
       }
     }
 
     // eslint-disable-next-line
-    function saveAll(this: any) {
+    function saveAll() {
       type tProviderToParser = {
         [key: string]: IEmote[];
       };
       const providerToParser: tProviderToParser = {
-        Twitch: this.parseTwitchEmotes,
-        FFZ: this.parseFFZEmotes,
-        BTTV: this.parseBTTVEmotes,
-        "7TV": this.parse7TVEmotes,
+        Twitch: fromTwitch(store.state),
+        FFZ: fromFFZ(store.state),
+        BTTV: fromBTTV(store.state),
+        "7TV": from7TV(store.state),
       };
 
       let results: IEmote[] = [];
 
       for (let provider in store.state.providerAPIResults) {
-        providerToParser[provider].forEach((emote: IEmote) => {
-          results.push({ ...emote, provider, count: 0, usedBy: {} });
-        });
+        if (providerToParser[provider].length) {
+          providerToParser[provider].forEach((emote: IEmote) => {
+            results.push({ ...emote, provider, count: 0, usedBy: {} });
+          });
+        }
       }
       store.commit(MutationType.UpdateEmotes, results);
     }
@@ -104,6 +159,9 @@ export default defineComponent({
       zeroCounts,
       logFileNames,
       saveAll,
+      logParserModalIsActive,
+      logParserProgressData,
+      closeModal,
     };
   },
 });
