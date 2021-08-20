@@ -21,10 +21,12 @@
       v-for="emote in filteredByRank"
       v-bind:key="emote.name"
       :name="emote.name"
+      :stateIndex="emote.stateIndex"
       :rank="emote.rank"
       :image="emote.image"
       :count="emote.count"
       :usedBy="emote.usedBy"
+      :showEmoteDetails="() => showEmoteDetails({ emote, emoteListProvider })"
     />
     <div class="placeholder" v-if="!filteredByRank.length">
       <span>No Results</span>
@@ -76,12 +78,20 @@ export default defineComponent({
       store.commit(MutationType.NextPage, props.emoteListProvider);
     };
 
+    function showEmoteDetails({ emote, emoteListProvider }) {
+      store.commit(MutationType.OpenEmoteDetailsModal, {
+        ...emote,
+        fromList: emoteListProvider,
+      });
+    }
+
     return {
       filteredByRank,
       hasPrevPage,
       hasNextPage,
       prevPage,
       nextPage,
+      showEmoteDetails,
     };
   },
 });

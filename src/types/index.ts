@@ -5,6 +5,7 @@ export interface IEmote {
   image: string,
   count: number,
   usedBy?: object
+  stateIndex?: number
 }
 
 export interface IEmoteInList extends IEmote {

@@ -1,5 +1,5 @@
 <template>
-  <li class="emote-list-item">
+  <li class="emote-list-item" @click="showEmoteDetails()">
     <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
@@ -17,6 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+
 export default defineComponent({
   name: "EmoteListItem",
   props: {
@@ -24,7 +25,12 @@ export default defineComponent({
     count: Number,
     image: String,
     rank: Number,
+    stateIndex: Number,
     usedBy: Object,
+    showEmoteDetails: {
+      type: Function,
+      required: true,
+    },
   },
 });
 </script>

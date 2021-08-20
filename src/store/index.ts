@@ -17,8 +17,10 @@ export interface State {
   },
   rankings: {
     activeTab: string,
+    emoteDetailsModalOpen: boolean,
     searchInput: string
   },
+  emoteDetails: any,
   providerAvailability: {
     'Twitch': boolean,
     'FFZ': boolean,
@@ -63,8 +65,10 @@ export const store = createStore<State>({
     },
     rankings: {
       activeTab: 'Overall',
+      emoteDetailsModalOpen: false,
       searchInput: ''
     },
+    emoteDetails: {},
     providerAvailability: {
       'Twitch': true,
       'FFZ': true,

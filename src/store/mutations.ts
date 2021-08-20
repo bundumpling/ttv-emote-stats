@@ -10,6 +10,8 @@ export enum MutationType {
   ResetProviderAPIResults = "RESET_PROVIDER_API_RESULTS",
   ResetEmoteFetchButtons = "RESET_EMOTE_FETCH_BUTTONS",
   SetActiveTab = "SET_ACTIVE_TAB",
+  OpenEmoteDetailsModal = "OPEN_EMOTE_DETAILS_MODAL",
+  CloseEmoteDetailsModal = "CLOSE_EMOTE_DETAILS_MODAL",
   SetSearchInput = "SET_SEARCH_INPUT",
   SetProviderAvailability = "SET_PROVIDER_AVAILABILITY",
   SetEmoteFetchButtonStatus = "SET_EMOTE_FETCH_BUTTON_STATUS",
@@ -31,6 +33,8 @@ export type Mutations = {
   [MutationType.ResetProviderAPIResults](state: any): void;
   [MutationType.ResetEmoteFetchButtons](state: any): void;
   [MutationType.SetActiveTab](state: any, tabName: string): void;
+  [MutationType.OpenEmoteDetailsModal](state: any, emote: any): void;
+  [MutationType.CloseEmoteDetailsModal](state: any): void;
   [MutationType.SetSearchInput](state: any, value: string): void;
   [MutationType.SetProviderAvailability](state: any, params: { provider: string, isAvailable: boolean }): void;
   [MutationType.SetEmoteFetchButtonStatus](state: any, params: { provider: string, status: string }): void;
@@ -83,6 +87,13 @@ export const mutations: MutationTree<any> & Mutations = {
   },
   [MutationType.SetActiveTab](state, tabName) {
     if (tabName) { state.rankings.activeTab = tabName }
+  },
+  [MutationType.OpenEmoteDetailsModal](state, emote) {
+    state.emoteDetails = { ...emote };
+    state.rankings.emoteDetailsModalOpen = true;
+  },
+  [MutationType.CloseEmoteDetailsModal](state) {
+    state.rankings.emoteDetailsModalOpen = false;
   },
   [MutationType.SetSearchInput](state, value) {
     state.rankings.searchInput = value;

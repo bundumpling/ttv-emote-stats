@@ -16,20 +16,29 @@
       "
     />
   </div>
+  <EmoteDetails v-if="emoteDetailsModalOpen" />
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import { IEmote, IEmoteInList } from "../types";
+
 import EmoteList from "./EmoteList.vue";
+import EmoteDetails from "./EmoteDetails.vue";
+
 export default defineComponent({
   name: "RankingsEmoteListContainer",
   components: {
     EmoteList,
+    EmoteDetails,
   },
   setup() {
     const store = useStore();
+
+    const emoteDetailsModalOpen = computed(() => {
+      return store.state.rankings.emoteDetailsModalOpen;
+    });
 
     const filterEmoteLists = computed(() => {
       return store.state.rankings.activeTab === "Overall"
@@ -50,17 +59,14 @@ export default defineComponent({
     });
 
     const countsSorted = computed(() => {
-      // clone avoid side effects in computed props
-      let clone = store.state.channel.emotes.slice();
-      return clone
+      return store.state.channel.emotes
+        .map((emote: IEmote, index: number) => {
+          return { ...emote, stateIndex: index };
+        })
         .sort((a: IEmote, b: IEmote) => b.count - a.count)
         .map((emote: IEmote, rank: number) => {
           return {
-            id: emote.id,
-            name: emote.name,
-            provider: emote.provider,
-            image: emote.image,
-            count: emote.count,
+            ...emote,
             rank: rank + 1,
             // usedBySorted: sortByUsed(emote.usedBy),
           };
@@ -162,6 +168,7 @@ export default defineComponent({
       getPageNumber,
       getRangeStart,
       getRangeEnd,
+      emoteDetailsModalOpen,
     };
   },
 });
