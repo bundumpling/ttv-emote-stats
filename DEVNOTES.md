@@ -17,24 +17,12 @@ Needed `sass-loader@^10` to get Bulma to work properly in dev environment.
 #### To get Twitch ID from username (need to send Client-ID and OAuth token in request headers):
   `https://api.twitch.tv/helix/users?login={username}`
 
-## **Feature**: Allow Grouping of the same emote with different names
-*e.g. Twitch emote with corresponding Personal BTTV name for unsub'd users*<br>
-  `bundumHappy`<br>
-  *subsumes*<br>
-  `bundumHappy`<br>
-  `bundumpHappy`<br>
-and can display combined counts.
-- Only show in Overall rankings?
-- Include option to toggle emote grouping from the view?
-- Requires a management panel for use by the channel owner. 
-- May also be worth adding ability to manage by communicating with the bot directly from chat.
-
 ## **Feature**: Continuous chat monitoring
   - Implement real-time view using web sockets
   - Batch updates to database from the chat monitoring bot
 
 ## **Feature**: Detailed statistics
-Rewrite parser to track who used the emote being counted and when it was used (per-day basis seems ideal).
+Rewrite parser to track who used the emote being counted (**done**) and when it was used (per-day basis seems ideal).
   - Usage within a range of dates
     - emotes by day
     - days by emote
@@ -47,7 +35,6 @@ Rewrite parser to track who used the emote being counted and when it was used (p
   Given a user account system tied to a channel in which a bot is present, the current Settings page would become part of an onboarding process.
 
   Other functionality would then be accessible from a **Management Panel**.
-
 
 ## **Feature**: Search
 Emote usage data by specific users in a channel would ideally have the option to search for a group of names.
@@ -68,4 +55,6 @@ Emote usage data by specific users in a channel would ideally have the option to
   - For existing emote codes update with new art or provider (if previous one was removed)
   
 ## ***Current Tasks***
+  - Improve Emote Details modal for the Rankings page.
+  - Create a view showing an specific username's emote usage.
   - Add **detailed view** for provider api results.
