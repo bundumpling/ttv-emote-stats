@@ -66,8 +66,8 @@ import {
   fromFFZ,
   fromBTTV,
   from7TV,
-} from "../utils/parseEmotesByProvider";
-import logParser from "../utils/logParser";
+} from "../helpers/parseEmotesByProvider";
+import logParser from "../helpers/logParser";
 import SettingsLogParserModal from "./SettingsLogParserModal.vue";
 
 export default defineComponent({

@@ -15,7 +15,7 @@ import {
   fromFFZ,
   fromBTTV,
   from7TV,
-} from "../utils/parseEmotesByProvider";
+} from "../helpers/parseEmotesByProvider";
 
 import SettingsAPIControl from "./SettingsAPIControl.vue";
 export default defineComponent({
