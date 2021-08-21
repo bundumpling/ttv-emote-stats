@@ -134,6 +134,7 @@ export const mutations: MutationTree<any> & Mutations = {
   [MutationType.ZeroCounts](state) {
     state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
       e.count = 0;
+      e.usedBy = {};
       return e
     })
   },
