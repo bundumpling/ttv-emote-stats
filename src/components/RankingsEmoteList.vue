@@ -39,10 +39,10 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
-import EmoteListItem from "./EmoteListItem.vue";
+import EmoteListItem from "./RankingsEmoteListItem.vue";
 
 export default defineComponent({
-  name: "EmoteList",
+  name: "RankingsEmoteList",
   props: {
     emoteListProvider: String,
     emoteList: Array,

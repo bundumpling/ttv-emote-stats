@@ -24,8 +24,8 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import { IEmote, IEmoteInList } from "../types";
 
-import EmoteList from "./EmoteList.vue";
-import EmoteDetails from "./EmoteDetails.vue";
+import EmoteList from "./RankingsEmoteList.vue";
+import EmoteDetails from "./RankingsEmoteDetailsModal.vue";
 
 export default defineComponent({
   name: "RankingsEmoteListContainer",

@@ -1,25 +1,25 @@
 <template>
-  <Subheader msg="Settings" />
+  <TheSubheader msg="Settings" />
   <div class="container">
-    <SettingsSelectChannel />
-    <SettingsOptionsPanel />
-    <SettingsEmoteProviders />
+    <SelectChannel />
+    <OptionsPanel />
+    <APIControlContainer />
   </div>
 </template>
 
 <script>
-import Subheader from "../components/Subheader.vue";
-import SettingsSelectChannel from "../components/SettingsSelectChannel.vue";
-import SettingsEmoteProviders from "../components/SettingsEmoteProviders.vue";
-import SettingsOptionsPanel from "../components/SettingsOptionsPanel.vue";
+import TheSubheader from "../components/TheSubheader.vue";
+import SelectChannel from "../components/SettingsSelectChannel.vue";
+import OptionsPanel from "../components/SettingsControlPanel.vue";
+import APIControlContainer from "../components/SettingsAPIControlContainer.vue";
 
 export default {
   name: "SettingsPage",
   components: {
-    Subheader,
-    SettingsSelectChannel,
-    SettingsEmoteProviders,
-    SettingsOptionsPanel,
+    TheSubheader,
+    SelectChannel,
+    OptionsPanel,
+    APIControlContainer,
   },
 };
 </script>

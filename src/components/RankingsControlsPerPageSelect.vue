@@ -22,7 +22,7 @@ import { defineComponent } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 export default defineComponent({
-  name: "RankingsEmotesPerPageSelect",
+  name: "RankingsControlsPerPageSelect",
   setup() {
     const store = useStore();
 

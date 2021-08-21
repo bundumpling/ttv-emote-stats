@@ -1,19 +1,19 @@
 <template>
   <div class="list-controls-wrapper">
-    <EmoteListSearchInput />
-    <EmotesPerPageSelect />
+    <SearchInput />
+    <PerPageSelect />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import EmotesPerPageSelect from "./EmotesPerPageSelect.vue";
-import EmoteListSearchInput from "./EmoteListSearchInput.vue";
+import PerPageSelect from "./RankingsControlsPerPageSelect.vue";
+import SearchInput from "./RankingsControlsSearchInput.vue";
 export default defineComponent({
   name: "RankingsListControls",
   components: {
-    EmotesPerPageSelect,
-    EmoteListSearchInput,
+    PerPageSelect,
+    SearchInput,
   },
 });
 </script>

@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "Subheader",
+  name: "TheSubheader",
   props: {
     msg: String,
   },

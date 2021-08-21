@@ -6,7 +6,7 @@
 
 <script>
 import TheHeader from "../components/TheHeader.vue";
-import Subheader from "../components/Subheader.vue";
+import Subheader from "../components/TheSubheader.vue";
 import ASCIIArtCryingBun from "../components/ASCIIArtCryingBun.vue";
 export default {
   name: "NotFoundPage",

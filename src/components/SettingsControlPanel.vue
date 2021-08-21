@@ -71,7 +71,7 @@ import logParser from "../utils/logParser";
 import SettingsLogParserModal from "./SettingsLogParserModal.vue";
 
 export default defineComponent({
-  name: "EmoteListOptionsPanel",
+  name: "SettingsControlPanel",
   components: {
     SettingsLogParserModal,
   },

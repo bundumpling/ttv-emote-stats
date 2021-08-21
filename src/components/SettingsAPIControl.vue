@@ -28,7 +28,7 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import SettingsAPIControlButton from "./SettingsAPIControlButton.vue";
 export default defineComponent({
-  name: "SettingsEmoteApiControl",
+  name: "SettingsAPIControl",
   props: {
     provider: String,
     emotes: Array,

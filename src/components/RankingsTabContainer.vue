@@ -17,7 +17,7 @@ import { useStore } from "../store";
 import RankingsTab from "./RankingsTab.vue";
 
 export default defineComponent({
-  name: "RankingsTabsContainer",
+  name: "RankingsTabContainer",
   components: {
     RankingsTab,
   },

@@ -1,9 +1,9 @@
 <template>
   <div class="emote-api-control-wrapper">
-    <SettingsEmoteAPIControl provider="Twitch" :emotes="parseTwitchEmotes" />
-    <SettingsEmoteAPIControl provider="FFZ" :emotes="parseFFZEmotes" />
-    <SettingsEmoteAPIControl provider="BTTV" :emotes="parseBTTVEmotes" />
-    <SettingsEmoteAPIControl provider="7TV" :emotes="parse7TVEmotes" />
+    <SettingsAPIControl provider="Twitch" :emotes="parseTwitchEmotes" />
+    <SettingsAPIControl provider="FFZ" :emotes="parseFFZEmotes" />
+    <SettingsAPIControl provider="BTTV" :emotes="parseBTTVEmotes" />
+    <SettingsAPIControl provider="7TV" :emotes="parse7TVEmotes" />
   </div>
 </template>
 
@@ -17,11 +17,11 @@ import {
   from7TV,
 } from "../utils/parseEmotesByProvider";
 
-import SettingsEmoteAPIControl from "./SettingsEmoteAPIControl.vue";
+import SettingsAPIControl from "./SettingsAPIControl.vue";
 export default defineComponent({
-  name: "SettingsEmoteProviders",
+  name: "SettingsAPIControlContainer",
   components: {
-    SettingsEmoteAPIControl,
+    SettingsAPIControl,
   },
   setup() {
     const store = useStore();

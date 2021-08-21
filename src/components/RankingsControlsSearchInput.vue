@@ -18,7 +18,7 @@ import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
 export default defineComponent({
-  name: "EmoteListSearchInput",
+  name: "RankingsControlsSearchInput",
   setup() {
     const store = useStore();
     const search = computed({

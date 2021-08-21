@@ -35,7 +35,7 @@ import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
 export default defineComponent({
-  name: "EmoteDetails",
+  name: "RankingsEmoteDetailsModal",
   props: {},
   setup() {
     const store = useStore();
