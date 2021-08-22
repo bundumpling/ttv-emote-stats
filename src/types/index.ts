@@ -98,6 +98,7 @@ export interface IEmoteFrom7TVAPI {
 
 export enum ParserStatus {
   IDLE = "IDLE",
+  LOADING = "LOADING",
   PARSING = "PARSING",
   SAVING = "SAVING",
   DONE = "DONE",

@@ -120,6 +120,7 @@ export default defineComponent({
     }
 
     function logFileNames() {
+      logParserProgressData.status = ParserStatus.LOADING;
       logParserModalIsActive.value = true;
       let fileInput = document.getElementById(
         "logfile-input"
