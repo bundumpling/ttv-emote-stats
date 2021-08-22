@@ -69,10 +69,10 @@ export default async function logParser(log: string, emotes: IEmote[]) {
   const parseLine = () => {
     if (isBlankTimestampedLine()) return;
 
-    buildUsername();
+    const username = buildUsername();
 
     while (charIsNotNewline() && cursorIsNotAtEOF()) {
-      buildWord();
+      const word = buildWord();
       parseWord();
       prepareForNextWord();
     }
