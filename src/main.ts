@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { store } from './store/'
 import App from "@/App.vue"
-import router from '@/router'
+import router from './router/'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUpload, faDownload, faRedo, faChevronLeft, faChevronRight, faChartBar, faCogs, faEdit } from '@fortawesome/free-solid-svg-icons'
