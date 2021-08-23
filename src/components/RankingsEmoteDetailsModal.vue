@@ -6,7 +6,6 @@
         <div class="image is-32x32">
           <img :src="details.image" />
         </div>
-
         <p class="modal-card-title ml-3">Details for {{ details.name }}</p>
         <button class="delete" aria-label="close" @click="close()"></button>
       </header>
@@ -17,8 +16,8 @@
         <div>
           <p>Used {{ details.count }} times in {{ channelName }}'s channel.</p>
           <p>
-            Most used by {{ mostUsedBy.username }} a total of
-            {{ mostUsedBy.count }} times!
+            Most used by {{ mostUsedBy[0].username }} a total of
+            {{ mostUsedBy[0].count }} times!
           </p>
         </div>
       </section>
@@ -49,13 +48,11 @@ export default defineComponent({
     });
 
     const mostUsedBy = computed(() => {
-      let max = { username: "", count: 0 };
-      Object.keys(store.state.emoteDetails.usedBy).forEach((key) => {
-        if (store.state.emoteDetails.usedBy[key] > max.count) {
-          max = { username: key, count: store.state.emoteDetails.usedBy[key] };
-        }
-      });
-      return max;
+      return Object.keys(store.state.emoteDetails.usedBy)
+        .map((username) => {
+          return { username, count: store.state.emoteDetails.usedBy[username] };
+        })
+        .sort((a, b) => b.count - a.count);
     });
 
     function close() {
