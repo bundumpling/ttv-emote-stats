@@ -7,7 +7,6 @@
       :emotesPerPage="emotesPerPage"
       :rangeStart="getRangeStart(emoteListProvider)"
       :rangeEnd="getRangeEnd(emoteListProvider)"
-      :searchInputValue="searchInputValue"
       :emoteListProvider="emoteListProvider"
       :emoteList="
         emoteListProvider === 'Overall'
