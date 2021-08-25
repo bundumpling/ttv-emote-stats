@@ -8,6 +8,7 @@
       type="text"
       aria-label="search input"
       autocomplete="off"
+      @keydown.space.prevent
     />
   </div>
 </template>
