@@ -4,6 +4,22 @@ const fetch = require("node-fetch");
 const app = express();
 const port = 8081;
 
+
+const { MongoClient } = require('mongodb');
+const url = 'mongodb://localhost:27017';
+
+const dbName = 'TTVEmoteStats';
+
+let db = null;
+
+MongoClient.connect(url, (err, client) => {
+  if (err) {
+    console.error(err);
+  }
+  db = client.db(dbName);
+  console.log("Successfully connected to MongoDB");
+});
+
 const TWITCH_OPTIONS = {
   method: "GET",
   headers: {
@@ -11,6 +27,16 @@ const TWITCH_OPTIONS = {
     "Authorization": process.env.TWITCH_AUTH_TOKEN
   }
 };
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  next();
+});
 
 app.get("/", (req, res) => res.send("Hello from the API Relay Server!"));
 
@@ -112,6 +138,77 @@ app.get("/7tv/emotes", (req, res) => {
     console.error(error)
     return res.send({ error: error.message });
   })
+})
+
+app.get("/channel/:userName", (req, res) => {
+  db.collection('emoteSet').findOne({ user_name: req.params.userName }, (err, data) => {
+    if (err) res.send(err);
+    res.json(data);
+  })
+})
+
+app.post("/emotesets", express.json(), (req, res) => {
+  const channelID = req.body.channel_id;
+  const channelName = req.body.channel_name;
+  const emotes = req.body.emotes;
+
+  emotes.forEach(emote => {
+    db.collection('Emote').findOneAndUpdate({
+      _id: emote.id
+    },
+    {
+      $set: {
+        "_id": emote.id,
+        "channel_name": channelName,
+        "channel_id": channelID,
+        "code": emote.name,
+        "provider": emote.provider,
+        "image_source": emote.image
+      }
+    },
+    {
+      upsert: true,
+      returnDocument: 'after',
+    }, (err, result) => {
+      if (err) {
+        console.error(err)
+      }
+      else {
+        console.log(result)
+      }
+    })
+  })
+/*
+  db.collection('EmoteSet').findOne({ _id: channelID }).then((err, result) => {
+    if (err) {
+      console.error(err)
+    }
+    // code provider imagesource
+    let resultEmotes = result ? result.emotes : {};
+    emotes.forEach(emote => {
+      if (resultEmotes[emote.id]) {
+        resultEmotes[emote.id] = {
+          code: emote.name,
+          provider: emote.provider,
+          image_source: emote.image,
+          ...resultEmotes[emote.id]
+        }
+      } else {
+        resultEmotes[emote.id] = {
+          code: emote.name,
+          provider: emote.provider,
+          image_source: emote.image,
+          count: 0
+        }
+      }
+    })
+    db.collection('EmoteSet').findOneAndUpdate(
+      { _id: channelID },
+      {
+        $set: { emotes: resultEmotes }
+      }, { upsert: true })
+  })
+*/
 })
 
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));
