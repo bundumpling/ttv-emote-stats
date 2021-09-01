@@ -124,6 +124,22 @@ export const mutations: MutationTree<any> & Mutations = {
     for (const provider in state.channel.hasEmotesFrom) {
       state.channel.hasEmotesFrom[provider] = emotes.find(emote => emote.provider === provider) ? true : false;
     }
+    fetch(
+      `http://localhost:8081/emotesets/`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          channel_id: state.channel.twitchID,
+          channel_name: state.channel.name,
+          emotes: emotes
+        })
+      }
+    ).then(response => response.json()
+    ).then(json => console.log(json));
   },
   [MutationType.RandomizeCounts](state) {
     state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
