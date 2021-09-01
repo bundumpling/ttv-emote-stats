@@ -140,16 +140,16 @@ app.get("/7tv/emotes", (req, res) => {
   })
 })
 
-app.get("/channel/:userName", (req, res) => {
-  db.collection('emoteSet').findOne({ user_name: req.params.userName }, (err, data) => {
+app.get("/channel/:channelName", (req, res) => {
+  db.collection('Channel').findOne({ user_name: req.params.channelName }, (err, data) => {
     if (err) res.send(err);
     res.json(data);
   })
 })
 
-app.post("/emotesets", express.json(), (req, res) => {
+app.post("/channel/:channelName/update", express.json(), (req, res) => {
+  const channelName = req.params.channelName;
   const channelID = req.body.channel_id;
-  const channelName = req.body.channel_name;
   const emotes = req.body.emotes;
 
   emotes.forEach(emote => {
@@ -179,7 +179,7 @@ app.post("/emotesets", express.json(), (req, res) => {
     })
   })
 /*
-  db.collection('EmoteSet').findOne({ _id: channelID }).then((err, result) => {
+  db.collection('Channel').findOne({ _id: channelID }).then((err, result) => {
     if (err) {
       console.error(err)
     }

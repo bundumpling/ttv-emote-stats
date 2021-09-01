@@ -125,7 +125,7 @@ export const mutations: MutationTree<any> & Mutations = {
       state.channel.hasEmotesFrom[provider] = emotes.find(emote => emote.provider === provider) ? true : false;
     }
     fetch(
-      `http://localhost:8081/emotesets/`,
+      `http://localhost:8081/channel/${state.channel.name}/update`,
       {
         method: 'POST',
         headers: {
@@ -134,7 +134,6 @@ export const mutations: MutationTree<any> & Mutations = {
         },
         body: JSON.stringify({
           channel_id: state.channel.twitchID,
-          channel_name: state.channel.name,
           emotes: emotes
         })
       }
