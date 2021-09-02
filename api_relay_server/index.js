@@ -10,7 +10,7 @@ const url = 'mongodb://localhost:27017';
 
 const dbName = 'TTVEmoteStats';
 
-const { updateChannelEmotes } = require("./controller");
+const { updateChannelEmotes, getChannelData } = require("./controller");
 
 let db = null;
 
@@ -142,12 +142,7 @@ app.get("/7tv/emotes", (req, res) => {
   })
 })
 
-app.get("/channel/:channelName", (req, res) => {
-  db.collection('Channel').findOne({ user_name: req.params.channelName }, (err, data) => {
-    if (err) res.send(err);
-    res.json(data);
-  })
-})
+app.get("/channel/:channelName", (req, res) => getChannelData(req, res, db))
 
 app.post("/channel/:channelName/update", express.json(), (req, res) => {
   const channelName = req.params.channelName;

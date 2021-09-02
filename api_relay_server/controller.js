@@ -57,6 +57,40 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
   })
 }
 
+const getChannelData = (req, res, db) => {
+  db.collection('TwitchLogin').findOne({ login: req.params.channelName }, (err, { login, twitchID }) => {
+    if (err) res.send(err);
+
+    db.collection('Channel').findOne({ _id: twitchID }, (err, data) => {
+      if (err) res.send(err);
+      const emotes = Object.keys(data.emotes).map(id => {
+        return {
+          id,
+          count: data.emotes[id].count || 0,
+          ...data.emotes[id]
+        }
+      })
+      const findEmoteFromProvider = provider => emotes.some(emote => emote.provider === provider);
+      const hasEmotesFrom = {
+        "Twitch": findEmoteFromProvider("Twitch"),
+        "FFZ": findEmoteFromProvider("FFZ"),
+        "BTTV": findEmoteFromProvider("BTTV"),
+        "7TV": findEmoteFromProvider("7TV")
+      }
+
+      const result = {
+        twitchID,
+        name: login,
+        hasEmotesFrom,
+        emotes
+      };
+     
+      res.json(result);
+    })
+  })
+}
+
 module.exports = {
-  updateChannelEmotes
+  updateChannelEmotes,
+  getChannelData
 }
