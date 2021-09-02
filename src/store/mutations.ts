@@ -135,7 +135,7 @@ export const mutations: MutationTree<any> & Mutations = {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          channel_id: state.channel.twitchID,
+          channelID: state.channel.twitchID,
           emotes: emotes
         })
       }

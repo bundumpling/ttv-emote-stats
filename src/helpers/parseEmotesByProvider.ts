@@ -13,12 +13,10 @@ export function fromTwitch(state: State): IEmote[] {
   return state.providerAPIResults["Twitch"].map(
     (emote: IEmoteFromTwitchAPI) => {
       return {
-        id: `Twitch-${emote.id}`,
         code: emote.name,
         image: emote.images.url_1x,
         provider: 'Twitch',
-        count: 0,
-        usedBy: {}
+        providerEmoteID: emote.id,
       };
     }
   );
@@ -29,12 +27,10 @@ export function fromFFZ(state: State): IEmote[] {
   return state.providerAPIResults["FFZ"].map(
     (emote: IEmoteFromFFZAPI) => {
       return {
-        id: `FFZ-${emote.id}`,
         code: emote.name,
         image: emote.urls["1"],
         provider: 'FFZ',
-        count: 0,
-        usedBy: {}
+        providerEmoteID: `${emote.id}`,
       };
     }
   );
@@ -45,12 +41,10 @@ export function fromBTTV(state: State): IEmote[] {
   return state.providerAPIResults["BTTV"].map(
     (emote: IEmoteFromBTTVAPI) => {
       return {
-        id: `BTTV-${emote.id}`,
         code: emote.code,
         image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
         provider: 'BTTV',
-        count: 0,
-        usedBy: {}
+        providerEmoteID: emote.id,
       };
     }
   );
@@ -61,12 +55,10 @@ export function from7TV(state: State): IEmote[] {
   return state.providerAPIResults["7TV"].map(
     (emote: IEmoteFrom7TVAPI) => {
       return {
-        id: `7TV-${emote.id}`,
         code: emote.name,
         image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
         provider: '7TV',
-        count: 0,
-        usedBy: {}
+        providerEmoteID: emote.id,
       };
     }
   );

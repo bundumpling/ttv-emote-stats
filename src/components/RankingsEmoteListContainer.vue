@@ -62,7 +62,7 @@ export default defineComponent({
         .map((emote: IEmote, index: number) => {
           return { ...emote, stateIndex: index };
         })
-        .sort((a: IEmote, b: IEmote) => b.count - a.count)
+        .sort((a: IEmote, b: IEmote) => (b.count || 0) - (a.count || 0))
         .map((emote: IEmote, rank: number) => {
           return {
             ...emote,
@@ -109,7 +109,7 @@ export default defineComponent({
       };
       let clone = store.state.channel.emotes.slice();
       let sortedByProvider = clone
-        .sort((a: IEmote, b: IEmote) => b.count - a.count)
+        .sort((a: IEmote, b: IEmote) => (b.count || 0) - (a.count || 0))
         .reduce(
           (acc: tResult, emote: IEmote) => {
             acc[emote.provider].push({

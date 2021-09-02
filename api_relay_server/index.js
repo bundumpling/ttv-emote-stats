@@ -146,10 +146,17 @@ app.get("/channel/:channelName", (req, res) => getChannelData(req, res, db))
 
 app.post("/channel/:channelName/update", express.json(), (req, res) => {
   const channelName = req.params.channelName;
-  const channelID = req.body.channel_id;
+  const channelID = req.body.channelID;
   const emotes = req.body.emotes;
 
-  updateChannelEmotes(db, channelName, channelID, emotes);
+  updateChannelEmotes(db, channelName, channelID, emotes).then((error, result) => {
+    if (error) {
+      console.error(error);
+      res.send({ ok: false })
+    } else {
+      res.send({ ok: true })
+    }
+  });
 })
 
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));

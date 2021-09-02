@@ -177,7 +177,7 @@ export default defineComponent({
       for (let provider in store.state.providerAPIResults) {
         if (providerToParser[provider].length) {
           providerToParser[provider].forEach((emote: IEmote) => {
-            results.push({ ...emote, provider, count: 0, usedBy: {} });
+            results.push({ ...emote, provider });
           });
         }
       }

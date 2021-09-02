@@ -1,17 +1,17 @@
 const updateChannelEmotes = (db, channelName, channelID, emotes) => {
 
-  const updateEmoteInEmoteCollection = emote => {
+  const updateEmoteInEmoteCollection = ({ code, provider, providerEmoteID, image }) => {
     db.collection('Emote').findOneAndUpdate({
-      _id: emote.id
+      $and: [ { channelID }, { code } ]
     },
     {
       $set: {
-        "_id": emote.id,
-        "channel_name": channelName,
-        "channel_id": channelID,
-        "code": emote.name,
-        "provider": emote.provider,
-        "image_source": emote.image
+        channelName,
+        channelID,
+        code,
+        provider,
+        providerEmoteID,
+        image
       }
     },
     {
@@ -36,7 +36,7 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
     )
   };  
 
-  db.collection('Channel').findOne({ _id: channelID }).then((err, channel) => {
+  return db.collection('Channel').findOne({ _id: channelID }).then((err, channel) => {
     if (err) {
       console.error(err)
     }
@@ -45,12 +45,15 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
 
     emotes.forEach(emote => {
       updateEmoteInEmoteCollection(emote);
-        channelEmotes[emote.id] = {
-          code: emote.name,
-          provider: emote.provider,
-          image_source: emote.image,
-          ...channelEmotes[emote.id] || {}
-        }
+      const { code, image, provider, providerEmoteID } = emote;
+      const channelEmoteKey = `${provider}-${providerEmoteID}`;
+      channelEmotes[channelEmoteKey] = {
+        code,
+        image,
+        provider,
+        providerEmoteID,
+        ...channelEmotes[channelEmoteKey] || { count: 0, }
+      }
     })
 
     updateEmotesInChannelCollection(channelID, channelEmotes);

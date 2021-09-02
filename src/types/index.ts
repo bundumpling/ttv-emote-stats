@@ -1,9 +1,9 @@
 export interface IEmote {
-  id: string,
   code: string,
-  provider: string,
   image: string,
-  count: number,
+  provider: string,
+  providerEmoteID: string,
+  count?: number,
   usedBy?: object
   stateIndex?: number
 }
