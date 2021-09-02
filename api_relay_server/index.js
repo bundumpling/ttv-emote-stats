@@ -10,6 +10,8 @@ const url = 'mongodb://localhost:27017';
 
 const dbName = 'TTVEmoteStats';
 
+const { updateChannelEmotes } = require("./controller");
+
 let db = null;
 
 MongoClient.connect(url, (err, client) => {
@@ -152,63 +154,7 @@ app.post("/channel/:channelName/update", express.json(), (req, res) => {
   const channelID = req.body.channel_id;
   const emotes = req.body.emotes;
 
-  emotes.forEach(emote => {
-    db.collection('Emote').findOneAndUpdate({
-      _id: emote.id
-    },
-    {
-      $set: {
-        "_id": emote.id,
-        "channel_name": channelName,
-        "channel_id": channelID,
-        "code": emote.name,
-        "provider": emote.provider,
-        "image_source": emote.image
-      }
-    },
-    {
-      upsert: true,
-      returnDocument: 'after',
-    }, (err, result) => {
-      if (err) {
-        console.error(err)
-      }
-      else {
-        console.log(result)
-      }
-    })
-  })
-/*
-  db.collection('Channel').findOne({ _id: channelID }).then((err, result) => {
-    if (err) {
-      console.error(err)
-    }
-    // code provider imagesource
-    let resultEmotes = result ? result.emotes : {};
-    emotes.forEach(emote => {
-      if (resultEmotes[emote.id]) {
-        resultEmotes[emote.id] = {
-          code: emote.name,
-          provider: emote.provider,
-          image_source: emote.image,
-          ...resultEmotes[emote.id]
-        }
-      } else {
-        resultEmotes[emote.id] = {
-          code: emote.name,
-          provider: emote.provider,
-          image_source: emote.image,
-          count: 0
-        }
-      }
-    })
-    db.collection('EmoteSet').findOneAndUpdate(
-      { _id: channelID },
-      {
-        $set: { emotes: resultEmotes }
-      }, { upsert: true })
-  })
-*/
+  updateChannelEmotes(db, channelName, channelID, emotes);
 })
 
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));
