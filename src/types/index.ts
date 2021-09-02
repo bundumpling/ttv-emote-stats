@@ -1,6 +1,6 @@
 export interface IEmote {
   id: string,
-  name: string,
+  code: string,
   provider: string,
   image: string,
   count: number,

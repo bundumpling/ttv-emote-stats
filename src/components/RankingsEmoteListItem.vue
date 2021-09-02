@@ -3,10 +3,10 @@
     <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
-        <img :alt="name" v-bind:src="image" />
+        <img :alt="code" v-bind:src="image" />
       </div>
-      <div class="emote-name">
-        <span>{{ name }}</span>
+      <div class="emote-code">
+        <span>{{ code }}</span>
       </div>
       <div class="emote-count">
         {{ count }}
@@ -21,7 +21,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "RankingsEmoteListItem",
   props: {
-    name: String,
+    code: String,
     count: Number,
     image: String,
     rank: Number,
@@ -62,7 +62,7 @@ export default defineComponent({
   background-color: #ddd;
 
   .emote-data {
-    .emote-name {
+    .emote-code {
       text-overflow: clip;
       white-space: normal;
       word-break: break-all;
@@ -93,7 +93,7 @@ export default defineComponent({
   z-index: 2;
 }
 
-.emote-name {
+.emote-code {
   max-width: 10em;
   white-space: nowrap;
   overflow: hidden;

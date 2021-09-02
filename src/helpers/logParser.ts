@@ -4,7 +4,7 @@ export default async function logParser(log: string, emotes: IEmote[]) {
   const resultsMap = new Map<any, any>(
     emotes.map((e: IEmote, i: number) =>
       [
-        e.name,
+        e.code,
         {
           index: i,
           count: 0,

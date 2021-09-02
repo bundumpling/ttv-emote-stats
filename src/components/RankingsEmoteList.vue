@@ -19,11 +19,11 @@
     </div>
     <EmoteListItem
       v-for="emote in filteredByRank"
-      v-bind:key="emote.name"
-      :name="emote.name"
+      v-bind:key="emote.code"
+      :code="emote.code"
       :stateIndex="emote.stateIndex"
       :rank="emote.rank"
-      :image="emote.image"
+      :image="emote.image_source"
       :count="emote.count"
       :usedBy="emote.usedBy"
       :showEmoteDetails="() => showEmoteDetails({ emote, emoteListProvider })"

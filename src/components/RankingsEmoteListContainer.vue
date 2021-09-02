@@ -72,7 +72,7 @@ export default defineComponent({
         })
         .filter((emote: IEmoteInList) =>
           searchInputValue.value.length
-            ? emote.name
+            ? emote.code
                 .toLowerCase()
                 .includes(searchInputValue.value.toLowerCase())
             : emote
@@ -129,7 +129,7 @@ export default defineComponent({
       Object.keys(sortedByProvider).forEach((provider) => {
         result[provider] = sortedByProvider[provider].filter((emote: IEmote) =>
           searchInputValue.value.length
-            ? emote.name
+            ? emote.code
                 .toLowerCase()
                 .includes(searchInputValue.value.toLowerCase())
             : emote
