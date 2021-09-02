@@ -23,6 +23,7 @@ export enum MutationType {
   RandomizeCounts = "RANDOMIZE_COUNTS",
   ZeroCounts = "ZERO_COUNTS",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
+  SetChannelData = "SET_CHANNEL_DATA"
 }
 
 export type Mutations = {
@@ -46,6 +47,7 @@ export type Mutations = {
   [MutationType.RandomizeCounts](state: any): void;
   [MutationType.ZeroCounts](state: any): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
+  [MutationType.SetChannelData](state: any, channelData: any): void;
 }
 
 export const mutations: MutationTree<any> & Mutations = {
@@ -168,4 +170,7 @@ export const mutations: MutationTree<any> & Mutations = {
       }
     })
   },
+  [MutationType.SetChannelData](state, channelData) {
+    state.channel = channelData;
+  }
 }

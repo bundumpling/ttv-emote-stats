@@ -168,6 +168,32 @@ export const store = createStore<State>({
           });
         });
     },
+    fetchChannelData({ commit, state }, channelName: string) {
+      const URL = `http://localhost:8081/channel/${channelName}`;
+      fetch(URL, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+        .then(res => {
+          if (!res.ok) {
+            const error = new Error(res.statusText);
+            throw error;
+          }
+          return res.json();
+        })
+        .then(json => {
+          commit(MutationType.SetChannelData, json)
+        })
+        .catch(err => {
+          console.error(err);
+        })
+      // .then(() => {
+      //   loading.value = false;
+      // })
+
+    }
   }
 })
 
