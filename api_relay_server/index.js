@@ -159,4 +159,42 @@ app.post("/channel/:channelName/update", express.json(), (req, res) => {
   });
 })
 
+app.post("/channel/:channelName/updateCountsFromLog", express.json(), (req, res) => {
+  const channelName = req.params.channelName;
+  const mapOfEmoteCounts = new Map(JSON.parse(req.body.mapOfEmoteCounts));
+  console.log(mapOfEmoteCounts)
+
+  db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
+    if (err) res.send(err);
+
+    db.collection('Channel').findOne({ _id: twitchID }, (err, channel) => {
+      if (err) res.send(err);
+
+      mapOfEmoteCounts.forEach(({ provider, providerID, count, usedBy }, code) => {
+        const _id = `${provider}-${providerID}`;
+        channel.emotes[_id].count += count;
+
+        db.collection('Emote').findOne({ $and: [ { channelID: twitchID }, { code } ] }, (err, emote) => {
+          if (err) res.send(err);
+
+          for (let user in usedBy) {
+            if (!emote.usedBy) {
+              emote.usedBy = {};
+            }
+            if (emote.usedBy[user]) {
+              emote.usedBy[user] += usedBy[user];
+            } else {
+              emote.usedBy[user] = usedBy[user];
+            }
+          }
+
+          db.collection('Emote').findOneAndUpdate({ $and: [ { channelID: twitchID }, { code } ] }, { $set: { usedBy: emote.usedBy }});
+        })
+      })
+
+      db.collection('Channel').findOneAndUpdate({ _id: twitchID }, { $set: { emotes: channel.emotes } })
+    });    
+  })
+})
+
 app.listen(port, () => console.log(`API Relay Server listening on port ${port}`));

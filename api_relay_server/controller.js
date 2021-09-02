@@ -93,6 +93,8 @@ const getChannelData = (req, res, db) => {
   })
 }
 
+
+
 module.exports = {
   updateChannelEmotes,
   getChannelData

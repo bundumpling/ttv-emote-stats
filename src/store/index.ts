@@ -193,6 +193,25 @@ export const store = createStore<State>({
       //   loading.value = false;
       // })
 
+    },
+    updateChannelEmoteCountsFromParsedLog({ commit, state }, { mapOfEmoteCounts, channelName, logFilename }) {
+      console.log(mapOfEmoteCounts)
+      const URL = `http://localhost:8081/channel/${channelName}/updateCountsFromLog`;
+      fetch(
+        URL,
+        {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            logFilename,
+            mapOfEmoteCounts
+          })
+        }
+      ).then(response => response.json()
+      ).then(json => console.log(json));
     }
   }
 })

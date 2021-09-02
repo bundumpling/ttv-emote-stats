@@ -2,11 +2,13 @@ import { IEmote } from "../types";
 
 export default async function logParser(log: string, emotes: IEmote[]) {
   const resultsMap = new Map<any, any>(
-    emotes.map((e: IEmote, i: number) =>
+    emotes.map((emote: IEmote, i: number) =>
       [
-        e.code,
+        emote.code,
         {
           index: i,
+          provider: emote.provider,
+          providerID: emote.providerEmoteID,
           count: 0,
           usedBy: {}
         }

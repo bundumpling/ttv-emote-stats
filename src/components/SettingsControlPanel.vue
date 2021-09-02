@@ -112,11 +112,11 @@ export default defineComponent({
     };
 
     async function readLogFile(log: string | ArrayBuffer) {
-      const resultsMap: Map<any, any> = await logParser(
+      const mapOfEmoteCounts: Map<any, any> = await logParser(
         log as string,
         store.state.channel.emotes
       );
-      return resultsMap;
+      return mapOfEmoteCounts;
     }
 
     function logFileNames() {
@@ -143,8 +143,13 @@ export default defineComponent({
               let text = e.target.result;
               logParserProgressData.activeIndex = i;
               logParserProgressData.status = ParserStatus.PARSING;
-              const resultsMap = await readLogFile(text);
-              store.commit(MutationType.SaveLogParserResults, resultsMap);
+              const mapOfEmoteCounts = await readLogFile(text);
+              // store.commit(MutationType.SaveLogParserResults, mapOfEmoteCounts);
+              store.dispatch("updateChannelEmoteCountsFromParsedLog", {
+                mapOfEmoteCounts: JSON.stringify([...mapOfEmoteCounts]),
+                channelName: store.state.channel.name,
+                logFilename: files[i].name,
+              });
               logParserProgressData.numParsed++;
               if (
                 logParserProgressData.numParsed ===

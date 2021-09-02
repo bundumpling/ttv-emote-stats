@@ -23,7 +23,7 @@
       :code="emote.code"
       :stateIndex="emote.stateIndex"
       :rank="emote.rank"
-      :image="emote.image_source"
+      :image="emote.image"
       :count="emote.count"
       :usedBy="emote.usedBy"
       :showEmoteDetails="() => showEmoteDetails({ emote, emoteListProvider })"
