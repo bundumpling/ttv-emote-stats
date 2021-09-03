@@ -14,6 +14,9 @@ const updateChannelEmotes = (db, channelID, emotes) => {
           provider,
           providerEmoteID,
           image
+        },
+        $inc: {
+          count: 0
         }
       },
       {
