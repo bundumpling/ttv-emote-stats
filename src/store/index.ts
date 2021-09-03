@@ -177,19 +177,26 @@ export const store = createStore<State>({
         }
       })
         .then(res => res.json())
-        .then(json => {
+        .then(({ _id, emotes }) => {
+          const twitchID = _id;
+          type thasEmotesFrom = {
+            [key: string]: boolean
+          }
+          const hasEmotesFrom = ['Twitch', 'FFZ', 'BTTV', '7TV'].reduce<thasEmotesFrom>((result, provider) => ({
+            [provider]: emotes.some((emote: { provider: string; }) => emote.provider === provider),
+            ...result
+          }), {})
+
           commit(MutationType.SetChannelData, {
             name: channelName,
-            twitchID: json._id,
-            emotes: json.emotes
+            twitchID,
+            emotes,
+            hasEmotesFrom
           })
         })
         .catch(err => {
           console.error(err);
         })
-      // .then(() => {
-      //   loading.value = false;
-      // })
 
     },
     updateChannelEmoteCountsFromParsedLog({ commit, state }, { mapOfEmoteCounts, channelName, logFilename }) {
