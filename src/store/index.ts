@@ -176,15 +176,13 @@ export const store = createStore<State>({
           'content-type': 'application/json'
         }
       })
-        .then(res => {
-          if (!res.ok) {
-            const error = new Error(res.statusText);
-            throw error;
-          }
-          return res.json();
-        })
+        .then(res => res.json())
         .then(json => {
-          commit(MutationType.SetChannelData, json)
+          commit(MutationType.SetChannelData, {
+            name: channelName,
+            twitchID: json._id,
+            emotes: json.emotes
+          })
         })
         .catch(err => {
           console.error(err);

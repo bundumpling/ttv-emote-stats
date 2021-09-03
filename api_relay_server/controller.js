@@ -1,97 +1,100 @@
-const updateChannelEmotes = (db, channelName, channelID, emotes) => {
+const updateChannelEmotes = (db, channelID, emotes) => {
 
-  const updateEmoteInEmoteCollection = ({ code, provider, providerEmoteID, image }) => {
-    db.collection('Emote').findOneAndUpdate({
-      $and: [ { channelID }, { code } ]
-    },
-    {
-      $set: {
-        channelName,
-        channelID,
-        code,
-        provider,
-        providerEmoteID,
-        image
-      }
-    },
-    {
-      upsert: true,
-      returnDocument: 'after',
-    }, (err, result) => {
-      if (err) {
-        console.error(err)
-      }
-      else {
-        console.log(result)
-      }
+  Promise.all(emotes.map(
+    ({ code, provider, providerEmoteID, image }) => {
+      const _id = `${channelID}-${code}`;
+
+      return db.collection('Emote').findOneAndUpdate({
+        _id
+      },
+      {
+        $set: {
+          channelID,
+          code,
+          provider,
+          providerEmoteID,
+          image
+        }
+      },
+      {
+        upsert: true,
+        returnDocument: 'after',
+      }, (err, result) => {
+        if (err) {
+          console.error(err)
+        }
+        else {
+          console.log(result)
+        }
+      })
     })
-  };
-
-  const updateEmotesInChannelCollection = (channelID, channelEmotes) => {
+  ).then(() => 
     db.collection('Channel').findOneAndUpdate(
       { _id: channelID },
       {
-        $set: { emotes: channelEmotes }
+        $set: { emotes: emotes.map(({ code }) => `${channelID}-${code}`) }
       }, { upsert: true }
     )
-  };  
-
-  return db.collection('Channel').findOne({ _id: channelID }).then((err, channel) => {
+  ).then((err, result) => {
     if (err) {
-      console.error(err)
+      console.error(err);
+    } else {
+      return result;
     }
-
-    let channelEmotes = channel ? channel.emotes : {};
-
-    emotes.forEach(emote => {
-      updateEmoteInEmoteCollection(emote);
-      const { code, image, provider, providerEmoteID } = emote;
-      const channelEmoteKey = `${provider}-${providerEmoteID}`;
-      channelEmotes[channelEmoteKey] = {
-        code,
-        image,
-        provider,
-        providerEmoteID,
-        ...channelEmotes[channelEmoteKey] || { count: 0, }
-      }
-    })
-
-    updateEmotesInChannelCollection(channelID, channelEmotes);
   })
 }
 
 const getChannelData = (req, res, db) => {
-  db.collection('TwitchLogin').findOne({ login: req.params.channelName }, (err, { login, twitchID }) => {
-    if (err) res.send(err);
+  db.collection('TwitchLogin').findOne(
+    { login: req.params.channelName }, 
+    (err, { login, twitchID }) => {
+      db.collection('Channel').aggregate(
+        [
+          { $match: { _id: twitchID } },
+          { $lookup: {
+              from: 'Emote',
+              localField: 'emotes',
+              foreignField: '_id',
+              as: 'emotes'
+            }
+          }
+        ],
+      ).toArray().then(result => {
+        res.json(result[0])
 
-    db.collection('Channel').findOne({ _id: twitchID }, (err, data) => {
-      if (err) res.send(err);
-      const emotes = Object.keys(data.emotes).map(id => {
-        return {
-          id,
-          count: data.emotes[id].count || 0,
-          ...data.emotes[id]
-        }
-      })
-      const findEmoteFromProvider = provider => emotes.some(emote => emote.provider === provider);
-      const hasEmotesFrom = {
-        "Twitch": findEmoteFromProvider("Twitch"),
-        "FFZ": findEmoteFromProvider("FFZ"),
-        "BTTV": findEmoteFromProvider("BTTV"),
-        "7TV": findEmoteFromProvider("7TV")
-      }
-
-      const result = {
-        twitchID,
-        name: login,
-        hasEmotesFrom,
-        emotes
-      };
-     
-      res.json(result);
-    })
-  })
+      });
+    }
+  )
 }
+
+  //   db.collection('Channel').findOne({ _id: twitchID }, (err, data) => {
+  //     if (err) res.send(err);
+  //     const emotes = Object.keys(data.emotes).map(id => {
+  //       return {
+  //         id,
+  //         count: data.emotes[id].count || 0,
+  //         ...data.emotes[id]
+  //       }
+  //     })
+  //     const findEmoteFromProvider = provider => emotes.some(emote => emote.provider === provider);
+  //     const hasEmotesFrom = {
+  //       "Twitch": findEmoteFromProvider("Twitch"),
+  //       "FFZ": findEmoteFromProvider("FFZ"),
+  //       "BTTV": findEmoteFromProvider("BTTV"),
+  //       "7TV": findEmoteFromProvider("7TV")
+  //     }
+
+  //     const result = {
+  //       twitchID,
+  //       name: login,
+  //       hasEmotesFrom,
+  //       emotes
+  //     };
+     
+  //     res.json(result);
+  //   })
+  // })
+
 
 
 

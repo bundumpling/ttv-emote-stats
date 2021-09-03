@@ -149,7 +149,7 @@ app.post("/channel/:channelName/update", express.json(), (req, res) => {
   const channelID = req.body.channelID;
   const emotes = req.body.emotes;
 
-  updateChannelEmotes(db, channelName, channelID, emotes).then((error, result) => {
+  updateChannelEmotes(db, channelID, emotes).then((error, result) => {
     if (error) {
       console.error(error);
       res.send({ ok: false })
