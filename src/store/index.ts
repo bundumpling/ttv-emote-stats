@@ -168,7 +168,7 @@ export const store = createStore<State>({
           });
         });
     },
-    fetchChannelData({ commit, state }, channelName: string) {
+    fetchChannelData({ commit }, channelName: string) {
       const URL = `http://localhost:8081/channel/${channelName}`;
       fetch(URL, {
         method: 'GET',
