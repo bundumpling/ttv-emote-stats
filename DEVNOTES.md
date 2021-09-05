@@ -57,4 +57,4 @@ Emote usage data by specific users in a channel would ideally have the option to
 ## ***Current Tasks***
   - Improve Emote Details modal for the Rankings page.
   - Create a view showing an specific username's emote usage.
-  - Add **detailed view** for provider api results.
+  - Now that users are tied to their unique TwitchID, display a user's emote usage count as a total of all their known aliases' counts.
