@@ -16,7 +16,7 @@ export function fromTwitch(state: State): IEmote[] {
         code: emote.name,
         image: emote.images.url_1x,
         provider: 'Twitch',
-        providerEmoteID: emote.id,
+        providerID: emote.id,
       };
     }
   );
@@ -30,7 +30,7 @@ export function fromFFZ(state: State): IEmote[] {
         code: emote.name,
         image: emote.urls["1"],
         provider: 'FFZ',
-        providerEmoteID: `${emote.id}`,
+        providerID: `${emote.id}`,
       };
     }
   );
@@ -44,7 +44,7 @@ export function fromBTTV(state: State): IEmote[] {
         code: emote.code,
         image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
         provider: 'BTTV',
-        providerEmoteID: emote.id,
+        providerID: emote.id,
       };
     }
   );
@@ -58,7 +58,7 @@ export function from7TV(state: State): IEmote[] {
         code: emote.name,
         image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
         provider: '7TV',
-        providerEmoteID: emote.id,
+        providerID: emote.id,
       };
     }
   );

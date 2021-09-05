@@ -76,7 +76,10 @@ export default defineComponent({
     const mostUsedBy = computed(() => {
       return Object.keys(store.state.emoteDetails.usedBy)
         .map((username) => {
-          return { username, count: store.state.emoteDetails.usedBy[username] };
+          return {
+            username: username.split("-")[0], // format of usernames is <name>-<twitchID>
+            count: store.state.emoteDetails.usedBy[username],
+          };
         })
         .sort((a, b) => b.count - a.count);
     });

@@ -1,10 +1,24 @@
+
+export interface ILogParserResults {
+  [key: string]: {
+    provider: string,
+    providerID: string,
+    count: number,
+    usedBy: {
+      [key: string]: number
+    }
+  }
+}
+
 export interface IEmote {
   code: string,
   image: string,
   provider: string,
-  providerEmoteID: string,
+  providerID: string,
   count?: number,
-  usedBy?: object
+  usedBy?: {
+    [key: string]: number
+  }
   stateIndex?: number
 }
 

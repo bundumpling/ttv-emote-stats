@@ -26,6 +26,9 @@
       </section>
 
       <footer class="modal-card-foot">
+        <button @click="saveResultsToDB()" :disabled="!done">
+          Save Results to DB
+        </button>
         <button @click="closeModal()" :disabled="!done">Close Modal</button>
       </footer>
     </div>
@@ -38,6 +41,10 @@ import { ParserStatus } from "../types";
 export default defineComponent({
   name: "SettingsLogParserModal",
   props: {
+    saveResultsToDB: {
+      type: Function,
+      required: true,
+    },
     closeModal: {
       type: Function,
       required: true,

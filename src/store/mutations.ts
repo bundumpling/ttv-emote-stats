@@ -1,6 +1,6 @@
 import { MutationTree } from "vuex";
 
-import { IEmote } from '../types';
+import { IEmote, ILogParserResults } from '../types';
 
 export enum MutationType {
   SetChannelNameAndTwitchID = "SET_CHANNEL_NAME_AND_TWITCHID",
@@ -23,7 +23,9 @@ export enum MutationType {
   RandomizeCounts = "RANDOMIZE_COUNTS",
   ZeroCounts = "ZERO_COUNTS",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
-  SetChannelData = "SET_CHANNEL_DATA"
+  SetChannelData = "SET_CHANNEL_DATA",
+  UpdateLogParserResults = "UPDATE_LOG_PARSER_RESULTS",
+  ResetLogParserResults = "RESET_LOG_PARSER_RESULTS"
 }
 
 export type Mutations = {
@@ -48,6 +50,8 @@ export type Mutations = {
   [MutationType.ZeroCounts](state: any): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
   [MutationType.SetChannelData](state: any, channelData: any): void;
+  [MutationType.UpdateLogParserResults](state: any, results: any): void;
+  [MutationType.ResetLogParserResults](state: any): void;
 }
 
 export const mutations: MutationTree<any> & Mutations = {
@@ -139,8 +143,7 @@ export const mutations: MutationTree<any> & Mutations = {
           emotes: emotes
         })
       }
-    ).then(response => response.json()
-    ).then(json => console.log(json));
+    ).then(response => response.status)
   },
   [MutationType.RandomizeCounts](state) {
     state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
@@ -172,5 +175,35 @@ export const mutations: MutationTree<any> & Mutations = {
   },
   [MutationType.SetChannelData](state, channelData) {
     state.channel = channelData;
+  },
+  [MutationType.UpdateLogParserResults](state, { logFilename, logParserResult }) {
+    if (!Object.keys(state.logParserResults).length) {
+      state.logParserResults = logParserResult;
+    } else {
+      Object.keys(logParserResult).forEach((key) => {
+        const value = logParserResult[key];
+        if (value.count && value.usedBy) {
+          if (state.logParserResults[key]) {
+            state.logParserResults[key].count += value.count;
+            Object.keys(value.usedBy).forEach(username => {
+              if (value.usedBy) {
+                if (state.logParserResults[key].usedBy[username]) {
+                  state.logParserResults[key].usedBy[username] += value.usedBy[username];
+                } else {
+                  state.logParserResults[key].usedBy[username] = value.usedBy[username];
+                }
+              }
+            })
+          } else {
+            state.logParserResults[key] = value;
+          }
+        }
+      })
+    }
+    state.logParserFilenames = [logFilename, ...state.logParserFilenames];
+  },
+  [MutationType.ResetLogParserResults](state) {
+    state.logParserResults = {};
+    state.logParserFilenames = [];
   }
 }

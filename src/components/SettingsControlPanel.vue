@@ -52,6 +52,7 @@
   <SettingsLogParserModal
     v-if="logParserModalIsActive"
     :progressData="logParserProgressData"
+    :saveResultsToDB="saveResultsToDB"
     :closeModal="closeModal"
   />
 </template>
@@ -60,7 +61,12 @@
 import { defineComponent, ref, reactive } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
-import { IEmote, ParserStatus, tLogParserProgressData } from "../types";
+import {
+  IEmote,
+  ILogParserResults,
+  ParserStatus,
+  tLogParserProgressData,
+} from "../types";
 import {
   fromTwitch,
   fromFFZ,
@@ -103,6 +109,10 @@ export default defineComponent({
       logParserProgressData.reset();
     }
 
+    function saveResultsToDB(): void {
+      store.dispatch("saveLogParserResultsToDB");
+    }
+
     const randomizeCounts = () => {
       store.commit(MutationType.RandomizeCounts, undefined);
     };
@@ -112,56 +122,78 @@ export default defineComponent({
     };
 
     async function readLogFile(log: string | ArrayBuffer) {
-      const mapOfEmoteCounts: Map<any, any> = await logParser(
+      const results: ILogParserResults = await logParser(
         log as string,
         store.state.channel.emotes
       );
-      return mapOfEmoteCounts;
+      return results;
     }
 
-    function logFileNames() {
+    async function fetchListOfParsedLogFilenames() {
+      return fetch(
+        `http://localhost:8081/channel/${store.state.channel.name}/listofParsedLogFilesnames`,
+        { method: "GET" }
+      ).then((res) => res.json());
+    }
+
+    async function logFileNames() {
       logParserProgressData.status = ParserStatus.LOADING;
       logParserModalIsActive.value = true;
       let fileInput = document.getElementById(
         "logfile-input"
       ) as HTMLInputElement;
       if (fileInput.files) {
+        const alreadyParsed = await fetchListOfParsedLogFilenames();
+        console.log(alreadyParsed);
+
         let files: FileList = fileInput.files;
         logParserProgressData.filenames.length = files.length;
+
         for (let i = 0; i < files.length; i++) {
-          let reader = new FileReader();
-          reader.onerror = (e) => {
-            if (e.target && e.target.error) {
-              const errorMessage = `${e.target.error.name} reading ${files[i].name}`;
-              console.log(errorMessage);
-              logParserProgressData.errors.push(errorMessage);
-              logParserProgressData.numParsed++;
+          if (alreadyParsed.includes(files[i].name)) {
+            console.log(`${files[0].name} already parsed according to DB.`);
+            logParserProgressData.filenames.length--;
+            if (
+              logParserProgressData.numParsed ===
+              logParserProgressData.filenames.length
+            ) {
+              logParserProgressData.status = ParserStatus.DONE;
             }
-          };
-          reader.onload = async (e) => {
-            if (e.target && e.target.result) {
-              let text = e.target.result;
-              logParserProgressData.activeIndex = i;
-              logParserProgressData.status = ParserStatus.PARSING;
-              const mapOfEmoteCounts = await readLogFile(text);
-              // store.commit(MutationType.SaveLogParserResults, mapOfEmoteCounts);
-              store.dispatch("updateChannelEmoteCountsFromParsedLog", {
-                mapOfEmoteCounts: JSON.stringify([...mapOfEmoteCounts]),
-                channelName: store.state.channel.name,
-                logFilename: files[i].name,
-              });
-              logParserProgressData.numParsed++;
-              if (
-                logParserProgressData.numParsed ===
-                logParserProgressData.filenames.length
-              ) {
-                logParserProgressData.status = ParserStatus.DONE;
+          } else {
+            let reader = new FileReader();
+            reader.onerror = (e) => {
+              if (e.target && e.target.error) {
+                const errorMessage = `${e.target.error.name} reading ${files[i].name}`;
+                console.log(errorMessage);
+                logParserProgressData.errors.push(errorMessage);
+                logParserProgressData.numParsed++;
               }
-            }
-          };
-          logParserProgressData.filenames[i] = files[i].name;
-          reader.readAsText(files[i]);
+            };
+            reader.onload = async (e) => {
+              if (e.target && e.target.result) {
+                let text = e.target.result;
+                logParserProgressData.activeIndex = i;
+                logParserProgressData.status = ParserStatus.PARSING;
+                const logParserResult = await readLogFile(text);
+                store.commit(MutationType.UpdateLogParserResults, {
+                  logFilename: files[i].name,
+                  logParserResult,
+                });
+                logParserProgressData.numParsed++;
+                if (
+                  logParserProgressData.numParsed ===
+                  logParserProgressData.filenames.length
+                ) {
+                  logParserProgressData.status = ParserStatus.DONE;
+                }
+              }
+            };
+            logParserProgressData.filenames[i] = files[i].name;
+            reader.readAsText(files[i]);
+          }
         }
+      } else {
+        logParserProgressData.status = ParserStatus.DONE;
       }
     }
 
@@ -236,6 +268,7 @@ export default defineComponent({
       saveAll,
       logParserModalIsActive,
       logParserProgressData,
+      saveResultsToDB,
       closeModal,
       createDownloadableBlobFromState,
       blobURL,

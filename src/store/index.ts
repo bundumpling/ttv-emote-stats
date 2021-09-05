@@ -1,7 +1,7 @@
 // import { InjectionKey } from "@vue/runtime-core";
 import { createStore, Store as VuexStore, CommitOptions } from "vuex";
 import { Mutations, mutations, MutationType } from "./mutations";
-import { IEmote } from "../types"
+import { IEmote, ILogParserResults } from "../types"
 
 export interface State {
   channel: {
@@ -15,6 +15,8 @@ export interface State {
       '7TV': boolean
     }
   },
+  logParserResults: ILogParserResults,
+  logParserFilenames: string[],
   rankings: {
     activeTab: string,
     emoteDetailsModalOpen: boolean,
@@ -63,6 +65,8 @@ export const store = createStore<State>({
         '7TV': false
       }
     },
+    logParserResults: {},
+    logParserFilenames: [],
     rankings: {
       activeTab: 'Overall',
       emoteDetailsModalOpen: false,
@@ -199,9 +203,13 @@ export const store = createStore<State>({
         })
 
     },
-    updateChannelEmoteCountsFromParsedLog({ commit, state }, { mapOfEmoteCounts, channelName, logFilename }) {
-      console.log(mapOfEmoteCounts)
+    saveLogParserResultsToDB({ state, commit }) {
+      const channelName = state.channel.name;
+      const logFilenames = state.logParserFilenames;
+      const logParserResults = state.logParserResults;
+
       const URL = `http://localhost:8081/channel/${channelName}/updateCountsFromLog`;
+
       fetch(
         URL,
         {
@@ -211,12 +219,15 @@ export const store = createStore<State>({
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            logFilename,
-            mapOfEmoteCounts
+            logFilenames,
+            logParserResults
           })
         }
       ).then(response => response.json()
-      ).then(json => console.log(json));
+      ).then(json => {
+        console.log(json)
+        // commit(MutationType.ResetLogParserResults);
+      });
     }
   }
 })
