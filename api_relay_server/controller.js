@@ -47,7 +47,12 @@ const updateChannelEmotes = (db, channelID, emotes) => {
     db.collection('Channel').findOneAndUpdate(
       { _id: channelID },
       {
-        $set: { emotes: emotes.map(({ code }) => `${channelID}-${code}`) }
+        $set: { 
+          emotes: emotes.map(({ code }) => `${channelID}-${code}`),
+        },
+        $setOnInsert: { 
+          parsedLogfiles: []
+        }
       }, { upsert: true }
     )
   ).then((err, result) => {
@@ -128,7 +133,7 @@ const updateCountsFromLog = async (req, res, db) => {
   }
 
   async function requestTwitchIDsFromUsernameArray(usernames) {
-    return new Promise(async (res) => {
+    return new Promise(async (res) => setTimeout(() => {
       const paramsString = usernames.map(username => `login=${username}`).join("&");
       const URL = `https://api.twitch.tv/helix/users?${paramsString}`;
       fetch(URL, TWITCH_OPTIONS)
@@ -142,19 +147,22 @@ const updateCountsFromLog = async (req, res, db) => {
           })
           res(userdata)
         })
-    })
+    }, 1000))
   }
   
   async function processBatchRequestForTwitchIDs(usernameBatches) {
     return new Promise(async (res) => {
       let result = [];
+      let timestamp = Date.now();
+      console.log(`${timestamp} - Start processBatchRequestForTwitchIDs`)
       for (let i = 0; i < usernameBatches.length; i++) {
-        const usernameBatch = usernameBatches[i];
-        const userdata = await requestTwitchIDsFromUsernameArray(usernameBatch);
-        console.log(`Got results for ${userdata.length}/${usernameBatch.length} user requests from Twitch API.`);
-        for (let i = 0; i < userdata.length; i++) {
-          result.push(userdata[i]);
-        }
+          const usernameBatch = usernameBatches[i];
+          const userdata = await requestTwitchIDsFromUsernameArray(usernameBatch);
+          console.log(`${Date.now()} - [${i + 1} -  Got results for ${userdata.length}/${usernameBatch.length} user requests from Twitch API.`);
+          for (let i = 0; i < userdata.length; i++) {
+            result.push(userdata[i]);
+          }
+        
       }
       res(result);
     });
@@ -180,7 +188,7 @@ const updateCountsFromLog = async (req, res, db) => {
         console.log(`Unknown users (no TwitchID in DB): ${usernamesWithoutTwitchID.size}`);
         const usernameBatches = await chunkUsernamesSetToArray(usernamesWithoutTwitchID);
         const userdata = await processBatchRequestForTwitchIDs(usernameBatches);
-        console.log(`Twitch API returned ${userdata.length} TwitchIDs for unknown users.`)
+        console.log(`${Date.now()} - Twitch API returned ${userdata.length} TwitchIDs for unknown users.`)
         if (userdata.length) {
           addNewTwitchLoginDocuments(userdata);
         }
@@ -195,7 +203,7 @@ const updateCountsFromLog = async (req, res, db) => {
   }
 
   const usernameTwitchIDDictionary = await buildUsernameTwitchIDDictionary();
-  console.log(`Final Username/TwitchID dictionary size: ${usernameTwitchIDDictionary.size}`);
+  console.log(`${Date.now()} - Final Username/TwitchID dictionary size: ${usernameTwitchIDDictionary.size}`);
 
   db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
     if (err) res.send(err);
