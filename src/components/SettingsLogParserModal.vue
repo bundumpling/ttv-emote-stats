@@ -64,13 +64,15 @@ export default defineComponent({
     });
 
     const progress = computed(() => {
-      return props.progressData.status === ParserStatus.DONE
-        ? 100
-        : Math.floor(
-            (props.progressData.numParsed /
-              props.progressData.filenames.length) *
-              100
-          );
+      if (props.progressData.status === ParserStatus.DONE) {
+        return 100;
+      } else {
+        const result = Math.floor(
+          (props.progressData.numParsed / props.progressData.filenames.length) *
+            100
+        );
+        return isNaN(result) ? 0 : result;
+      }
     });
 
     const errors = computed(() => {

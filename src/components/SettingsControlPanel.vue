@@ -91,6 +91,8 @@ export default defineComponent({
 
     const logParserProgressData: tLogParserProgressData = reactive({
       filenames: [],
+      parsedFilenames: [],
+      skippedFilenames: [],
       activeIndex: null,
       numParsed: 0,
       status: ParserStatus.IDLE,
@@ -146,51 +148,56 @@ export default defineComponent({
         const alreadyParsed = await fetchListOfParsedLogFilenames();
         console.log(alreadyParsed);
 
-        let files: FileList = fileInput.files;
-        logParserProgressData.filenames.length = files.length;
-
+        const files: FileList = fileInput.files;
+        let unparsedFiles: File[] = [];
         for (let i = 0; i < files.length; i++) {
-          if (alreadyParsed.includes(files[i].name)) {
-            console.log(`${files[0].name} already parsed according to DB.`);
-            logParserProgressData.filenames.length--;
-            if (
-              logParserProgressData.numParsed ===
-              logParserProgressData.filenames.length
-            ) {
-              logParserProgressData.status = ParserStatus.DONE;
-            }
+          const filename = files[i].name;
+          if (alreadyParsed.includes(filename)) {
+            console.log(`${filename} already parsed according to DB.`);
+            logParserProgressData.skippedFilenames.push(filename);
           } else {
-            let reader = new FileReader();
-            reader.onerror = (e) => {
-              if (e.target && e.target.error) {
-                const errorMessage = `${e.target.error.name} reading ${files[i].name}`;
-                console.log(errorMessage);
-                logParserProgressData.errors.push(errorMessage);
-                logParserProgressData.numParsed++;
-              }
-            };
-            reader.onload = async (e) => {
-              if (e.target && e.target.result) {
-                let text = e.target.result;
-                logParserProgressData.activeIndex = i;
-                logParserProgressData.status = ParserStatus.PARSING;
-                const logParserResult = await readLogFile(text);
-                store.commit(MutationType.UpdateLogParserResults, {
-                  logFilename: files[i].name,
-                  logParserResult,
-                });
-                logParserProgressData.numParsed++;
-                if (
-                  logParserProgressData.numParsed ===
-                  logParserProgressData.filenames.length
-                ) {
-                  logParserProgressData.status = ParserStatus.DONE;
-                }
-              }
-            };
-            logParserProgressData.filenames[i] = files[i].name;
-            reader.readAsText(files[i]);
+            unparsedFiles.push(files[i]);
           }
+        }
+
+        logParserProgressData.filenames.length = unparsedFiles.length;
+
+        if (!unparsedFiles.length) {
+          logParserProgressData.status = ParserStatus.DONE;
+        }
+
+        for (let i = 0; i < unparsedFiles.length; i++) {
+          let reader = new FileReader();
+          reader.onerror = (e) => {
+            if (e.target && e.target.error) {
+              const errorMessage = `${e.target.error.name} reading ${unparsedFiles[i].name}`;
+              console.log(errorMessage);
+              logParserProgressData.errors.push(errorMessage);
+              logParserProgressData.numParsed++;
+            }
+          };
+          reader.onload = async (e) => {
+            if (e.target && e.target.result) {
+              let text = e.target.result;
+              logParserProgressData.activeIndex = i;
+              logParserProgressData.status = ParserStatus.PARSING;
+              const logParserResult = await readLogFile(text);
+              store.commit(MutationType.UpdateLogParserResults, {
+                logFilename: unparsedFiles[i].name,
+                logParserResult,
+              });
+              logParserProgressData.parsedFilenames.push(unparsedFiles[i].name);
+              logParserProgressData.numParsed++;
+              if (
+                logParserProgressData.numParsed ===
+                logParserProgressData.filenames.length
+              ) {
+                logParserProgressData.status = ParserStatus.DONE;
+              }
+            }
+          };
+          logParserProgressData.filenames[i] = unparsedFiles[i].name;
+          reader.readAsText(unparsedFiles[i]);
         }
       } else {
         logParserProgressData.status = ParserStatus.DONE;

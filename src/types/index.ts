@@ -120,6 +120,8 @@ export enum ParserStatus {
 
 export type tLogParserProgressData = {
   filenames: string[];
+  parsedFilenames: string[];
+  skippedFilenames: string[];
   activeIndex: number | null;
   numParsed: number;
   status: ParserStatus;
