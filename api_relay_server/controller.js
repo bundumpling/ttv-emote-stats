@@ -239,6 +239,8 @@ const updateCountsFromLog = async (req, res, db) => {
       db.collection('Channel').updateOne({ _id: twitchID }, {
         $push: { parsedLogfiles: { $each: logFilenames } }
       })
+    }).then(() => {
+      res.send({ok: true})
     })
   })
 }
