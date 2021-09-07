@@ -225,8 +225,8 @@ export const store = createStore<State>({
         }
       ).then(response => response.json()
       ).then(json => {
-        console.log(json)
-        // commit(MutationType.ResetLogParserResults);
+
+        commit(MutationType.ResetLogParserResults);
       });
     }
   }

@@ -93,6 +93,7 @@ export default defineComponent({
       filenames: [],
       parsedFilenames: [],
       skippedFilenames: [],
+      consoleMessages: [],
       activeIndex: null,
       numParsed: 0,
       status: ParserStatus.IDLE,
@@ -100,19 +101,33 @@ export default defineComponent({
       reset: function () {
         (this.filenames = []),
           (this.activeIndex = null),
+          (this.parsedFilenames = []),
+          (this.skippedFilenames = []),
+          (this.consoleMessages = []),
           (this.numParsed = 0),
           (this.status = ParserStatus.IDLE),
           (this.errors = []);
       },
     });
 
+    function resetFileInputElement() {
+      const inputElement = document.getElementById(
+        "logfile-input"
+      ) as HTMLInputElement;
+      if (inputElement) {
+        inputElement.value = "";
+      }
+    }
+
     function closeModal(): void {
       logParserModalIsActive.value = false;
       logParserProgressData.reset();
+      resetFileInputElement();
     }
 
     function saveResultsToDB(): void {
       store.dispatch("saveLogParserResultsToDB");
+      resetFileInputElement();
     }
 
     const randomizeCounts = () => {
@@ -146,23 +161,37 @@ export default defineComponent({
       ) as HTMLInputElement;
       if (fileInput.files) {
         const alreadyParsed = await fetchListOfParsedLogFilenames();
-        console.log(alreadyParsed);
-
         const files: FileList = fileInput.files;
+        logParserProgressData.consoleMessages.push({
+          status: "info",
+          text: `Received ${files.length} files to process.`,
+        });
+
         let unparsedFiles: File[] = [];
         for (let i = 0; i < files.length; i++) {
           const filename = files[i].name;
           if (alreadyParsed.includes(filename)) {
-            console.log(`${filename} already parsed according to DB.`);
+            logParserProgressData.consoleMessages.push({
+              status: "warn",
+              text: `${filename} already recorded as parsed in database... skipping.`,
+            });
             logParserProgressData.skippedFilenames.push(filename);
           } else {
             unparsedFiles.push(files[i]);
+            logParserProgressData.consoleMessages.push({
+              status: "info",
+              text: `${filename} added to parsing queue.`,
+            });
           }
         }
 
         logParserProgressData.filenames.length = unparsedFiles.length;
 
         if (!unparsedFiles.length) {
+          logParserProgressData.consoleMessages.push({
+            status: "warn",
+            text: "All of the logfiles added have already been parsed according to the database... exiting.",
+          });
           logParserProgressData.status = ParserStatus.DONE;
         }
 
@@ -170,9 +199,11 @@ export default defineComponent({
           let reader = new FileReader();
           reader.onerror = (e) => {
             if (e.target && e.target.error) {
-              const errorMessage = `${e.target.error.name} reading ${unparsedFiles[i].name}`;
-              console.log(errorMessage);
-              logParserProgressData.errors.push(errorMessage);
+              const errorMessage = `${e.target.error.name} reading ${unparsedFiles[i].name}... skipping.`;
+              logParserProgressData.consoleMessages.push({
+                status: "warn",
+                text: errorMessage,
+              });
               logParserProgressData.numParsed++;
             }
           };
@@ -181,17 +212,26 @@ export default defineComponent({
               let text = e.target.result;
               logParserProgressData.activeIndex = i;
               logParserProgressData.status = ParserStatus.PARSING;
+              const filename = unparsedFiles[i].name;
               const logParserResult = await readLogFile(text);
               store.commit(MutationType.UpdateLogParserResults, {
-                logFilename: unparsedFiles[i].name,
+                logFilename: filename,
                 logParserResult,
               });
-              logParserProgressData.parsedFilenames.push(unparsedFiles[i].name);
+              logParserProgressData.consoleMessages.push({
+                status: "success",
+                text: `${filename} parsed successfully.`,
+              });
+              logParserProgressData.parsedFilenames.push(filename);
               logParserProgressData.numParsed++;
               if (
                 logParserProgressData.numParsed ===
                 logParserProgressData.filenames.length
               ) {
+                logParserProgressData.consoleMessages.push({
+                  status: "success",
+                  text: "Done parsing log files.",
+                });
                 logParserProgressData.status = ParserStatus.DONE;
               }
             }
@@ -200,6 +240,10 @@ export default defineComponent({
           reader.readAsText(unparsedFiles[i]);
         }
       } else {
+        logParserProgressData.consoleMessages.push({
+          status: "warn",
+          text: "No log files received to parse.",
+        });
         logParserProgressData.status = ParserStatus.DONE;
       }
     }

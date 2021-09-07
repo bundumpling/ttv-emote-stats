@@ -122,6 +122,7 @@ export type tLogParserProgressData = {
   filenames: string[];
   parsedFilenames: string[];
   skippedFilenames: string[];
+  consoleMessages: object[];
   activeIndex: number | null;
   numParsed: number;
   status: ParserStatus;
