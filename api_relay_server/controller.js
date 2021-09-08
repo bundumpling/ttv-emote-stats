@@ -192,7 +192,7 @@ const updateCountsFromLog = async (req, res, db) => {
   }
 
   async function buildUsernameTwitchIDDictionary() {
-    return new Promise(async (res) => {
+    return new Promise(async (resolve) => {
       const usernames = await buildUsernamesSet();
       const usernameTwitchIDDictionary = await getTwitchLoginsFromDB(usernames.values());
       console.log(`Known users (have TwitchID in DB): ${usernameTwitchIDDictionary.size}`);
@@ -205,12 +205,12 @@ const updateCountsFromLog = async (req, res, db) => {
         if (userdata.length) {
           addNewTwitchLoginDocuments(userdata);
         }
-        userdata.forEach(({login, id}) => {
-          usernameTwitchIDDictionary.set(login, id);
+        userdata.forEach(({login, twitchID}) => {
+          usernameTwitchIDDictionary.set(login, twitchID);
         });
-        res(usernameTwitchIDDictionary)
+        resolve(usernameTwitchIDDictionary)
       } else {
-        res(usernameTwitchIDDictionary)
+        resolve(usernameTwitchIDDictionary)
       }
     })
   }
