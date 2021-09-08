@@ -79,10 +79,7 @@ export default defineComponent({
     };
 
     function showEmoteDetails({ emote, emoteListProvider }) {
-      store.commit(MutationType.OpenEmoteDetailsModal, {
-        ...emote,
-        fromList: emoteListProvider,
-      });
+      store.dispatch("fetchEmoteUsedBy", { emote, emoteListProvider });
     }
 
     return {

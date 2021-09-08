@@ -86,6 +86,23 @@ const getChannelData = (req, res, db) => {
               foreignField: '_id',
               as: 'emotes'
             }
+          },
+          {
+            $addFields: {
+              "emotes": {
+                $map: {
+                  "input": "$emotes",
+                  "as": "emote",
+                  "in": {
+                    "_id": "$$emote._id",
+                    "code": "$$emote.code",
+                    "count": "$$emote.count",
+                    "image": "$$emote.image",
+                    "provider": "$$emote.provider" 
+                  }
+                }
+              }
+            }
           }
         ],
       ).toArray().then(result => {
@@ -96,13 +113,21 @@ const getChannelData = (req, res, db) => {
   )
 }
 
+const getEmoteUsedByCounts = (req, res, db) => {
+  const emoteID = req.params.emoteID;
+  db.collection('Emote').findOne({ _id: emoteID }, (err, emote) => {
+    if (err) res.send(err);
+    else {
+      res.json(emote.usedBy)
+    }
+  })
+}
+
 const updateCountsFromLog = async (req, res, db) => {
   const channelName = req.params.channelName;
   const { usernameLastSeen, emoteCounts } = req.body.logParserResults;
   const logFilenames = req.body.logFilenames;
 
-  
-  
   console.log("Handling POST to channel/updateCountsFromLog")
 
   async function buildUsernamesSet() {
@@ -273,5 +298,6 @@ const updateCountsFromLog = async (req, res, db) => {
 module.exports = {
   updateChannelEmotes,
   updateCountsFromLog,
-  getChannelData
+  getChannelData,
+  getEmoteUsedByCounts
 }

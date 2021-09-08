@@ -6,7 +6,7 @@
         <div class="image is-32x32">
           <img :src="details.image" />
         </div>
-        <p class="modal-card-title ml-3">Details for {{ details.name }}</p>
+        <p class="modal-card-title ml-3">Details for {{ details.code }}</p>
         <button class="delete" aria-label="close" @click="close()"></button>
       </header>
       <section class="modal-card-body">

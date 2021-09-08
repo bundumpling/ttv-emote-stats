@@ -107,8 +107,10 @@ export default defineComponent({
       type tResult = {
         [key: string]: IEmoteInList[];
       };
-      let clone = store.state.channel.emotes.slice();
-      let sortedByProvider = clone
+      let emotesWithStateIndex = store.state.channel.emotes.map(
+        (emote: IEmote, index: number) => ({ stateIndex: index, ...emote })
+      );
+      let sortedByProvider = emotesWithStateIndex
         .sort((a: IEmote, b: IEmote) => (b.count || 0) - (a.count || 0))
         .reduce(
           (acc: tResult, emote: IEmote) => {

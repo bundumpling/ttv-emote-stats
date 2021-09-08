@@ -1,5 +1,4 @@
 import { MutationTree } from "vuex";
-
 import { IEmote, ILogParserResults } from '../types';
 
 export enum MutationType {
@@ -94,8 +93,9 @@ export const mutations: MutationTree<any> & Mutations = {
   [MutationType.SetActiveTab](state, tabName) {
     if (tabName) { state.rankings.activeTab = tabName }
   },
-  [MutationType.OpenEmoteDetailsModal](state, emote) {
-    state.emoteDetails = { ...emote };
+  [MutationType.OpenEmoteDetailsModal](state, { emote, fromList }) {
+    state.channel.emotes[emote.stateIndex].usedBy = emote.usedBy;
+    state.emoteDetails = { fromList, ...emote };
     state.rankings.emoteDetailsModalOpen = true;
   },
   [MutationType.CloseEmoteDetailsModal](state) {

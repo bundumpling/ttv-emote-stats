@@ -10,7 +10,7 @@ const url = 'mongodb://localhost:27017';
 
 const dbName = 'TTVEmoteStats';
 
-const { updateChannelEmotes, updateCountsFromLog, getChannelData } = require("./controller");
+const { updateChannelEmotes, updateCountsFromLog, getChannelData, getEmoteUsedByCounts } = require("./controller");
 
 let db = null;
 
@@ -158,6 +158,8 @@ app.post("/channel/:channelName/update", express.json(), (req, res) => {
     }
   });
 })
+
+app.get("/emote/:emoteID/usedBy", (req, res) => getEmoteUsedByCounts(req, res, db))
 
 app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
   const channelName = req.params.channelName;

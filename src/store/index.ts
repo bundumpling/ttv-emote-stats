@@ -203,6 +203,23 @@ export const store = createStore<State>({
         })
 
     },
+    fetchEmoteUsedBy({ state, commit }, { emote, emoteListProvider }) {
+      const URL = `http://localhost:8081/emote/${emote._id}/usedBy`;
+      console.log(URL)
+      fetch(URL, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then(usedBy => {
+          store.commit(MutationType.OpenEmoteDetailsModal, {
+            emote: { usedBy, ...emote },
+            fromList: emoteListProvider,
+          });
+        });
+    },
     saveLogParserResultsToDB({ state, commit }) {
       const channelName = state.channel.name;
       const logFilenames = state.logParserFilenames;
