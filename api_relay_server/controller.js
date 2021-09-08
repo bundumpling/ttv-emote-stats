@@ -113,12 +113,57 @@ const getChannelData = (req, res, db) => {
   )
 }
 
-const getEmoteUsedByCounts = (req, res, db) => {
+const getEmoteUsedByCounts = async (req, res, db) => {
   const emoteID = req.params.emoteID;
-  db.collection('Emote').findOne({ _id: emoteID }, (err, emote) => {
+  db.collection('Emote').findOne({ _id: emoteID }, async (err, emote) => {
     if (err) res.send(err);
     else {
-      res.json(emote.usedBy)
+      const twitchIDLogins = new Map();
+      Object.keys(emote.usedBy).forEach(user => {
+        const [login, twitchID] = user.split("-");
+        if (twitchID) {
+          if (!twitchIDLogins.has(twitchID)) {
+            twitchIDLogins.set(twitchID, [login])
+          } else {
+            twitchIDLogins.set(twitchID, [login, ...twitchIDLogins.get(twitchID)])
+          }
+        } else {
+          twitchIDLogins.set(login, []); // default to login when no twitchID known
+        }
+      })
+
+      const usedBy = {};
+      let twitchIDLoginsIterator = twitchIDLogins.entries();
+      for (let [key, loginArray] of twitchIDLoginsIterator) {
+        if (!loginArray.length) {
+          // no known twitchID, so key is just login
+          usedBy[key] = emote.usedBy[key];
+        } else if (loginArray.length === 1) {
+          // only one login with this twitchID recorded in the counts
+          const userID = `${loginArray[0]}-${key}`;
+          usedBy[userID] = emote.usedBy[userID];
+        } else {
+          // multiple known logins with this the twitchID
+          const combinedCount = {
+            count: 0,
+            login: null,
+            lastSeen: null
+          }
+          const userdata = await db.collection('TwitchLogin').find({ twitchID: key }).toArray();
+          userdata.forEach(({ login, twitchID, lastSeen }) => {
+            console.log(login, twitchID, lastSeen)
+            const userID = `${login}-${twitchID}`;
+            combinedCount.count = combinedCount.count ? combinedCount.count + emote.usedBy[userID] : emote.usedBy[userID];
+            if (!combinedCount.lastSeen || lastSeen > combinedCount.lastSeen) {
+                combinedCount.login = login;
+                combinedCount.lastSeen = lastSeen;
+            }
+          })
+          const userID = `${combinedCount.login}-${key}`;
+          usedBy[userID] = combinedCount.count;
+        }
+      }
+      res.json(usedBy);
     }
   })
 }
