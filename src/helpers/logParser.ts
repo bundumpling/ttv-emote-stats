@@ -44,7 +44,7 @@ export default async function logParser(log: string, emotes: IEmote[]) {
   let startOfCurrentLine = cursor;
   let startOfNextLine = null;
 
-  const lineparserRegExp = /^\[(\d{2}:\d{2}:\d{2})\]\s{1,2}(?:(?!Uploading|Unrecognized)(?:\S+\s))?(\w+)(?::)\s(.+)\n$/;
+  const lineparserRegExp = /^\[(\d{2}:\d{2}:\d{2})\]\s{1,2}(?:(?!Uploading|Unrecognized)(?:[^:\s]+\s))?(\w+)(?::)\s(.+)\n$/;
 
   const cursorIsAtEOF = () => cursor >= log.length;
   const cursorIsAtNewline = () => log.charAt(cursor) === '\n';
