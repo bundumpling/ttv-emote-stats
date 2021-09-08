@@ -10,7 +10,7 @@ const TWITCH_OPTIONS = {
   }
 };
 
-const updateChannelEmotes = (db, channelID, emotes) => {
+const updateChannelEmotes = (db, channelName, channelID, emotes) => {
 
   return Promise.all(emotes.map(
     ({ code, provider, providerID, image }) => {
@@ -55,6 +55,15 @@ const updateChannelEmotes = (db, channelID, emotes) => {
         }
       }, { upsert: true }
     )
+  ).then(() => db.collection('TwitchLogin').findOneAndUpdate(
+    { twitchID: channelID },
+    {
+      $set: {
+        login: channelName
+      }
+    },
+    { upsert: true }
+  )
   ).then((err, result) => {
     if (err) {
       console.error(err);
@@ -89,15 +98,17 @@ const getChannelData = (req, res, db) => {
 
 const updateCountsFromLog = async (req, res, db) => {
   const channelName = req.params.channelName;
-  const logParserResults = req.body.logParserResults;
+  const { usernameLastSeen, emoteCounts } = req.body.logParserResults;
   const logFilenames = req.body.logFilenames;
+
+  
   
   console.log("Handling POST to channel/updateCountsFromLog")
 
   async function buildUsernamesSet() {
     const usernames = new Set();
-    Object.keys(logParserResults).forEach(code => {
-      Object.keys(logParserResults[code].usedBy).forEach(username => {
+    Object.keys(emoteCounts).forEach(code => {
+      Object.keys(emoteCounts[code].usedBy).forEach(username => {
         usernames.add(username);
       })
     })
@@ -108,7 +119,9 @@ const updateCountsFromLog = async (req, res, db) => {
     const dict = new Map();
     const results = await db.collection('TwitchLogin').find({ login: { $in: [...usernames] } }).toArray();
     results.forEach(({login, twitchID}) => {
-      dict.set(login, twitchID);
+      if (twitchID) {
+        dict.set(login, twitchID);
+      }
     })
     return dict;
   }
@@ -208,21 +221,21 @@ const updateCountsFromLog = async (req, res, db) => {
   db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
     if (err) res.send(err);
 
-    Promise.all(Object.keys(logParserResults).map(code => {
+    Promise.all(Object.keys(emoteCounts).map(code => {
       const _id = `${twitchID}-${code}`;
       db.collection('Emote').findOne({ _id }, (err, emote) => {
         if (err) res.send(err);
 
         const usedBy = emote.usedBy || {};
-        Object.keys(logParserResults[code].usedBy).map(username => {
+        Object.keys(emoteCounts[code].usedBy).map(username => {
           const userID = usernameTwitchIDDictionary.has(username)
             ? `${username}-${usernameTwitchIDDictionary.get(username)}`
             : username;
 
           if (usedBy[userID]) {
-            usedBy[userID] += logParserResults[code].usedBy[username];
+            usedBy[userID] += emoteCounts[code].usedBy[username];
           } else {
-            usedBy[userID] = logParserResults[code].usedBy[username];
+            usedBy[userID] = emoteCounts[code].usedBy[username];
           }
         })
 
@@ -231,13 +244,25 @@ const updateCountsFromLog = async (req, res, db) => {
             usedBy: { ...usedBy }
           },
           $inc: {
-            count: logParserResults[code].count
+            count: emoteCounts[code].count
           }
         })
       })
     })).then(() => {
       db.collection('Channel').updateOne({ _id: twitchID }, {
         $push: { parsedLogfiles: { $each: logFilenames } }
+      })
+    }).then(() => {
+      Object.keys(usernameLastSeen).map(username => {
+        db.collection('TwitchLogin').findOneAndUpdate(
+          { login: username }, 
+          { 
+            $max: { 
+              lastSeen: usernameLastSeen[username] 
+            }
+          },
+          { upsert: true }
+        )
       })
     }).then(() => {
       res.send({ok: true})

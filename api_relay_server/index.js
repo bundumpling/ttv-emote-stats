@@ -149,7 +149,7 @@ app.post("/channel/:channelName/update", express.json(), (req, res) => {
   const channelID = req.body.channelID;
   const emotes = req.body.emotes;
 
-  updateChannelEmotes(db, channelID, emotes).then((error, result) => {
+  updateChannelEmotes(db, channelName, channelID, emotes).then((error, result) => {
     if (error) {
       console.error(error);
       res.send({ ok: false })
@@ -163,7 +163,8 @@ app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
   const channelName = req.params.channelName;
   db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
     db.collection('Channel').findOne({ _id: twitchID }, (err, channelData) => {
-      res.send(JSON.stringify(channelData.parsedLogfiles));
+        res.send(JSON.stringify(channelData.parsedLogfiles));
+      
     })
   })
 })

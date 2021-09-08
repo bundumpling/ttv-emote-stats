@@ -180,22 +180,33 @@ export const mutations: MutationTree<any> & Mutations = {
     if (!Object.keys(state.logParserResults).length) {
       state.logParserResults = logParserResult;
     } else {
-      Object.keys(logParserResult).forEach((key) => {
-        const value = logParserResult[key];
+      const { usernameLastSeen, emoteCounts } = logParserResult;
+      Object.keys(emoteCounts).forEach((key) => {
+        const value = emoteCounts[key];
         if (value.count && value.usedBy) {
-          if (state.logParserResults[key]) {
-            state.logParserResults[key].count += value.count;
+          if (state.logParserResults.emoteCounts[key]) {
+            state.logParserResults.emoteCounts[key].count += value.count;
             Object.keys(value.usedBy).forEach(username => {
               if (value.usedBy) {
-                if (state.logParserResults[key].usedBy[username]) {
-                  state.logParserResults[key].usedBy[username] += value.usedBy[username];
+                if (state.logParserResults.emoteCounts[key].usedBy[username]) {
+                  state.logParserResults.emoteCounts[key].usedBy[username] += value.usedBy[username];
                 } else {
-                  state.logParserResults[key].usedBy[username] = value.usedBy[username];
+                  state.logParserResults.emoteCounts[key].usedBy[username] = value.usedBy[username];
                 }
               }
             })
           } else {
-            state.logParserResults[key] = value;
+            state.logParserResults.emoteCounts[key] = value;
+          }
+        }
+      })
+      Object.keys(usernameLastSeen).forEach((username) => {
+        const timestamp = usernameLastSeen[username];
+        if (timestamp) {
+          if (state.logParserResults.usernameLastSeen[username]) {
+            state.logParserResults.usernameLastSeen[username] = Math.max(state.logParserResults.usernameLastSeen[username], timestamp)
+          } else {
+            state.logParserResults.usernameLastSeen[username] = timestamp;
           }
         }
       })

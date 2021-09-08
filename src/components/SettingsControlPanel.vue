@@ -160,7 +160,7 @@ export default defineComponent({
         "logfile-input"
       ) as HTMLInputElement;
       if (fileInput.files) {
-        const alreadyParsed = await fetchListOfParsedLogFilenames();
+        const alreadyParsed = (await fetchListOfParsedLogFilenames()) || [];
         const files: FileList = fileInput.files;
         logParserProgressData.consoleMessages.push({
           status: "info",

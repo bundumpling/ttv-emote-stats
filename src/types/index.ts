@@ -1,5 +1,11 @@
-
 export interface ILogParserResults {
+  emoteCounts?: ILogParserEmoteCounts,
+  usernameLastSeen?: {
+    [key: string]: number;
+  }
+}
+
+export interface ILogParserEmoteCounts {
   [key: string]: {
     provider: string,
     providerID: string,
