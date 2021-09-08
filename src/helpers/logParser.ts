@@ -53,18 +53,19 @@ export default async function logParser(log: string, emotes: IEmote[]) {
     const [hours, minutes, seconds] = timestampString.split(":").map(Number);
     return startingTime
       ? startingTime + (hours * 3600000) + (minutes * 60000) + (seconds * 1000)
-      : null;
+      : 0;
   }
 
-  const setUsernameLastSeen = (username: string, timestamp: number | null) => {
+  const setUsernameLastSeen = (username: string, timestamp: number) => {
     if (timestamp) {
       usernameLastSeen[username] = usernameLastSeen[username] ? Math.max(usernameLastSeen[username], timestamp) : timestamp;
     }
   }
 
-  const parseMessage = (username: string, message: string) => {
+  const parseMessage = (timestamp: number, username: string, message: string) => {
     message.split(" ").forEach(word => {
       if (codes.has(word)) {
+        setUsernameLastSeen(username, timestamp);
         emoteCounts[word].count++;
         if (emoteCounts[word].usedBy[username] === undefined) {
           emoteCounts[word].usedBy[username] = 1;
@@ -80,9 +81,7 @@ export default async function logParser(log: string, emotes: IEmote[]) {
     if (match) {
       const [timestampString, username, message] = match.slice(1);
       const timestamp = parseTimestampString(timestampString);
-
-      setUsernameLastSeen(username, timestamp);
-      parseMessage(username, message);
+      parseMessage(timestamp, username, message);
     }
   }
 
