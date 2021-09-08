@@ -163,7 +163,7 @@ app.get("/emote/:emoteID/usedBy", (req, res) => getEmoteUsedByCounts(req, res, d
 
 app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
   const channelName = req.params.channelName;
-  db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
+  db.collection('TwitchLogin').findOne({ _id: channelName }, (err, { twitchID }) => {
     db.collection('Channel').findOne({ _id: twitchID }, (err, channelData) => {
         res.send(JSON.stringify(channelData.parsedLogfiles));
       

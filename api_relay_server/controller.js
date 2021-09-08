@@ -56,10 +56,10 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
       }, { upsert: true }
     )
   ).then(() => db.collection('TwitchLogin').findOneAndUpdate(
-    { twitchID: channelID },
+    { _id: channelName },
     {
       $set: {
-        login: channelName
+        twitchID: channelID
       }
     },
     { upsert: true }
@@ -75,8 +75,8 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
 
 const getChannelData = (req, res, db) => {
   db.collection('TwitchLogin').findOne(
-    { login: req.params.channelName }, 
-    (err, { login, twitchID }) => {
+    { _id: req.params.channelName }, 
+    (err, { _id, twitchID }) => {
       db.collection('Channel').aggregate(
         [
           { $match: { _id: twitchID } },
@@ -150,16 +150,15 @@ const getEmoteUsedByCounts = async (req, res, db) => {
             lastSeen: null
           }
           const userdata = await db.collection('TwitchLogin').find({ twitchID: key }).toArray();
-          userdata.forEach(({ login, twitchID, lastSeen }) => {
-            console.log(login, twitchID, lastSeen)
-            const userID = `${login}-${twitchID}`;
+          userdata.forEach(({ _id, twitchID, lastSeen }) => {
+            const userID = `${_id}-${twitchID}`;
             combinedCount.count = combinedCount.count ? combinedCount.count + emote.usedBy[userID] : emote.usedBy[userID];
             if (!combinedCount.lastSeen || lastSeen > combinedCount.lastSeen) {
-                combinedCount.login = login;
+                combinedCount._id = _id;
                 combinedCount.lastSeen = lastSeen;
             }
           })
-          const userID = `${combinedCount.login}-${key}`;
+          const userID = `${combinedCount._id}-${key}`;
           usedBy[userID] = combinedCount.count;
         }
       }
@@ -187,10 +186,10 @@ const updateCountsFromLog = async (req, res, db) => {
 
   async function getTwitchLoginsFromDB(usernames) {
     const dict = new Map();
-    const results = await db.collection('TwitchLogin').find({ login: { $in: [...usernames] } }).toArray();
-    results.forEach(({login, twitchID}) => {
+    const results = await db.collection('TwitchLogin').find({ _id: { $in: [...usernames] } }).toArray();
+    results.forEach(({_id, twitchID}) => {
       if (twitchID) {
-        dict.set(login, twitchID);
+        dict.set(_id, twitchID);
       }
     })
     return dict;
@@ -222,10 +221,12 @@ const updateCountsFromLog = async (req, res, db) => {
       fetch(URL, TWITCH_OPTIONS)
         .then(response => response.json())      
         .then(json => {
-          const userdata = json.data.map(({login, id}) => {
+          const userdata = json.data.map((user) => {
+            const { login } = user;
+            const twitchID = user.id;
             return {
-              login,
-              twitchID: id
+              _id: login,
+              twitchID
             }
           })
           res(userdata)
@@ -252,13 +253,16 @@ const updateCountsFromLog = async (req, res, db) => {
   }
 
   async function addNewTwitchLoginDocuments(userdata) {
-    db.collection('TwitchLogin').insertMany(userdata, (err) => {
-      if (err) {
-        console.log(`Error adding new documents to TwitchLogin collection: ${err}`);
-      } else {
-        console.log(`Successfully added ${userdata.length} new documents to the TwitchLogin collection.`);
-      }
-    })
+    return new Promise((async (resolve) => {
+      db.collection('TwitchLogin').insertMany(userdata, (err) => {
+        if (err) {
+          console.log(`Error adding new documents to TwitchLogin collection: ${err}`);
+        } else {
+          console.log(`Successfully added ${userdata.length} new documents to the TwitchLogin collection.`);
+        }
+        resolve();
+      })
+    }))
   }
 
   async function buildUsernameTwitchIDDictionary() {
@@ -273,12 +277,13 @@ const updateCountsFromLog = async (req, res, db) => {
         const userdata = await processBatchRequestForTwitchIDs(usernameBatches);
         console.log(`${Date.now()} - Twitch API returned ${userdata.length} TwitchIDs for unknown users.`)
         if (userdata.length) {
-          addNewTwitchLoginDocuments(userdata);
+          addNewTwitchLoginDocuments(userdata).then(() => {
+            userdata.forEach(({_id, twitchID}) => {
+              usernameTwitchIDDictionary.set(_id, twitchID);
+            });
+            resolve(usernameTwitchIDDictionary)
+          });
         }
-        userdata.forEach(({login, twitchID}) => {
-          usernameTwitchIDDictionary.set(login, twitchID);
-        });
-        resolve(usernameTwitchIDDictionary)
       } else {
         resolve(usernameTwitchIDDictionary)
       }
@@ -288,7 +293,7 @@ const updateCountsFromLog = async (req, res, db) => {
   const usernameTwitchIDDictionary = await buildUsernameTwitchIDDictionary();
   console.log(`${Date.now()} - Final Username/TwitchID dictionary size: ${usernameTwitchIDDictionary.size}`);
 
-  db.collection('TwitchLogin').findOne({ login: channelName }, (err, { twitchID }) => {
+  db.collection('TwitchLogin').findOne({ _id: channelName }, (err, { twitchID }) => {
     if (err) res.send(err);
 
     Promise.all(Object.keys(emoteCounts).map(code => {
@@ -325,7 +330,7 @@ const updateCountsFromLog = async (req, res, db) => {
     }).then(() => {
       Object.keys(usernameLastSeen).map(username => {
         db.collection('TwitchLogin').findOneAndUpdate(
-          { login: username }, 
+          { _id: username }, 
           { 
             $max: { 
               lastSeen: usernameLastSeen[username] 
