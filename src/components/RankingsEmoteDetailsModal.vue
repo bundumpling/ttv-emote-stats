@@ -28,19 +28,35 @@
         </div>
       </section>
       <section class="modal-card-body mostusedby-wrapper">
-        <div class="mostusedby-header">Top 10 Users</div>
+        <div class="mostusedby-header">
+          <span
+            class="pagePrevious"
+            :class="hasPrevPage ? 'is-clickable' : 'hidden'"
+            @click="hasPrevPage ? prevPage() : null"
+          >
+            <font-awesome-icon icon="chevron-left" />
+          </span>
+          <h2>Top Users</h2>
+          <span
+            class="pageNext"
+            :class="hasNextPage ? 'is-clickable' : 'hidden'"
+            @click="hasNextPage ? nextPage() : null"
+          >
+            <font-awesome-icon icon="chevron-right" />
+          </span>
+        </div>
         <ol class="mostusedby" type="none">
           <li
-            v-for="(user, rank) in mostUsedBy.slice(0, 10)"
+            v-for="(user, rank) in mostUsedBy.slice(page * 10, (page + 1) * 10)"
             :key="user.username"
             :class="
-              rank < 3
+              page === 0 && rank < 3
                 ? ['gold', 'silver', 'bronze'][rank]
                 : ['lightgray', ''][rank % 2]
             "
           >
             <div class="mostusedby-rank-and-username">
-              <span class="mostusedby-rank">{{ rank + 1 }}</span>
+              <span class="mostusedby-rank">{{ page * 10 + rank + 1 }}</span>
               <span class="mostusedby-username">{{ user.username }}</span>
             </div>
             <span class="mostusedby-count">{{ user.count }}</span>
@@ -55,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
@@ -64,6 +80,8 @@ export default defineComponent({
   props: {},
   setup() {
     const store = useStore();
+
+    const page = ref(0);
 
     const details = computed(() => {
       return store.state.emoteDetails;
@@ -84,6 +102,18 @@ export default defineComponent({
         .sort((a, b) => b.count - a.count);
     });
 
+    const hasPrevPage = computed(() => page.value > 0);
+    const hasNextPage = computed(
+      () => (page.value + 1) * 10 < mostUsedBy.value.length
+    );
+
+    function prevPage() {
+      page.value--;
+    }
+    function nextPage() {
+      page.value++;
+    }
+
     function close() {
       store.commit(MutationType.CloseEmoteDetailsModal, undefined);
     }
@@ -92,6 +122,11 @@ export default defineComponent({
       details,
       channelName,
       mostUsedBy,
+      page,
+      hasPrevPage,
+      hasNextPage,
+      prevPage,
+      nextPage,
       close,
     };
   },
@@ -184,10 +219,26 @@ export default defineComponent({
 }
 
 .mostusedby-header {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   text-align: center;
   font-weight: bold;
   font-size: 1.3em;
+  margin: 0 auto;
   margin-bottom: 0.5em;
+
+  h2 {
+    font-weight: bold;
+    font-size: 1.1em;
+    font-variant: small-caps;
+    user-select: none;
+  }
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .gold,
