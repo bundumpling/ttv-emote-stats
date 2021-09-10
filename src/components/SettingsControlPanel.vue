@@ -1,8 +1,6 @@
 <template>
   <div class="options-panel block">
     <button class="button" @click="saveAll()">Save All Emotes</button>
-    <button class="button" @click="randomizeCounts()">Randomize Counts</button>
-    <button class="button" @click="zeroCounts()">Zero Counts</button>
     <div class="file">
       <label class="file-label">
         <input
@@ -21,33 +19,6 @@
         </span>
       </label>
     </div>
-    <div class="file">
-      <label class="file-label">
-        <input
-          id="statefile-input"
-          class="file-input"
-          name="loadState"
-          type="file"
-          @change="loadStateFromFile()"
-        />
-        <span class="file-cta">
-          <span class="file-icon">
-            <font-awesome-icon icon="upload" />
-          </span>
-          <span class="file-label">Load State From File</span>
-        </span>
-      </label>
-    </div>
-    <button class="button" @click="createDownloadableBlobFromState()">
-      Create Blob from State
-    </button>
-    <a
-      class="button"
-      :href="blobURL"
-      :download="blobURLDownloadAs"
-      v-show="blobURLReady"
-      >Download State</a
-    >
   </div>
   <SettingsLogParserModal
     v-if="logParserModalIsActive"
@@ -85,9 +56,6 @@ export default defineComponent({
     const store = useStore();
 
     const logParserModalIsActive = ref(false);
-    const blobURLReady = ref(false);
-    const blobURL = ref("");
-    const blobURLDownloadAs = ref("");
 
     const logParserProgressData: tLogParserProgressData = reactive({
       filenames: [],
@@ -129,14 +97,6 @@ export default defineComponent({
       store.dispatch("saveLogParserResultsToDB");
       resetFileInputElement();
     }
-
-    const randomizeCounts = () => {
-      store.commit(MutationType.RandomizeCounts, undefined);
-    };
-
-    const zeroCounts = () => {
-      store.commit(MutationType.ZeroCounts, undefined);
-    };
 
     async function readLogFile(log: string | ArrayBuffer) {
       const results: ILogParserResults = await logParser(
@@ -272,60 +232,16 @@ export default defineComponent({
       store.commit(MutationType.UpdateEmotes, results);
     }
 
-    function createDownloadableBlobFromState() {
-      const blob = new Blob([JSON.stringify(store.state, null, 2)], {
-        type: "application/json",
-      });
-      const url = window.URL.createObjectURL(blob);
-      blobURL.value = url;
-      blobURLReady.value = true;
-      blobURLDownloadAs.value = `state-${Date.now()}`;
-    }
-
-    async function parseJSONFile(json: string | ArrayBuffer) {
-      return JSON.parse(json as string);
-    }
-
-    function loadStateFromFile() {
-      let fileInput = document.getElementById(
-        "statefile-input"
-      ) as HTMLInputElement;
-      if (fileInput.files) {
-        let file: File = fileInput.files[0];
-        let reader = new FileReader();
-        reader.onerror = (e) => {
-          if (e.target && e.target.error) {
-            console.log(e.target.error.name);
-          }
-        };
-        reader.onload = async (e) => {
-          if (e.target && e.target.result) {
-            let jsonString = e.target.result;
-            const json = await parseJSONFile(jsonString);
-            store.replaceState(json);
-          }
-        };
-        reader.readAsText(file);
-      }
-    }
-
     // In order for the change event to fire, a different file must be uploaded.
     // By setting the input element's value to zero, the same log file can be processed multiple times.
     // document.getElementById("input").value = "";
     return {
-      randomizeCounts,
-      zeroCounts,
       logFileNames,
       saveAll,
       logParserModalIsActive,
       logParserProgressData,
       saveResultsToDB,
       closeModal,
-      createDownloadableBlobFromState,
-      blobURL,
-      blobURLReady,
-      blobURLDownloadAs,
-      loadStateFromFile,
     };
   },
 });

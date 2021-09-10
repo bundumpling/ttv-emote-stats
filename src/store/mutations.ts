@@ -1,5 +1,4 @@
 import { MutationTree } from "vuex";
-import { IEmote, ILogParserResults } from '../types';
 
 export enum MutationType {
   SetChannelNameAndTwitchID = "SET_CHANNEL_NAME_AND_TWITCHID",
@@ -19,8 +18,6 @@ export enum MutationType {
   NextPage = "NEXT_PAGE",
   PrevPage = "PREV_PAGE",
   UpdateEmotes = "UPDATE_EMOTES",
-  RandomizeCounts = "RANDOMIZE_COUNTS",
-  ZeroCounts = "ZERO_COUNTS",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
   SetChannelData = "SET_CHANNEL_DATA",
   UpdateLogParserResults = "UPDATE_LOG_PARSER_RESULTS",
@@ -45,8 +42,6 @@ export type Mutations = {
   [MutationType.NextPage](state: any, emoteListProvider: string): void;
   [MutationType.PrevPage](state: any, emoteListProvider: string): void;
   [MutationType.UpdateEmotes](state: any, emotes: Array<any>): void;
-  [MutationType.RandomizeCounts](state: any): void;
-  [MutationType.ZeroCounts](state: any): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
   [MutationType.SetChannelData](state: any, channelData: any): void;
   [MutationType.UpdateLogParserResults](state: any, results: any): void;
@@ -144,19 +139,6 @@ export const mutations: MutationTree<any> & Mutations = {
         })
       }
     ).then(response => response.status)
-  },
-  [MutationType.RandomizeCounts](state) {
-    state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
-      e.count = Math.floor(Math.random() * 10000)
-      return e;
-    })
-  },
-  [MutationType.ZeroCounts](state) {
-    state.channel.emotes = state.channel.emotes.map((e: IEmote) => {
-      e.count = 0;
-      e.usedBy = {};
-      return e
-    })
   },
   [MutationType.SaveLogParserResults](state, resultsMap) {
     resultsMap.forEach((v: any) => {
