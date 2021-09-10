@@ -53,9 +53,4 @@ const router = createRouter({
   routes
 });
 
-router.resolve({
-  name: 'NotFound',
-  params: { pathMatch: 'NotFound' }
-}).href
-
 export default router;
