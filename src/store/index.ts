@@ -158,7 +158,7 @@ export const store = createStore<State>({
           });
         });
     },
-    fetchChannelData({ commit }, channelName: string) {
+    fetchChannelEmoteCounts({ commit }, channelName: string) {
       const URL = `http://localhost:8081/channel/${channelName}`;
       fetch(URL, {
         method: 'GET',

@@ -30,7 +30,7 @@ export default defineComponent({
     const channelName = route.params.channelName;
 
     onMounted(() => {
-      store.dispatch("fetchChannelData", channelName);
+      store.dispatch("fetchChannelEmoteCounts", channelName);
     });
 
     return {
