@@ -15,8 +15,6 @@ export enum MutationType {
   SetEmoteFetchButtonStatus = "SET_EMOTE_FETCH_BUTTON_STATUS",
   SetProviderAPIResults = "SET_PROVIDER_API_RESULTS",
   SetEmotesPerPage = "SET_EMOTES_PER_PAGE",
-  NextPage = "NEXT_PAGE",
-  PrevPage = "PREV_PAGE",
   UpdateEmotes = "UPDATE_EMOTES",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
   SetChannelData = "SET_CHANNEL_DATA",
@@ -39,8 +37,6 @@ export type Mutations = {
   [MutationType.SetEmoteFetchButtonStatus](state: any, params: { provider: string, status: string }): void;
   [MutationType.SetProviderAPIResults](state: any, params: { provider: string, emotes: Array<any> }): void;
   [MutationType.SetEmotesPerPage](state: any, emotesPerPage: number): void;
-  [MutationType.NextPage](state: any, emoteListProvider: string): void;
-  [MutationType.PrevPage](state: any, emoteListProvider: string): void;
   [MutationType.UpdateEmotes](state: any, emotes: Array<any>): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
   [MutationType.SetChannelData](state: any, channelData: any): void;
@@ -113,12 +109,6 @@ export const mutations: MutationTree<any> & Mutations = {
     for (const emoteListProvider in state.emoteListPageNumbers) {
       state.emoteListPageNumbers[emoteListProvider] = 0;
     }
-  },
-  [MutationType.NextPage](state, emoteListProvider) {
-    state.emoteListPageNumbers[emoteListProvider]++;
-  },
-  [MutationType.PrevPage](state, emoteListProvider) {
-    state.emoteListPageNumbers[emoteListProvider]--;
   },
   [MutationType.UpdateEmotes](state, emotes) {
     state.channel.emotes = emotes;

@@ -3,10 +3,6 @@
     <EmoteList
       v-for="emoteListProvider in filterEmoteLists"
       v-bind:key="emoteListProvider"
-      :pageNumber="getPageNumber(emoteListProvider)"
-      :emotesPerPage="emotesPerPage"
-      :rangeStart="getRangeStart(emoteListProvider)"
-      :rangeEnd="getRangeEnd(emoteListProvider)"
       :emoteListProvider="emoteListProvider"
       :emoteList="
         emoteListProvider === 'Overall'
@@ -53,10 +49,6 @@ export default defineComponent({
       return store.state.rankings.searchInput;
     });
 
-    const emotesPerPage = computed(() => {
-      return store.state.emotesPerPage;
-    });
-
     const countsSorted = computed(() => {
       return store.state.channel.emotes
         .map((emote: IEmote, index: number) => {
@@ -78,30 +70,6 @@ export default defineComponent({
             : emote
         );
     });
-
-    //eslint-disable-next-line
-    const sortByUsed = (usedByObj: any) => {
-      let arr = Array.from(
-        Object.keys(usedByObj).map((key) => [key, usedByObj[key]])
-      );
-      return arr.sort((a, b) => b[1] - a[1]);
-    };
-
-    // const countsSortedThenGroupedByProvider = computed(() => {
-    //   let result = {
-    //     Twitch: [],
-    //     FFZ: [],
-    //     BTTV: [],
-    //     "7TV": [],
-    //   };
-    //   countsSorted.value.forEach((e) => {
-    //     if (!result[e.provider]) {
-    //       result[e.provider] = [];
-    //     }
-    //     result[e.provider].push(e);
-    //   });
-    //   return result;
-    // });
 
     const countsByProviderSorted = computed(() => {
       type tResult = {
@@ -140,35 +108,11 @@ export default defineComponent({
       return result;
     });
 
-    function getPageNumber(emoteListProvider: string) {
-      return store.state.emoteListPageNumbers[emoteListProvider];
-    }
-
-    function getRangeStart(emoteListProvider: string) {
-      return (
-        store.state.emotesPerPage *
-          store.state.emoteListPageNumbers[emoteListProvider] +
-        1
-      );
-    }
-
-    function getRangeEnd(emoteListProvider: string) {
-      return (
-        store.state.emotesPerPage *
-        (store.state.emoteListPageNumbers[emoteListProvider] + 1)
-      );
-    }
-
     return {
       filterEmoteLists,
       searchInputValue,
-      emotesPerPage,
       countsSorted,
-      // countsSortedThenGroupedByProvider,
       countsByProviderSorted,
-      getPageNumber,
-      getRangeStart,
-      getRangeEnd,
       emoteDetailsModalOpen,
     };
   },

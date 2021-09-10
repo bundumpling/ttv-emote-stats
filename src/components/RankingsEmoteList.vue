@@ -2,8 +2,8 @@
   <ul class="emote-list box">
     <div class="header">
       <span
-        class="pagePrevious is-clickable"
-        :class="hasPrevPage ? '' : 'hidden'"
+        class="pagePrevious"
+        :class="hasPrevPage ? 'is-clickable' : 'hidden'"
         @click="hasPrevPage ? prevPage() : null"
         ><font-awesome-icon icon="chevron-left"
       /></span>
@@ -11,8 +11,8 @@
         {{ emoteListProvider }}
       </h2>
       <span
-        class="pageNext is-clickable"
-        :class="hasNextPage ? '' : 'hidden'"
+        class="pageNext"
+        :class="hasNextPage ? 'is-clickable' : 'hidden'"
         @click="hasNextPage ? nextPage() : null"
         ><font-awesome-icon icon="chevron-right"
       /></span>
@@ -35,9 +35,8 @@
 </template>
 
 <script>
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../store";
-import { MutationType } from "../store/mutations";
 
 import EmoteListItem from "./RankingsEmoteListItem.vue";
 
@@ -57,25 +56,26 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const hasPrevPage = computed(
-      () => store.state.emoteListPageNumbers[props.emoteListProvider] > 0
-    );
+
+    const page = ref(0);
+
+    const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(
       () =>
-        props.emoteList.length >
-        store.state.emotesPerPage *
-          (store.state.emoteListPageNumbers[props.emoteListProvider] + 1)
+        props.emoteList.length > store.state.emotesPerPage * (page.value + 1)
     );
     const filteredByRank = computed(() => {
       return props.emoteList.filter(
-        (_, rank) => props.rangeStart <= rank + 1 && rank < props.rangeEnd
+        (_, rank) =>
+          store.state.emotesPerPage * page.value <= rank &&
+          rank < store.state.emotesPerPage * (page.value + 1)
       );
     });
     const prevPage = () => {
-      store.commit(MutationType.PrevPage, props.emoteListProvider);
+      page.value--;
     };
     const nextPage = () => {
-      store.commit(MutationType.NextPage, props.emoteListProvider);
+      page.value++;
     };
 
     function showEmoteDetails({ emote, emoteListProvider }) {
@@ -84,6 +84,7 @@ export default defineComponent({
 
     return {
       filteredByRank,
+      page,
       hasPrevPage,
       hasNextPage,
       prevPage,

@@ -42,13 +42,6 @@ export interface State {
     '7TV': Array<any>
   },
   emoteGroupingMenuShowAll: boolean,
-  emoteListPageNumbers: {
-    "Overall": number,
-    "Twitch": number,
-    "FFZ": number,
-    "BTTV": number,
-    "7TV": number
-  },
   emotesPerPage: number
 }
 
@@ -92,13 +85,6 @@ export const store = createStore<State>({
       '7TV': []
     },
     emoteGroupingMenuShowAll: true,
-    emoteListPageNumbers: {
-      "Overall": 0,
-      "Twitch": 0,
-      "FFZ": 0,
-      "BTTV": 0,
-      "7TV": 0
-    },
     emotesPerPage: 10
   },
   mutations,
