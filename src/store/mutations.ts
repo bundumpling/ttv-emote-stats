@@ -19,7 +19,8 @@ export enum MutationType {
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
   SetChannelData = "SET_CHANNEL_DATA",
   UpdateLogParserResults = "UPDATE_LOG_PARSER_RESULTS",
-  ResetLogParserResults = "RESET_LOG_PARSER_RESULTS"
+  ResetLogParserResults = "RESET_LOG_PARSER_RESULTS",
+  SetChannelEmoteData = "SET_CHANNEL_EMOTE_DATA"
 }
 
 export type Mutations = {
@@ -42,6 +43,7 @@ export type Mutations = {
   [MutationType.SetChannelData](state: any, channelData: any): void;
   [MutationType.UpdateLogParserResults](state: any, results: any): void;
   [MutationType.ResetLogParserResults](state: any): void;
+  [MutationType.SetChannelEmoteData](state: any, results: any): void;
 }
 
 export const mutations: MutationTree<any> & Mutations = {
@@ -188,5 +190,8 @@ export const mutations: MutationTree<any> & Mutations = {
   [MutationType.ResetLogParserResults](state) {
     state.logParserResults = {};
     state.logParserFilenames = [];
+  },
+  [MutationType.SetChannelEmoteData](state, channelEmoteData) {
+    state.settings.channelEmoteData = channelEmoteData;
   }
 }

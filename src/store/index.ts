@@ -15,6 +15,13 @@ export interface State {
       '7TV': boolean
     }
   },
+  settings: {
+    channelEmoteData: {
+      channelID?: string,
+      emotesFromDatabase: object[],
+      emotesFromProviders: object[]
+    }
+  }
   logParserResults: ILogParserResults,
   logParserFilenames: string[],
   rankings: {
@@ -56,6 +63,12 @@ export const store = createStore<State>({
         'FFZ': false,
         'BTTV': false,
         '7TV': false
+      }
+    },
+    settings: {
+      channelEmoteData: {
+        emotesFromDatabase: [],
+        emotesFromProviders: []
       }
     },
     logParserResults: {},
@@ -205,6 +218,14 @@ export const store = createStore<State>({
             fromList: emoteListProvider,
           });
         });
+    },
+    async getChannelEmotesFromDatabaseAndProviders({ state, commit }, channelName) {
+      const URL = `http://localhost:8081/channel/${channelName}/getChannelEmotesFromDatabaseAndProviders`
+      fetch(URL, { method: 'GET' })
+        .then(response => response.json())
+        .then(channelEmoteData => {
+          commit(MutationType.SetChannelEmoteData, channelEmoteData)
+        })
     },
     saveLogParserResultsToDB({ state, commit }) {
       const channelName = state.channel.name;

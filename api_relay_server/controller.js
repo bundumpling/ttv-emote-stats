@@ -345,9 +345,153 @@ const updateCountsFromLog = async (req, res, db) => {
   })
 }
 
+const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
+  const channelName = req.params.channelName;
+  let results = {
+    emotesFromDatabase: [],
+    emotesFromProviders: {
+      'Twitch': [],
+      'FFZ': [],
+      'BTTV': [],
+      '7TV': []
+    }
+  };
+  db.collection('TwitchLogin').findOne(
+    { _id: channelName }, 
+    (err, { _id, twitchID }) => {
+      db.collection('Channel').aggregate(
+        [
+          { $match: { _id: twitchID } },
+          { $lookup: {
+              from: 'Emote',
+              localField: 'emotes',
+              foreignField: '_id',
+              as: 'emotes'
+            }
+          },
+          {
+            $addFields: {
+              "emotes": {
+                $map: {
+                  "input": "$emotes",
+                  "as": "emote",
+                  "in": {
+                    "code": "$$emote.code",
+                    "image": "$$emote.image",
+                    "provider": "$$emote.provider",
+                    "providerID": "$$emote.providerID"
+                  }
+                }
+              }
+            }
+          }
+        ],
+      ).toArray().then(async (result) => {
+        if (result && result[0] && result[0].emotes)
+        results.emotesFromDatabase = result[0].emotes;
+
+      results.emotesFromProviders['Twitch'] = await fetch(`https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${twitchID}`, TWITCH_OPTIONS).then(response => {
+        if (!response.ok) {
+          throw new Error(`Got status code ${response.status} from provider Twitch`);
+        }
+        return response.json();
+      }).then(json => {
+        if (!json.data.length) {
+          throw new Error(`Twitch does not have any emotes for this channel`);
+        }
+        return json.data.map(emote => {
+          return {
+            code: emote.name,
+            image: emote.images.url_1x,
+            provider: 'Twitch',
+            providerID: emote.id,
+          };
+        })
+      }).catch((error) => {
+        console.error(error)
+        return []
+      })
+
+      results.emotesFromProviders['FFZ'] = await fetch(`https://api.frankerfacez.com/v1/room/id/${twitchID}`, { method: 'GET' }).then(response => {
+        if (!response.ok) {
+          throw new Error(`Got status code ${response.status} from provider FFZ`);
+        }
+        return response.json();
+      }).then(json => {
+        if (!json.sets[json.room.set].emoticons.length){
+          throw new Error('FFZ does not have any emotes for this channel');
+        }
+        return json.sets[json.room.set].emoticons.map(emote => {
+          return {
+            code: emote.name,
+            image: emote.urls["1"],
+            provider: 'FFZ',
+            providerID: `${emote.id}`,
+          };
+        });
+      }).catch((error) => {
+        console.error(error)
+        return []
+      })
+
+      results.emotesFromProviders['BTTV'] = await fetch(`https://api.betterttv.net/3/cached/users/twitch/${twitchID}`, { method: 'GET' }).then(response => {
+        if (!response.ok) {
+          throw new Error(`Got status code ${response.status} from provider BTTV`);
+        }
+        return response.json();
+      }).then(json => {
+        let emotes = json.channelEmotes.concat(json.sharedEmotes);
+        if (!emotes.length) {
+          throw new Error('BTTV does not have any emotes for this channel');
+        }
+        return emotes.map(emote => {
+          return {
+            code: emote.code,
+            image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
+            provider: 'BTTV',
+            providerID: emote.id,
+          };
+        });
+      }).catch(error => {
+        console.error(error)
+        return [];
+      })
+
+      results.emotesFromProviders['7TV'] = await fetch(`https://api.7tv.app/v2/users/${channelName}/emotes`, { method: 'GET' }).then(response => {
+        if (!response.ok) {
+          throw new Error(`Got status code ${response.status} from provider 7TV`);
+        }
+        return response.json();
+      }).then(json => {
+        return json.map(emote => {
+          return {
+            code: emote.name,
+            image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
+            provider: '7TV',
+            providerID: emote.id,
+          };
+        })
+      }).catch(error => {
+        console.error(error)
+        return [];
+      })
+
+      res.send({
+        channelID: `${twitchID}`,
+        emotesFromDatabase: results.emotesFromDatabase,
+        emotesFromProviders: Object.keys(results.emotesFromProviders).reduce((result, provider) => {
+          return [...results.emotesFromProviders[provider], ...result]
+        }, [])
+      });
+
+    })
+  })
+}
+
 module.exports = {
   updateChannelEmotes,
   updateCountsFromLog,
   getChannelEmoteCounts,
-  getEmoteUsedByCounts
+  getEmoteUsedByCounts,
+  getChannelEmotesFromDatabaseAndProviders
 }

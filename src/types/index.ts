@@ -21,6 +21,7 @@ export interface IEmote {
   image: string,
   provider: string,
   providerID: string,
+  obsolete?: boolean,
   count?: number,
   usedBy?: {
     [key: string]: number
