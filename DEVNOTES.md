@@ -39,7 +39,6 @@ Rewrite parser to track who used the emote being counted (**done**) and when it 
 ## **Feature**: Search
 Emote usage data by specific users in a channel would ideally have the option to search for a group of names.
   - Use case would be someone that changes their name and wishes to combine the data recorded under multiple aliases.
-  - Might even be worth having a table that relates usernames to Twitch IDs, which remain the same despite name changes.
 
 ## **Feature**: Emote image sourcing
   - Change emote image hover to show larger source image when available.
@@ -55,6 +54,12 @@ Emote usage data by specific users in a channel would ideally have the option to
   - For existing emote codes update with new art or provider (if previous one was removed)
   
 ## ***Current Tasks***
-  - Improve Emote Details modal for the Rankings page.
-  - Create a view showing an specific username's emote usage.
-  - Now that users are tied to their unique TwitchID, display a user's emote usage count as a total of all their known aliases' counts.
+  - Update Settings page to be a protected route using Twitch OAuth credentials.
+  - Used to manage channel emote updates by comparing freshly fetched data from emote provider APIs to what's currently in the database.
+  - If an existing emote is no longer accessible from the provider, option given to flag as obsolete in the database.
+  - If an existing emote has changed (for instance, the emote code now applies to a different emote, possible from a different provider entirely, or was previously flagged as obsolete and is now available again), option given to update in the database.
+  - If a new emote is provided, option given to add it to the database.
+  - If multiple emotes use the same emote code, warn of the conflict and force a choice of one among them to store in the database.
+  - View will have a Condensed and a Detailed view.
+    - Condensed is similar to the current view, where each provider's emotes appear as a grid of image thumbnails. Added will be a summary of pending changes.
+    - Detailed is a table view, with attribute columns and functionality to sort by any attribute.
