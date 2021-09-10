@@ -159,7 +159,7 @@ export const store = createStore<State>({
         });
     },
     fetchChannelEmoteCounts({ commit }, channelName: string) {
-      const URL = `http://localhost:8081/channel/${channelName}`;
+      const URL = `http://localhost:8081/channel/${channelName}/emoteCounts`;
       fetch(URL, {
         method: 'GET',
         headers: {

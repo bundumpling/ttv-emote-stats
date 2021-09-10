@@ -73,7 +73,7 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
   })
 }
 
-const getChannelData = (req, res, db) => {
+const getChannelEmoteCounts = (req, res, db) => {
   db.collection('TwitchLogin').findOne(
     { _id: req.params.channelName }, 
     (err, { _id, twitchID }) => {
@@ -348,6 +348,6 @@ const updateCountsFromLog = async (req, res, db) => {
 module.exports = {
   updateChannelEmotes,
   updateCountsFromLog,
-  getChannelData,
+  getChannelEmoteCounts,
   getEmoteUsedByCounts
 }
