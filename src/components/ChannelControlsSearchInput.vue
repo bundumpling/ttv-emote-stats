@@ -19,11 +19,11 @@ import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
 export default defineComponent({
-  name: "RankingsControlsSearchInput",
+  name: "ChannelControlsSearchInput",
   setup() {
     const store = useStore();
     const search = computed({
-      get: () => store.state.rankings.searchInput,
+      get: () => store.state.channel.searchInput,
       set(value) {
         store.commit(MutationType.SetSearchInput, value);
       },

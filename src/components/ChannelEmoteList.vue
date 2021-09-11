@@ -38,10 +38,10 @@
 import { defineComponent, computed, ref } from "vue";
 import { useStore } from "../store";
 
-import EmoteListItem from "./RankingsEmoteListItem.vue";
+import EmoteListItem from "./ChannelEmoteListItem.vue";
 
 export default defineComponent({
-  name: "RankingsEmoteList",
+  name: "ChannelEmoteList",
   props: {
     emoteListProvider: String,
     emoteList: Array,
@@ -62,13 +62,14 @@ export default defineComponent({
     const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(
       () =>
-        props.emoteList.length > store.state.emotesPerPage * (page.value + 1)
+        props.emoteList.length >
+        store.state.channel.emotesPerPage * (page.value + 1)
     );
     const filteredByRank = computed(() => {
       return props.emoteList.filter(
         (_, rank) =>
-          store.state.emotesPerPage * page.value <= rank &&
-          rank < store.state.emotesPerPage * (page.value + 1)
+          store.state.channel.emotesPerPage * page.value <= rank &&
+          rank < store.state.channel.emotesPerPage * (page.value + 1)
       );
     });
     const prevPage = () => {

@@ -22,12 +22,12 @@ import { defineComponent } from "vue";
 import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 export default defineComponent({
-  name: "RankingsControlsPerPageSelect",
+  name: "ChannelControlsPerPageSelect",
   setup() {
     const store = useStore();
 
     function isSelected(value: number) {
-      return store.state.emotesPerPage === value;
+      return store.state.channel.emotesPerPage === value;
     }
 
     function switchSelect(event: Event) {

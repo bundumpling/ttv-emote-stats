@@ -12,7 +12,7 @@
       <section class="modal-card-body">
         <div class="subheader">
           <span class="rank">#{{ details.rank }}</span> in
-          {{ details.fromList }} Rankings
+          {{ details.fromList }} Channel
         </div>
         <div>
           <p class="subheader-usedinchannel">
@@ -76,7 +76,7 @@ import { useStore } from "../store";
 import { MutationType } from "../store/mutations";
 
 export default defineComponent({
-  name: "RankingsEmoteDetailsModal",
+  name: "ChannelEmoteDetailsModal",
   props: {},
   setup() {
     const store = useStore();
@@ -84,7 +84,7 @@ export default defineComponent({
     const page = ref(0);
 
     const details = computed(() => {
-      return store.state.emoteDetails;
+      return store.state.channel.emoteDetails;
     });
 
     const channelName = computed(() => {
@@ -92,11 +92,11 @@ export default defineComponent({
     });
 
     const mostUsedBy = computed(() => {
-      return Object.keys(store.state.emoteDetails.usedBy)
+      return Object.keys(store.state.channel.emoteDetails.usedBy)
         .map((username) => {
           return {
             username: username.split("-")[0], // format of usernames is <name>-<twitchID>
-            count: store.state.emoteDetails.usedBy[username],
+            count: store.state.channel.emoteDetails.usedBy[username],
           };
         })
         .sort((a, b) => b.count - a.count);

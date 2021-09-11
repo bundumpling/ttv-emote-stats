@@ -1,7 +1,6 @@
 <template>
   <TheSubheader :msg="`Channel Emote Rankings for ${channelName}`" />
   <Controls />
-  <TabsContainer />
   <EmoteListContainer />
 </template>
 
@@ -11,16 +10,14 @@ import { useRoute } from "vue-router";
 import { useStore } from "../store";
 
 import TheSubheader from "../components/TheSubheader.vue";
-import Controls from "../components/RankingsControls.vue";
-import TabsContainer from "../components/RankingsTabContainer.vue";
-import EmoteListContainer from "../components/RankingsEmoteListContainer.vue";
+import Controls from "../components/ChannelControls.vue";
+import EmoteListContainer from "../components/ChannelEmoteListContainer.vue";
 
 export default defineComponent({
   name: "ChannelPage",
   components: {
     TheSubheader,
     Controls,
-    TabsContainer,
     EmoteListContainer,
   },
   setup() {

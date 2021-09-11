@@ -19,7 +19,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "RankingsEmoteListItem",
+  name: "ChannelEmoteListItem",
   props: {
     code: String,
     count: Number,

@@ -20,16 +20,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/HomePage.vue")
   },
   {
-    path: "/Rankings",
-    name: "Rankings",
-    component: () => import("../pages/RankingsPage.vue")
-  },
-  {
-    path: "/Settings",
-    name: "Settings",
-    component: () => import("../pages/SettingsPage.vue")
-  },
-  {
     path: "/channel/:channelName/settings",
     name: "ChannelSettings",
     component: () => import("../pages/SettingsPage.vue"),

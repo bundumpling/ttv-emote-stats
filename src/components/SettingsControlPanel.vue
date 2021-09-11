@@ -38,12 +38,6 @@ import {
   ParserStatus,
   tLogParserProgressData,
 } from "../types";
-import {
-  fromTwitch,
-  fromFFZ,
-  fromBTTV,
-  from7TV,
-} from "../helpers/parseEmotesByProvider";
 import logParser from "../helpers/logParser";
 import SettingsLogParserModal from "./SettingsLogParserModal.vue";
 
@@ -208,28 +202,8 @@ export default defineComponent({
       }
     }
 
-    // eslint-disable-next-line
     function saveAll() {
-      type tProviderToParser = {
-        [key: string]: IEmote[];
-      };
-      const providerToParser: tProviderToParser = {
-        Twitch: fromTwitch(store.state),
-        FFZ: fromFFZ(store.state),
-        BTTV: fromBTTV(store.state),
-        "7TV": from7TV(store.state),
-      };
-
-      let results: IEmote[] = [];
-
-      for (let provider in store.state.providerAPIResults) {
-        if (providerToParser[provider].length) {
-          providerToParser[provider].forEach((emote: IEmote) => {
-            results.push({ ...emote, provider });
-          });
-        }
-      }
-      store.commit(MutationType.UpdateEmotes, results);
+      // TODO
     }
 
     // In order for the change event to fire, a different file must be uploaded.

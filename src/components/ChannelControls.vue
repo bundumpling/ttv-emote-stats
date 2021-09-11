@@ -7,10 +7,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import PerPageSelect from "./RankingsControlsPerPageSelect.vue";
-import SearchInput from "./RankingsControlsSearchInput.vue";
+import PerPageSelect from "./ChannelControlsPerPageSelect.vue";
+import SearchInput from "./ChannelControlsSearchInput.vue";
 export default defineComponent({
-  name: "RankingsListControls",
+  name: "ChannelListControls",
   components: {
     PerPageSelect,
     SearchInput,

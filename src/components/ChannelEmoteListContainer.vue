@@ -19,11 +19,11 @@ import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
 import { IEmote, IEmoteInList } from "../types";
 
-import EmoteList from "./RankingsEmoteList.vue";
-import EmoteDetails from "./RankingsEmoteDetailsModal.vue";
+import EmoteList from "./ChannelEmoteList.vue";
+import EmoteDetails from "./ChannelEmoteDetailsModal.vue";
 
 export default defineComponent({
-  name: "RankingsEmoteListContainer",
+  name: "ChannelEmoteListContainer",
   components: {
     EmoteList,
     EmoteDetails,
@@ -32,21 +32,19 @@ export default defineComponent({
     const store = useStore();
 
     const emoteDetailsModalOpen = computed(() => {
-      return store.state.rankings.emoteDetailsModalOpen;
+      return store.state.channel.emoteDetailsModalOpen;
     });
 
     const filterEmoteLists = computed(() => {
-      return store.state.rankings.activeTab === "Overall"
-        ? ["Overall"].concat(
-            ["Twitch", "FFZ", "BTTV", "7TV"].filter(
-              (provider) => store.state.channel.hasEmotesFrom[provider] === true
-            )
-          )
-        : [store.state.rankings.activeTab];
+      return ["Overall"].concat(
+        ["Twitch", "FFZ", "BTTV", "7TV"].filter(
+          (provider) => store.state.channel.hasEmotesFrom[provider] === true
+        )
+      );
     });
 
     const searchInputValue = computed(() => {
-      return store.state.rankings.searchInput;
+      return store.state.channel.searchInput;
     });
 
     const countsSorted = computed(() => {
