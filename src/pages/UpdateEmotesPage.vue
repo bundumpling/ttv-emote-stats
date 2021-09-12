@@ -49,7 +49,7 @@ import { defineComponent, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "../store";
 import TheSubheader from "../components/TheSubheader.vue";
-import { IEmote } from "@/types";
+import { IEmote, IEmoteForUpdate } from "@/types";
 // import OptionsPanel from "../components/SettingsControlPanel.vue";
 // import APIControlContainer from "../components/SettingsAPIControlContainer.vue";
 
@@ -77,20 +77,21 @@ export default defineComponent({
         store.state.settings.channelEmoteData;
 
       type tResult = {
-        [key: string]: {
-          image: string;
-          provider: string;
-          providerID: string;
-          isNew?: boolean;
-          obsolete?: boolean;
-          isUpdated?: boolean;
-        };
+        [key: string]: IEmoteForUpdate;
       };
       let result: tResult = {};
 
       emotesFromDatabase.forEach((emote: IEmote) => {
         const { code, image, provider, providerID } = emote;
-        result[code] = { image, provider, providerID, obsolete: true }; // flag obsolete until matching provider emote found
+        result[code] = {
+          code,
+          image,
+          provider,
+          providerID,
+          obsolete: true,
+          isNew: false,
+          isUpdated: false,
+        }; // flag obsolete until matching provider emote found
       });
 
       emotesFromProviders.forEach((emote: IEmote) => {
@@ -99,10 +100,13 @@ export default defineComponent({
         if (!result[code]) {
           // NEW EMOTE
           result[code] = {
+            code,
             image,
             provider,
             providerID,
             isNew: true,
+            obsolete: false,
+            isUpdated: false,
           };
         } else {
           let isUpdated = false;
@@ -114,23 +118,27 @@ export default defineComponent({
           ) {
             isUpdated = true;
             result[code] = {
+              code,
               image,
               provider,
               providerID,
               isUpdated,
+              isNew: false,
               obsolete: false,
             };
           } else {
             result[code] = {
               ...result[code],
               isUpdated,
+              isNew: false,
               obsolete: false,
             };
           }
         }
       });
 
-      const quantifyCompare = ({ isNew, obsolete, isUpdated }) => {
+      const quantifyCompare = (emote: IEmoteForUpdate) => {
+        const { isNew, obsolete, isUpdated } = emote;
         let value = 0;
         if (isNew) value += 5;
         if (obsolete) value += 3;
@@ -139,8 +147,8 @@ export default defineComponent({
       };
 
       return Object.keys(result)
-        .map((code) => ({ code, ...result[code] }))
-        .sort((a, b) => {
+        .map((code) => ({ ...result[code] }))
+        .sort((a: IEmoteForUpdate, b: IEmoteForUpdate) => {
           return quantifyCompare(b) - quantifyCompare(a);
         });
     });

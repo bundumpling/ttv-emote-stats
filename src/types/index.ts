@@ -21,12 +21,17 @@ export interface IEmote {
   image: string,
   provider: string,
   providerID: string,
-  obsolete?: boolean,
+  obsolete: boolean,
   count?: number,
   usedBy?: {
     [key: string]: number
   }
   stateIndex?: number
+}
+
+export interface IEmoteForUpdate extends IEmote {
+  isNew?: boolean,
+  isUpdated?: boolean
 }
 
 export interface IEmoteInList extends IEmote {
