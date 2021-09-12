@@ -4,22 +4,40 @@
     <table class="table">
       <thead>
         <tr>
-          <th><abbr title="Image">IMG</abbr></th>
+          <th>IMG</th>
           <th>Code</th>
-          <th><abbr title="Provider">Provider</abbr></th>
+          <th>Provider</th>
           <th>New</th>
-          <th><abbr title="Updated">Updated</abbr></th>
-          <th><abbr title="Obsolete">Obsolete</abbr></th>
+          <th>Obsolete</th>
+          <th>Updated</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="emote in tableData" :key="emote.code">
           <td><img :src="emote.image" /></td>
           <td class="emote-code">{{ emote.code }}</td>
-          <td>{{ emote.provider }}</td>
-          <td>{{ Boolean(emote.isNew) }}</td>
-          <td>{{ Boolean(emote.isUpdated) }}</td>
-          <td>{{ Boolean(emote.obsolete) }}</td>
+          <td class="emote-provider">{{ emote.provider }}</td>
+          <td>
+            <font-awesome-icon
+              v-if="Boolean(emote.isNew)"
+              icon="check"
+              class="checkmark"
+            />
+          </td>
+          <td>
+            <font-awesome-icon
+              v-if="Boolean(emote.obsolete)"
+              icon="check"
+              class="checkmark"
+            />
+          </td>
+          <td>
+            <font-awesome-icon
+              v-if="Boolean(emote.isUpdated)"
+              icon="check"
+              class="checkmark"
+            />
+          </td>
         </tr>
       </tbody>
     </table>
@@ -63,8 +81,8 @@ export default defineComponent({
           image: string;
           provider: string;
           providerID: string;
-          obsolete?: boolean;
           isNew?: boolean;
+          obsolete?: boolean;
           isUpdated?: boolean;
         };
       };
@@ -112,10 +130,19 @@ export default defineComponent({
         }
       });
 
-      return Object.keys(result).map((code) => ({
-        code,
-        ...result[code],
-      }));
+      const quantifyCompare = ({ isNew, obsolete, isUpdated }) => {
+        let value = 0;
+        if (isNew) value += 5;
+        if (obsolete) value += 3;
+        if (isUpdated) value += 1;
+        return value;
+      };
+
+      return Object.keys(result)
+        .map((code) => ({ code, ...result[code] }))
+        .sort((a, b) => {
+          return quantifyCompare(b) - quantifyCompare(a);
+        });
     });
 
     const hasNew = computed(() => tableData.value.find((emote) => emote.isNew));
@@ -148,5 +175,14 @@ tr {
 
 .emote-code {
   font-family: monospace;
+}
+
+.emote-provider {
+  font-weight: bold;
+}
+
+.checkmark {
+  font-size: 1.2em;
+  color: green;
 }
 </style>
