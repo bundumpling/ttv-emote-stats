@@ -1,55 +1,22 @@
 <template>
   <TheSubheader :msg="`Update ${channelName}'s Channel Emotes`" />
-  <div class="container table-wrapper">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>IMG</th>
-          <th>Code</th>
-          <th>Provider</th>
-          <th>New</th>
-          <th>Obsolete</th>
-          <th>Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="emote in tableData" :key="emote.code">
-          <td><img :src="emote.image" /></td>
-          <td class="emote-code">{{ emote.code }}</td>
-          <td class="emote-provider">{{ emote.provider }}</td>
-          <td>
-            <font-awesome-icon
-              v-if="Boolean(emote.isNew)"
-              icon="check"
-              class="checkmark"
-            />
-          </td>
-          <td>
-            <font-awesome-icon
-              v-if="Boolean(emote.obsolete)"
-              icon="check"
-              class="checkmark"
-            />
-          </td>
-          <td>
-            <font-awesome-icon
-              v-if="Boolean(emote.isUpdated)"
-              icon="check"
-              class="checkmark"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="control-wrapper">
+    <span @click="toggleDetailedView">
+      {{ `[ Switch to ${showDetailedView ? "condensed" : "detailed"} view ]` }}
+    </span>
   </div>
+  <DetailedView v-if="showDetailedView" :updatedEmotes="updatedEmotes" />
+  <CondensedView v-if="!showDetailedView" :updatedEmotes="updatedEmotes" />
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed } from "vue";
+import { defineComponent, onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "../store";
-import TheSubheader from "../components/TheSubheader.vue";
 import { IEmote, IEmoteForUpdate } from "@/types";
+import TheSubheader from "../components/TheSubheader.vue";
+import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
+import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
 // import OptionsPanel from "../components/SettingsControlPanel.vue";
 // import APIControlContainer from "../components/SettingsAPIControlContainer.vue";
 
@@ -57,6 +24,8 @@ export default defineComponent({
   name: "UpdateEmotesPage",
   components: {
     TheSubheader,
+    DetailedView,
+    CondensedView,
     // OptionsPanel,
     // APIControlContainer,
   },
@@ -72,7 +41,9 @@ export default defineComponent({
       }
     });
 
-    const tableData = computed(() => {
+    const showDetailedView = ref(false);
+
+    const updatedEmotes = computed(() => {
       const { emotesFromDatabase, emotesFromProviders } =
         store.state.settings.channelEmoteData;
 
@@ -153,44 +124,28 @@ export default defineComponent({
         });
     });
 
-    const hasNew = computed(() => tableData.value.find((emote) => emote.isNew));
-    const hasUpdated = computed(() =>
-      tableData.value.find((emote) => emote.isUpdated)
-    );
-    const hasObsolete = computed(() =>
-      tableData.value.find((emote) => emote.obsolete)
-    );
+    function toggleDetailedView() {
+      showDetailedView.value = !showDetailedView.value;
+    }
 
     return {
       channelName,
-      tableData,
-      hasNew,
-      hasUpdated,
-      hasObsolete,
+      updatedEmotes,
+      showDetailedView,
+      toggleDetailedView,
     };
   },
 });
 </script>
 
 <style>
-.table {
-  margin: 0 auto;
-}
-
-tr {
-  text-align: center;
-}
-
-.emote-code {
-  font-family: monospace;
-}
-
-.emote-provider {
-  font-weight: bold;
-}
-
-.checkmark {
+.control-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
   font-size: 1.2em;
-  color: green;
+  color: blue;
+  cursor: pointer;
+  font-family: monospace;
 }
 </style>
