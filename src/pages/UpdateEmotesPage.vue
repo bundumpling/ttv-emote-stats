@@ -1,5 +1,5 @@
 <template>
-  <TheSubheader :msg="`${channelName}'s Channel Emote Settings`" />
+  <TheSubheader :msg="`Update ${channelName}'s Channel Emotes`" />
   <div class="container table-wrapper">
     <table class="table">
       <thead>
@@ -36,7 +36,7 @@ import { IEmote } from "@/types";
 // import APIControlContainer from "../components/SettingsAPIControlContainer.vue";
 
 export default defineComponent({
-  name: "SettingsPage",
+  name: "UpdateEmotesPage",
   components: {
     TheSubheader,
     // OptionsPanel,

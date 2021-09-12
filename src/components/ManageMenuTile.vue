@@ -1,15 +1,17 @@
 <template>
-  <div
-    class="menu-tile"
-    :class="isHoveredOver ? 'menu-tile-hovered' : ''"
-    :style="`background-image: url('/img/ManageMenuTile/${$props.backgroundPath}')`"
-    v-on:mouseover="mouseOver"
-    v-on:mouseout="mouseOut"
-  >
-    <div class="menu-tile-text">
-      <span>{{ $props.text }}</span>
+  <router-link to="./manage/update-emotes">
+    <div
+      class="menu-tile"
+      :class="isHoveredOver ? 'menu-tile-hovered' : ''"
+      :style="`background-image: url('/img/ManageMenuTile/${$props.backgroundPath}')`"
+      v-on:mouseover="mouseOver"
+      v-on:mouseout="mouseOut"
+    >
+      <div class="menu-tile-text">
+        <span>{{ $props.text }}</span>
+      </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script lang="ts">

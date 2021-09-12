@@ -20,6 +20,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/HomePage.vue")
   },
   {
+    path: "/channel/:channelName/manage/update-emotes",
+    name: "UpdateEmotes",
+    component: () => import("../pages/UpdateEmotesPage.vue"),
+    beforeEnter: beforeEnterRouteWithChannelName
+  },
+  {
     path: "/channel/:channelName/manage",
     name: "ManageChannel",
     component: () => import("../pages/ManagePage.vue"),
