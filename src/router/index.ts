@@ -20,9 +20,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/HomePage.vue")
   },
   {
-    path: "/channel/:channelName/settings",
-    name: "ChannelSettings",
-    component: () => import("../pages/SettingsPage.vue"),
+    path: "/channel/:channelName/manage",
+    name: "ManageChannel",
+    component: () => import("../pages/ManagePage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName
   },
   {
