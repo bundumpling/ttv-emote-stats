@@ -43,7 +43,7 @@ export default defineComponent({
 
     const showDetailedView = ref(false);
 
-    const updatedEmotes = computed(() => {
+    const updatedEmotes = computed((): Array<IEmoteForUpdate> => {
       const { emotesFromDatabase, emotesFromProviders } =
         store.state.settings.channelEmoteData;
 
