@@ -1,5 +1,5 @@
 <template>
-  <li class="emote-list-item" @click="showEmoteDetails()">
+  <li class="emote-list-item" @click="count ? showEmoteDetails() : null">
     <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
