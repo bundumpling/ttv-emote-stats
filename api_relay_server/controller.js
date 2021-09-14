@@ -10,10 +10,14 @@ const TWITCH_OPTIONS = {
   }
 };
 
-const updateChannelEmotes = (db, channelName, channelID, emotes) => {
+const saveUpdatedEmotes = async (req, res, db) => {
+
+  const channelName = req.params.channelName;
+  const channelID = req.body.channelID;
+  const emotes = req.body.updatedEmotes;
 
   return Promise.all(emotes.map(
-    ({ code, provider, providerID, image }) => {
+    ({ code, provider, providerID, image, obsolete }) => {
       const _id = `${channelID}-${code}`;
 
       return db.collection('Emote').findOneAndUpdate({
@@ -25,10 +29,14 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
           code,
           provider,
           providerID,
-          image
+          image,
+          obsolete
         },
         $inc: {
           count: 0
+        },
+        $setOnInsert: { 
+          usedBy: {}
         }
       },
       {
@@ -47,8 +55,8 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
     db.collection('Channel').findOneAndUpdate(
       { _id: channelID },
       {
-        $set: { 
-          emotes: emotes.map(({ code }) => `${channelID}-${code}`),
+        $addToSet: { 
+          emotes: { $each : emotes.map(({ code }) => `${channelID}-${code}`) },
         },
         $setOnInsert: { 
           parsedLogfiles: []
@@ -67,8 +75,9 @@ const updateChannelEmotes = (db, channelName, channelID, emotes) => {
   ).then((err, result) => {
     if (err) {
       console.error(err);
+      res.send({ ok: false, error: err });
     } else {
-      return result;
+      res.send({ ok: true, result });
     }
   })
 }
@@ -379,7 +388,8 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
                     "code": "$$emote.code",
                     "image": "$$emote.image",
                     "provider": "$$emote.provider",
-                    "providerID": "$$emote.providerID"
+                    "providerID": "$$emote.providerID",
+                    "obsolete": "$$emote.obsolete"
                   }
                 }
               }
@@ -478,6 +488,7 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
 
       res.send({
         channelID: `${twitchID}`,
+        channelName,
         emotesFromDatabase: results.emotesFromDatabase,
         emotesFromProviders: Object.keys(results.emotesFromProviders).reduce((result, provider) => {
           return [...results.emotesFromProviders[provider], ...result]
@@ -489,7 +500,7 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
 }
 
 module.exports = {
-  updateChannelEmotes,
+  saveUpdatedEmotes,
   updateCountsFromLog,
   getChannelEmoteCounts,
   getEmoteUsedByCounts,

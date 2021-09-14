@@ -1,6 +1,9 @@
 <template>
   <TheSubheader :msg="`Update ${channelName}'s Channel Emotes`" />
   <div class="control-wrapper">
+    <button @click="saveUpdatedEmotes" :disabled="!hasUpdates">
+      Save Updated Emotes
+    </button>
     <span @click="toggleDetailedView">
       {{ `[ Switch to ${showDetailedView ? "condensed" : "detailed"} view ]` }}
     </span>
@@ -13,7 +16,7 @@
 import { defineComponent, onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "../store";
-import { IEmote, IEmoteForUpdate } from "@/types";
+import { Emote, EmoteForUpdate } from "@/types";
 import TheSubheader from "../components/TheSubheader.vue";
 import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
 import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
@@ -41,32 +44,34 @@ export default defineComponent({
       }
     });
 
+    const hasUpdates = ref(false);
     const showDetailedView = ref(false);
 
-    const updatedEmotes = computed((): Array<IEmoteForUpdate> => {
+    const updatedEmotes = computed((): Array<EmoteForUpdate> => {
       const { emotesFromDatabase, emotesFromProviders } =
         store.state.settings.channelEmoteData;
 
       type tResult = {
-        [key: string]: IEmoteForUpdate;
+        [key: string]: EmoteForUpdate;
       };
       let result: tResult = {};
 
-      emotesFromDatabase.forEach((emote: IEmote) => {
-        const { code, image, provider, providerID } = emote;
+      emotesFromDatabase.forEach((emote: Emote) => {
+        const { code, image, provider, providerID, obsolete } = emote;
         result[code] = {
           code,
           image,
           provider,
           providerID,
-          obsolete: true,
+          obsolete,
+          isUnavailable: true,
           isNew: false,
           isUpdated: false,
         }; // flag obsolete until matching provider emote found
       });
 
-      emotesFromProviders.forEach((emote: IEmote) => {
-        const { code, image, provider, providerID } = emote;
+      emotesFromProviders.forEach((emote: Emote) => {
+        const { code, image, provider, providerID, obsolete } = emote;
 
         if (!result[code]) {
           // NEW EMOTE
@@ -75,51 +80,55 @@ export default defineComponent({
             image,
             provider,
             providerID,
-            isNew: true,
             obsolete: false,
+            isNew: true,
+            isUnavailable: false,
             isUpdated: false,
           };
         } else {
-          let isUpdated = false;
           // Compare...
           if (
             result[code].image !== image ||
             result[code].provider !== provider ||
             result[code].providerID !== providerID
           ) {
-            isUpdated = true;
             result[code] = {
               code,
               image,
               provider,
               providerID,
-              isUpdated,
-              isNew: false,
               obsolete: false,
+              isUpdated: true,
+              isNew: false,
+              isUnavailable: false,
             };
           } else {
             result[code] = {
               ...result[code],
-              isUpdated,
-              isNew: false,
               obsolete: false,
+              isUpdated: false,
+              isUnavailable: false,
+              isNew: false,
             };
           }
         }
       });
 
-      const quantifyCompare = (emote: IEmoteForUpdate) => {
-        const { isNew, obsolete, isUpdated } = emote;
+      const quantifyCompare = (emote: EmoteForUpdate) => {
+        const { isNew, isUnavailable, isUpdated } = emote;
         let value = 0;
         if (isNew) value += 5;
-        if (obsolete) value += 3;
+        if (isUnavailable) value += 3;
         if (isUpdated) value += 1;
+
+        if (value) hasUpdates.value = true;
+
         return value;
       };
 
       return Object.keys(result)
         .map((code) => ({ ...result[code] }))
-        .sort((a: IEmoteForUpdate, b: IEmoteForUpdate) => {
+        .sort((a: EmoteForUpdate, b: EmoteForUpdate) => {
           return quantifyCompare(b) - quantifyCompare(a);
         });
     });
@@ -128,9 +137,20 @@ export default defineComponent({
       showDetailedView.value = !showDetailedView.value;
     }
 
+    function saveUpdatedEmotes() {
+      const emotesWIthChanges = updatedEmotes.value.filter(
+        (emote: EmoteForUpdate) => {
+          return emote.isNew || emote.isUnavailable || emote.isUpdated;
+        }
+      );
+      store.dispatch("saveUpdatedEmotesToDB", emotesWIthChanges);
+    }
+
     return {
       channelName,
       updatedEmotes,
+      hasUpdates,
+      saveUpdatedEmotes,
       showDetailedView,
       toggleDetailedView,
     };
@@ -138,14 +158,17 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss">
 .control-wrapper {
   display: flex;
   justify-content: center;
   align-items: baseline;
   font-size: 1.2em;
   color: blue;
-  cursor: pointer;
   font-family: monospace;
+
+  span {
+    cursor: pointer;
+  }
 }
 </style>

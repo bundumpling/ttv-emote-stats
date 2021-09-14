@@ -6,7 +6,7 @@
         <th>Code</th>
         <th>Provider</th>
         <th>New</th>
-        <th>Obsolete</th>
+        <th>Unavailable</th>
         <th>Updated</th>
       </tr>
     </thead>
@@ -24,7 +24,7 @@
         </td>
         <td>
           <font-awesome-icon
-            v-if="Boolean(emote.obsolete)"
+            v-if="Boolean(emote.isUnavailable)"
             icon="check"
             class="checkmark"
           />
@@ -42,14 +42,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { IEmoteForUpdate } from "../types";
+import { defineComponent, PropType } from "vue";
+import { EmoteForUpdate } from "../types";
 
 export default defineComponent({
   name: "ManageUpdateEmotesDetailedView",
   props: {
     updatedEmotes: {
-      type: Array,
+      type: Array as PropType<EmoteForUpdate[]>,
       required: true,
     },
   },

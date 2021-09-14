@@ -1,13 +1,13 @@
 // import { InjectionKey } from "@vue/runtime-core";
 import { createStore, Store as VuexStore, CommitOptions } from "vuex";
 import { Mutations, mutations, MutationType } from "./mutations";
-import { IEmote, ILogParserResults } from "../types"
+import { Emote, ILogParserResults } from "../types"
 
 export interface State {
   channel: {
     name: string,
     twitchID: string,
-    emotes: Array<IEmote>,
+    emotes: Array<Emote>,
     hasEmotesFrom: {
       'Twitch': boolean,
       'FFZ': boolean,
@@ -22,6 +22,7 @@ export interface State {
   settings: {
     channelEmoteData: {
       channelID?: string,
+      channelName?: string,
       emotesFromDatabase: object[],
       emotesFromProviders: object[]
     },
@@ -114,6 +115,31 @@ export const store = createStore<State>({
         .then(channelEmoteData => {
           commit(MutationType.SetChannelEmoteData, channelEmoteData)
         })
+    },
+    saveUpdatedEmotesToDB({ state, commit }, updatedEmotes) {
+      const { channelName, channelID } = state.settings.channelEmoteData;
+      const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
+
+      fetch(
+        URL,
+        {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            channelID,
+            updatedEmotes
+          })
+        }
+      ).then(response => response.json()
+      ).then(json => {
+        // post save redirect?
+        if (json.ok) {
+          console.log(json);
+        }
+      })
     },
     saveLogParserResultsToDB({ state, commit }) {
       const channelName = state.channel.name;

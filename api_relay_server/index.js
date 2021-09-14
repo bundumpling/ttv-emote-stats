@@ -1,16 +1,22 @@
 require('dotenv').config();
 const express = require("express");
-const fetch = require("node-fetch");
+const cors = require("cors");
 const app = express();
-const port = 8081;
+app.use(cors({
+  origin: 'http://localhost:8080',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
 
+const fetch = require("node-fetch");
+
+const port = 8081;
 
 const { MongoClient } = require('mongodb');
 const url = 'mongodb://localhost:27017';
 
 const dbName = 'TTVEmoteStats';
 
-const { updateChannelEmotes, updateCountsFromLog, getChannelEmoteCounts, getEmoteUsedByCounts, getChannelEmotesFromDatabaseAndProviders } = require("./controller");
+const { saveUpdatedEmotes, updateCountsFromLog, getChannelEmoteCounts, getEmoteUsedByCounts, getChannelEmotesFromDatabaseAndProviders } = require("./controller");
 
 let db = null;
 
@@ -146,21 +152,6 @@ app.get("/channel/:channelName/emoteCounts", (req, res) => getChannelEmoteCounts
 
 app.get("/channel/:channelName/getChannelEmotesFromDatabaseAndProviders", (req, res) => getChannelEmotesFromDatabaseAndProviders(req, res, db))
 
-app.post("/channel/:channelName/update", express.json(), (req, res) => {
-  const channelName = req.params.channelName;
-  const channelID = req.body.channelID;
-  const emotes = req.body.emotes;
-
-  updateChannelEmotes(db, channelName, channelID, emotes).then((error, result) => {
-    if (error) {
-      console.error(error);
-      res.send({ ok: false })
-    } else {
-      res.send({ ok: true })
-    }
-  });
-})
-
 app.get("/emote/:emoteID/usedBy", (req, res) => getEmoteUsedByCounts(req, res, db))
 
 app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
@@ -172,6 +163,8 @@ app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
     })
   })
 })
+
+app.post("/channel/:channelName/saveUpdatedEmotes", express.json({ limit: '10MB' }), (req, res) => saveUpdatedEmotes(req, res, db))
 
 app.post("/channel/:channelName/updateCountsFromLog", express.json({ limit: '10MB' }), (req, res) => updateCountsFromLog(req, res, db));
 
