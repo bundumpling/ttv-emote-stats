@@ -16,7 +16,7 @@ export interface ILogParserEmoteCounts {
   }
 }
 
-export interface IEmote {
+export type Emote = {
   code: string,
   image: string,
   provider: string,
@@ -29,12 +29,13 @@ export interface IEmote {
   stateIndex?: number
 }
 
-export interface IEmoteForUpdate extends IEmote {
+export type EmoteForUpdate = Emote & {
   isNew?: boolean,
+  isUnavailable?: boolean,
   isUpdated?: boolean
 }
 
-export interface IEmoteInList extends IEmote {
+export type EmoteInList = Emote & {
   rank: number
 }
 

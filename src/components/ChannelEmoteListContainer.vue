@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useStore } from "../store";
-import { IEmote, IEmoteInList } from "../types";
+import { Emote, EmoteInList } from "../types";
 
 import EmoteList from "./ChannelEmoteList.vue";
 import EmoteDetails from "./ChannelEmoteDetailsModal.vue";
@@ -49,18 +49,18 @@ export default defineComponent({
 
     const countsSorted = computed(() => {
       return store.state.channel.emotes
-        .map((emote: IEmote, index: number) => {
+        .map((emote: Emote, index: number) => {
           return { ...emote, stateIndex: index };
         })
-        .sort((a: IEmote, b: IEmote) => (b.count || 0) - (a.count || 0))
-        .map((emote: IEmote, rank: number) => {
+        .sort((a: Emote, b: Emote) => (b.count || 0) - (a.count || 0))
+        .map((emote: Emote, rank: number) => {
           return {
             ...emote,
             rank: rank + 1,
             // usedBySorted: sortByUsed(emote.usedBy),
           };
         })
-        .filter((emote: IEmoteInList) =>
+        .filter((emote: EmoteInList) =>
           searchInputValue.value.length
             ? emote.code
                 .toLowerCase()
@@ -71,15 +71,15 @@ export default defineComponent({
 
     const countsByProviderSorted = computed(() => {
       type tResult = {
-        [key: string]: IEmoteInList[];
+        [key: string]: EmoteInList[];
       };
       let emotesWithStateIndex = store.state.channel.emotes.map(
-        (emote: IEmote, index: number) => ({ stateIndex: index, ...emote })
+        (emote: Emote, index: number) => ({ stateIndex: index, ...emote })
       );
       let sortedByProvider = emotesWithStateIndex
-        .sort((a: IEmote, b: IEmote) => (b.count || 0) - (a.count || 0))
+        .sort((a: Emote, b: Emote) => (b.count || 0) - (a.count || 0))
         .reduce(
-          (acc: tResult, emote: IEmote) => {
+          (acc: tResult, emote: Emote) => {
             acc[emote.provider].push({
               ...emote,
               rank: acc[emote.provider].length + 1,
@@ -95,7 +95,7 @@ export default defineComponent({
         );
       let result: tResult = {};
       Object.keys(sortedByProvider).forEach((provider) => {
-        result[provider] = sortedByProvider[provider].filter((emote: IEmote) =>
+        result[provider] = sortedByProvider[provider].filter((emote: Emote) =>
           searchInputValue.value.length
             ? emote.code
                 .toLowerCase()
