@@ -26,6 +26,12 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: beforeEnterRouteWithChannelName
   },
   {
+    path: "/channel/:channelName/manage/parse-logs",
+    name: "ParseLogs",
+    component: () => (import("../pages/ParseLogsPage.vue")),
+    beforeEnter: beforeEnterRouteWithChannelName
+  },
+  {
     path: "/channel/:channelName/manage",
     name: "ManageChannel",
     component: () => import("../pages/ManagePage.vue"),
