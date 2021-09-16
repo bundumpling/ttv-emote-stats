@@ -6,6 +6,7 @@
       v-bind:key="`${index}-${tile.text}`"
       :text="tile.text"
       :backgroundPath="tile.background"
+      :linkPath="tile.link"
     />
   </div>
 </template>
@@ -13,7 +14,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "../store";
 import TheSubheader from "../components/TheSubheader.vue";
 import ManageMenuTile from "../components/ManageMenuTile.vue";
 
@@ -31,10 +31,12 @@ export default defineComponent({
       {
         text: "Update Emotes",
         background: "UpdateEmotes-background-284x224.png",
+        link: "./update-emotes",
       },
       {
         text: "Parse Logs",
         background: "ParseLogs-background-284x224.png",
+        link: "./parse-logs",
       },
     ];
 

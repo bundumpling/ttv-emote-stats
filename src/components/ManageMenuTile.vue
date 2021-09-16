@@ -1,5 +1,5 @@
 <template>
-  <router-link to="./manage/update-emotes">
+  <router-link :to="$props.linkPath">
     <div
       class="menu-tile"
       :class="isHoveredOver ? 'menu-tile-hovered' : ''"
@@ -21,8 +21,9 @@ export default defineComponent({
   name: "ManageMenuTile",
   components: {},
   props: {
-    backgroundPath: String,
     text: String,
+    backgroundPath: String,
+    linkPath: String,
   },
   setup() {
     const isHoveredOver = ref(false);
