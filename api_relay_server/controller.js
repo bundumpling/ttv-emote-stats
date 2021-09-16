@@ -11,18 +11,15 @@ const TWITCH_OPTIONS = {
 };
 
 const saveUpdatedEmotes = async (req, res, db) => {
-
   const channelName = req.params.channelName;
   const channelID = req.body.channelID;
-  const emotes = req.body.updatedEmotes;
+  const emotes = req.body.emotes;
 
-  return Promise.all(emotes.map(
-    ({ code, provider, providerID, image, obsolete }) => {
-      const _id = `${channelID}-${code}`;
+  return Promise.all(emotes.map(({ code, provider, providerID, image, obsolete }) => {
+    const _id = `${channelID}-${code}`;
 
-      return db.collection('Emote').findOneAndUpdate({
-        _id
-      },
+    return db.collection('Emote').findOneAndUpdate(
+      { _id },
       {
         $set: {
           channelID,
@@ -81,6 +78,7 @@ const saveUpdatedEmotes = async (req, res, db) => {
     }
   })
 }
+
 
 const getChannelEmoteCounts = (req, res, db) => {
   db.collection('TwitchLogin').findOne(
@@ -174,6 +172,22 @@ const getEmoteUsedByCounts = async (req, res, db) => {
       res.json(usedBy);
     }
   })
+}
+
+const getChannelEmoteCodes = async (req, res, db) => {
+  db.collection('TwitchLogin')
+    .findOne({ _id: req.params.channelName })
+    .then(({ _id, twitchID }) => 
+      db.collection('Channel')
+        .findOne({ _id: twitchID })
+        .then(({ emotes }) => {
+          const emoteCodes = emotes.map((emote) => emote.replace(/^\d+\-/, ''))
+          res.json({
+            channelID: twitchID,
+            emoteCodes
+          })
+        })
+      )
 }
 
 const updateCountsFromLog = async (req, res, db) => {
@@ -502,6 +516,7 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
 module.exports = {
   saveUpdatedEmotes,
   updateCountsFromLog,
+  getChannelEmoteCodes,
   getChannelEmoteCounts,
   getEmoteUsedByCounts,
   getChannelEmotesFromDatabaseAndProviders
