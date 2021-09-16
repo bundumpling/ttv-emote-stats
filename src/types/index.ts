@@ -7,8 +7,6 @@ export interface ILogParserResults {
 
 export interface ILogParserEmoteCounts {
   [key: string]: {
-    provider: string,
-    providerID: string,
     count: number,
     usedBy: {
       [key: string]: number
