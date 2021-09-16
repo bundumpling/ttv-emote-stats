@@ -29,8 +29,6 @@ export default defineComponent({
     TheSubheader,
     DetailedView,
     CondensedView,
-    // OptionsPanel,
-    // APIControlContainer,
   },
   setup() {
     const route = useRoute();
@@ -39,7 +37,10 @@ export default defineComponent({
 
     onMounted(() => {
       // reduce unnecessary backend api calls
-      if (!store.state.settings.channelEmoteData.emotesFromProviders.length) {
+      if (
+        !store.state.settings.channelEmoteData.emotesFromProviders.length ||
+        store.state.settings.channelEmoteData.channelName !== channelName
+      ) {
         store.dispatch("getChannelEmotesFromDatabaseAndProviders", channelName);
       }
     });
@@ -138,12 +139,14 @@ export default defineComponent({
     }
 
     function saveUpdatedEmotes() {
-      const emotesWIthChanges = updatedEmotes.value.filter(
-        (emote: EmoteForUpdate) => {
-          return emote.isNew || emote.isUnavailable || emote.isUpdated;
-        }
-      );
-      store.dispatch("saveUpdatedEmotesToDB", emotesWIthChanges);
+      const emotes = updatedEmotes.value.filter((emote: EmoteForUpdate) => {
+        return emote.isNew || emote.isUnavailable || emote.isUpdated;
+      });
+      store.dispatch("saveUpdatedEmotesToDB", {
+        channelName,
+        channelID: store.state.settings.channelEmoteData.channelID,
+        emotes,
+      });
     }
 
     return {
