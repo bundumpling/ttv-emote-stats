@@ -16,7 +16,7 @@ const url = 'mongodb://localhost:27017';
 
 const dbName = 'TTVEmoteStats';
 
-const { saveUpdatedEmotes, updateCountsFromLog, getChannelEmoteCounts, getEmoteUsedByCounts, getChannelEmotesFromDatabaseAndProviders } = require("./controller");
+const { saveUpdatedEmotes, updateCountsFromLog, getChannelEmoteCounts, getChannelEmoteCodes, getEmoteUsedByCounts, getChannelEmotesFromDatabaseAndProviders } = require("./controller");
 
 let db = null;
 
@@ -149,6 +149,8 @@ app.get("/7tv/emotes", (req, res) => {
 })
 
 app.get("/channel/:channelName/emoteCounts", (req, res) => getChannelEmoteCounts(req, res, db))
+
+app.get("/channel/:channelName/emoteCodes", (req, res) => getChannelEmoteCodes(req, res, db));
 
 app.get("/channel/:channelName/getChannelEmotesFromDatabaseAndProviders", (req, res) => getChannelEmotesFromDatabaseAndProviders(req, res, db))
 
