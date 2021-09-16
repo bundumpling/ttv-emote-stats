@@ -42,7 +42,7 @@
 import { defineComponent, computed, onUpdated } from "vue";
 import { ParserStatus } from "../types";
 export default defineComponent({
-  name: "SettingsLogParserModal",
+  name: "ParseLogsModal",
   props: {
     saveResultsToDB: {
       type: Function,

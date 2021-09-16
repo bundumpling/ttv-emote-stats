@@ -21,10 +21,11 @@ export interface State {
   },
   settings: {
     channelEmoteData: {
-      channelID?: string,
-      channelName?: string,
+      channelID: string,
+      channelName: string,
       emotesFromDatabase: object[],
-      emotesFromProviders: object[]
+      emotesFromProviders: object[],
+      emoteCodes: string[]
     },
     logParserResults: ILogParserResults,
     logParserFilenames: string[],
@@ -50,8 +51,11 @@ export const store = createStore<State>({
     },
     settings: {
       channelEmoteData: {
+        channelName: '',
+        channelID: '',
         emotesFromDatabase: [],
-        emotesFromProviders: []
+        emotesFromProviders: [],
+        emoteCodes: []
       },
       logParserResults: {},
       logParserFilenames: [],
@@ -91,9 +95,25 @@ export const store = createStore<State>({
         })
 
     },
+    getChannelEmoteCodes({ state, commit }, channelName) {
+      const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
+      fetch(URL, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then(({ channelID, emoteCodes }) => {
+          commit(MutationType.SetChannelEmoteData, {
+            channelID,
+            channelName,
+            emoteCodes
+          });
+        })
+    },
     fetchEmoteUsedBy({ state, commit }, { emote, emoteListProvider }) {
       const URL = `http://localhost:8081/emote/${emote._id}/usedBy`;
-      console.log(URL)
       fetch(URL, {
         method: 'GET',
         headers: {
@@ -102,7 +122,7 @@ export const store = createStore<State>({
       })
         .then(res => res.json())
         .then(usedBy => {
-          store.commit(MutationType.OpenEmoteDetailsModal, {
+          commit(MutationType.OpenEmoteDetailsModal, {
             emote: { usedBy, ...emote },
             fromList: emoteListProvider,
           });
@@ -116,8 +136,8 @@ export const store = createStore<State>({
           commit(MutationType.SetChannelEmoteData, channelEmoteData)
         })
     },
-    saveUpdatedEmotesToDB({ state, commit }, updatedEmotes) {
-      const { channelName, channelID } = state.settings.channelEmoteData;
+    saveUpdatedEmotesToDB({ state, commit }, { channelName, channelID, emotes }) {
+
       const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
 
       fetch(
@@ -130,7 +150,7 @@ export const store = createStore<State>({
           },
           body: JSON.stringify({
             channelID,
-            updatedEmotes
+            emotes
           })
         }
       ).then(response => response.json()

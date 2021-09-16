@@ -1,19 +1,17 @@
-import { IEmote, ILogParserEmoteCounts } from "../types";
-async function buildResultsObjectFromEmoteArray(emotes: IEmote[]): Promise<ILogParserEmoteCounts> {
+import { ILogParserEmoteCounts } from "../types";
+async function buildResultsObjectFromEmoteArray(emotes: string[]): Promise<ILogParserEmoteCounts> {
   const emoteCounts = <ILogParserEmoteCounts>{}
-  emotes.forEach((emote: IEmote) => {
-    emoteCounts[emote.code] = {
-      provider: emote.provider,
-      providerID: emote.providerID,
+  emotes.forEach((emote: string) => {
+    emoteCounts[emote] = {
       count: 0,
       usedBy: {}
     }
   })
   return emoteCounts;
 }
-export default async function logParser(log: string, emotes: IEmote[]) {
+export default async function logParser(log: string, emotes: string[]) {
   const emoteCounts: ILogParserEmoteCounts = await buildResultsObjectFromEmoteArray(emotes);
-  const codes = new Set(emotes.map(emote => emote.code));
+  const emoteSet = new Set(emotes);
 
   interface IUsernameLastSeen {
     [key: string]: number;
@@ -64,7 +62,7 @@ export default async function logParser(log: string, emotes: IEmote[]) {
 
   const parseMessage = (timestamp: number, username: string, message: string) => {
     message.split(" ").forEach(word => {
-      if (codes.has(word)) {
+      if (emoteSet.has(word)) {
         setUsernameLastSeen(username, timestamp);
         emoteCounts[word].count++;
         if (emoteCounts[word].usedBy[username] === undefined) {
