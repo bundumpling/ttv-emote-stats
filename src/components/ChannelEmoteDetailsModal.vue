@@ -7,12 +7,14 @@
           <img :src="details.image" />
         </div>
         <p class="modal-card-title ml-3">Details for {{ details.code }}</p>
-        <button class="delete" aria-label="close" @click="close()"></button>
+        <span class="close" aria-label="close" @click="close()"
+          ><font-awesome-icon icon="window-close"
+        /></span>
       </header>
       <section class="modal-card-body">
         <div class="subheader">
           <span class="rank">#{{ details.rank }}</span> in
-          {{ details.fromList }} Channel
+          {{ details.fromList }} Emotes
         </div>
         <div>
           <p class="subheader-usedinchannel">
@@ -63,9 +65,7 @@
           </li>
         </ol>
       </section>
-      <footer class="modal-card-foot">
-        <button class="button" @click="close()">Close</button>
-      </footer>
+      <footer class="modal-card-foot"></footer>
     </div>
   </div>
 </template>
@@ -134,6 +134,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.close {
+  font-size: 2em;
+  color: maroon;
+  cursor: pointer;
+}
+
 .subheader {
   text-align: center;
   font-size: 1.3em;
