@@ -277,14 +277,16 @@ const updateCountsFromLog = async (req, res, db) => {
 
   async function addNewTwitchLoginDocuments(userdata) {
     return new Promise((async (resolve) => {
-      db.collection('TwitchLogin').insertMany(userdata, (err) => {
-        if (err) {
-          console.log(`Error adding new documents to TwitchLogin collection: ${err}`);
-        } else {
-          console.log(`Successfully added ${userdata.length} new documents to the TwitchLogin collection.`);
-        }
-        resolve();
-      })
+      userdata.forEach(
+        ({ _id, twitchID }) => db.collection('TwitchLogin').updateOne({ _id }, { $set: { twitchID } }, { upsert: true }, (err) => {
+          if (err) {
+            console.log(`Error adding new documents to TwitchLogin collection: ${err}`);
+          } else {
+            console.log(`Successfully added ${_id} (${twitchID}) to the TwitchLogin collection.`);
+          }
+        })
+      )
+      resolve();
     }))
   }
 
@@ -322,8 +324,14 @@ const updateCountsFromLog = async (req, res, db) => {
     Promise.all(Object.keys(emoteCounts).map(code => {
       const _id = `${twitchID}-${code}`;
       db.collection('Emote').findOne({ _id }, (err, emote) => {
-        if (err) res.send(err);
+        if (err) {
+          res.send(err);
+        }
 
+        if (!emote || !emote.usedBy) {
+          console.log(_id + 'not found')
+        }
+        
         const usedBy = emote.usedBy || {};
         Object.keys(emoteCounts[code].usedBy).map(username => {
           const userID = usernameTwitchIDDictionary.has(username)

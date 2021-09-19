@@ -162,7 +162,7 @@ export const store = createStore<State>({
       })
     },
     saveLogParserResultsToDB({ state, commit }) {
-      const channelName = state.channel.name;
+      const channelName = state.settings.channelEmoteData.channelName;
       const logFilenames = state.settings.logParserFilenames;
       const logParserResults = state.settings.logParserResults;
 
@@ -183,8 +183,7 @@ export const store = createStore<State>({
         }
       ).then(response => response.json()
       ).then(json => {
-
-        commit(MutationType.ResetLogParserResults);
+        // Need to do anything here?
       });
     }
   }

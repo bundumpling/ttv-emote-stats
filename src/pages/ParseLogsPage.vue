@@ -20,6 +20,7 @@
 import { defineComponent, onMounted } from "vue";
 import { useStore } from "../store";
 import { useRoute } from "vue-router";
+import { MutationType } from "../store/mutations";
 import TheSubheader from "../components/TheSubheader.vue";
 import ParseLogContainer from "../components/ManageParseLogContainer.vue";
 
@@ -42,6 +43,7 @@ export default defineComponent({
         !store.state.settings.channelEmoteData.emotesFromProviders.length ||
         store.state.settings.channelEmoteData.channelName !== channelName
       ) {
+        store.commit(MutationType.ResetLogParserResults, undefined);
         store.dispatch("getChannelEmoteCodes", channelName);
       }
     });

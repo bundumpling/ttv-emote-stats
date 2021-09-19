@@ -207,7 +207,9 @@ export default defineComponent({
                   progressData.unparsedList.length ===
                 progressData.uploadedList.length
               ) {
-                progressData.status = ParserStatus.DONE;
+                store.dispatch("saveLogParserResultsToDB").then(() => {
+                  progressData.status = ParserStatus.DONE;
+                });
               }
             }
           };
