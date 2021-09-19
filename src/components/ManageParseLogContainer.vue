@@ -2,18 +2,20 @@
   <div class="container box">
     <section class="main">
       <div class="input-side">
-        <Filelist header="Uploaded" :list="uploadedList" />
+        <Filelist header="Uploaded" :list="progressData.uploadedList" />
       </div>
       <div class="middle">
         <UploadButton
+          v-if="!uploadButtonDisabled"
           :disabled="uploadButtonDisabled"
           :handleUpload="handleLogFilesUpload"
         />
+        <Status v-else :status="progressData.status" :reset="reset" />
         <Statistics :stats="stats" />
       </div>
       <div class="output-side">
-        <Filelist header="Parsed" :list="parsedList" />
-        <Filelist header="Skipped/Error" :list="unparsedList" />
+        <Filelist header="Parsed" :list="progressData.parsedList" />
+        <Filelist header="Skipped/Error" :list="progressData.unparsedList" />
       </div>
     </section>
     <footer>
@@ -35,6 +37,7 @@ import {
 import logParser from "../helpers/logParser";
 import Filelist from "./ManageParseLogFilelist.vue";
 import UploadButton from "./ManageParseLogUploadButton.vue";
+import Status from "./ManageParseLogStatus.vue";
 import Statistics from "./ManageParseLogStatistics.vue";
 import ProgressBar from "./ManageParseLogProgressBar.vue";
 export default defineComponent({
@@ -42,6 +45,7 @@ export default defineComponent({
   components: {
     Filelist,
     UploadButton,
+    Status,
     Statistics,
     ProgressBar,
   },
@@ -56,12 +60,6 @@ export default defineComponent({
       parsedList: [],
       unparsedList: [],
       status: ParserStatus.IDLE,
-      reset: function () {
-        (this.uploadedList = []),
-          (this.parsedList = []),
-          (this.unparsedList = []),
-          (this.status = ParserStatus.IDLE);
-      },
     });
 
     const stats = reactive({
@@ -220,12 +218,21 @@ export default defineComponent({
       }
     }
 
+    function reset() {
+      progressData.uploadedList = [];
+      progressData.parsedList = [];
+      progressData.unparsedList = [];
+      progressData.status = ParserStatus.IDLE;
+      store.commit(MutationType.ResetLogParserResults, undefined);
+    }
+
     return {
       uploadButtonDisabled,
       stats,
       progress,
       handleLogFilesUpload,
-      ...progressData,
+      progressData,
+      reset,
     };
   },
 });

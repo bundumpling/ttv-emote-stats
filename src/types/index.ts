@@ -134,5 +134,4 @@ export type LogParserProgressData = {
   parsedList: string[];
   unparsedList: string[];
   status: ParserStatus;
-  reset: () => void;
 };
