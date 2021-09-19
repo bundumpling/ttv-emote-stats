@@ -100,7 +100,7 @@ export const mutations: MutationTree<any> & Mutations = {
     state.channel = channelData;
   },
   [MutationType.UpdateLogParserResults](state, { logFilename, logParserResult }) {
-    if (!Object.keys(state.logParserResults).length) {
+    if (!Object.keys(state.settings.logParserResults).length) {
       state.settings.logParserResults = logParserResult;
     } else {
       const { usernameLastSeen, emoteCounts } = logParserResult;

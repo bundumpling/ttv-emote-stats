@@ -3,54 +3,31 @@
     <TheSubheader
       :msg="`Parse Emote Usage from Chat Logs for ${channelName}'s Channel`"
     />
-    <div class="options-panel block">
-      <div class="file">
-        <label class="file-label">
-          <input
-            id="logfile-input"
-            class="file-input"
-            name="logs"
-            type="file"
-            multiple
-            @change="logFileNames()"
-          />
-          <span class="file-cta">
-            <span class="file-icon">
-              <font-awesome-icon icon="upload" />
-            </span>
-            <span class="file-label">Upload Logfile(s)</span>
-          </span>
-        </label>
-      </div>
-    </div>
-    <ParseLogsModal
-      v-if="logParserModalIsActive"
-      :progressData="logParserProgressData"
-      :saveResultsToDB="saveResultsToDB"
-      :closeModal="closeModal"
-    />
+    <section class="info">
+      <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: 
+        <ul>
+          <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
+          <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
+          <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
+        </ul>
+      </p>
+    </section>
+    <ParseLogContainer />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, reactive } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { useStore } from "../store";
 import { useRoute } from "vue-router";
-import { MutationType } from "../store/mutations";
-import {
-  ILogParserResults,
-  ParserStatus,
-  tLogParserProgressData,
-} from "../types";
-import logParser from "../helpers/logParser";
 import TheSubheader from "../components/TheSubheader.vue";
-import ParseLogsModal from "../components/ParseLogsModal.vue";
+import ParseLogContainer from "../components/ManageParseLogContainer.vue";
 
 export default defineComponent({
   name: "ParseLogsPage",
   components: {
     TheSubheader,
-    ParseLogsModal,
+    ParseLogContainer,
   },
   setup() {
     const store = useStore();
@@ -60,6 +37,8 @@ export default defineComponent({
     onMounted(() => {
       // reduce unnecessary backend api calls
       if (
+        !store.state.settings.channelEmoteData ||
+        !store.state.settings.channelEmoteData.emotesFromProviders ||
         !store.state.settings.channelEmoteData.emotesFromProviders.length ||
         store.state.settings.channelEmoteData.channelName !== channelName
       ) {
@@ -67,185 +46,44 @@ export default defineComponent({
       }
     });
 
-    const logParserModalIsActive = ref(false);
+    // function resetFileInputElement() {
+    //   const inputElement = document.getElementById(
+    //     "logfile-input"
+    //   ) as HTMLInputElement;
+    //   if (inputElement) {
+    //     inputElement.value = "";
+    //   }
+    // }
+    // function saveResultsToDB(): void {
+    //   store.dispatch("saveLogParserResultsToDB");
+    //   resetFileInputElement();
+    // }
 
-    const logParserProgressData: tLogParserProgressData = reactive({
-      filenames: [],
-      parsedFilenames: [],
-      skippedFilenames: [],
-      consoleMessages: [],
-      activeIndex: null,
-      numParsed: 0,
-      status: ParserStatus.IDLE,
-      errors: [],
-      reset: function () {
-        (this.filenames = []),
-          (this.activeIndex = null),
-          (this.parsedFilenames = []),
-          (this.skippedFilenames = []),
-          (this.consoleMessages = []),
-          (this.numParsed = 0),
-          (this.status = ParserStatus.IDLE),
-          (this.errors = []);
-      },
-    });
-
-    function resetFileInputElement() {
-      const inputElement = document.getElementById(
-        "logfile-input"
-      ) as HTMLInputElement;
-      if (inputElement) {
-        inputElement.value = "";
-      }
-    }
-
-    function closeModal(): void {
-      logParserModalIsActive.value = false;
-      logParserProgressData.reset();
-      resetFileInputElement();
-    }
-
-    function saveResultsToDB(): void {
-      store.dispatch("saveLogParserResultsToDB");
-      resetFileInputElement();
-    }
-
-    async function readLogFile(log: string | ArrayBuffer) {
-      const results: ILogParserResults = await logParser(
-        log as string,
-        store.state.settings.channelEmoteData.emoteCodes
-      );
-      return results;
-    }
-
-    async function fetchListOfParsedLogFilenames() {
-      return fetch(
-        `http://localhost:8081/channel/${channelName}/listofParsedLogFilesnames`,
-        { method: "GET" }
-      ).then((res) => res.json());
-    }
-
-    async function logFileNames() {
-      logParserProgressData.status = ParserStatus.LOADING;
-      logParserModalIsActive.value = true;
-      let fileInput = document.getElementById(
-        "logfile-input"
-      ) as HTMLInputElement;
-      if (fileInput.files) {
-        const alreadyParsed = (await fetchListOfParsedLogFilenames()) || [];
-        const files: FileList = fileInput.files;
-        logParserProgressData.consoleMessages.push({
-          status: "info",
-          text: `Received ${files.length} files to process.`,
-        });
-
-        let unparsedFiles: File[] = [];
-        for (let i = 0; i < files.length; i++) {
-          const filename = files[i].name;
-          if (alreadyParsed.includes(filename)) {
-            logParserProgressData.consoleMessages.push({
-              status: "warn",
-              text: `${filename} already recorded as parsed in database... skipping.`,
-            });
-            logParserProgressData.skippedFilenames.push(filename);
-          } else {
-            unparsedFiles.push(files[i]);
-            logParserProgressData.consoleMessages.push({
-              status: "info",
-              text: `${filename} added to parsing queue.`,
-            });
-          }
-        }
-
-        logParserProgressData.filenames.length = unparsedFiles.length;
-
-        if (!unparsedFiles.length) {
-          logParserProgressData.consoleMessages.push({
-            status: "warn",
-            text: "All of the logfiles added have already been parsed according to the database... exiting.",
-          });
-          logParserProgressData.status = ParserStatus.DONE;
-        }
-
-        for (let i = 0; i < unparsedFiles.length; i++) {
-          let reader = new FileReader();
-          reader.onerror = (e) => {
-            if (e.target && e.target.error) {
-              const errorMessage = `${e.target.error.name} reading ${unparsedFiles[i].name}... skipping.`;
-              logParserProgressData.consoleMessages.push({
-                status: "warn",
-                text: errorMessage,
-              });
-              logParserProgressData.numParsed++;
-            }
-          };
-          reader.onload = async (e) => {
-            if (e.target && e.target.result) {
-              let text = e.target.result;
-              logParserProgressData.activeIndex = i;
-              logParserProgressData.status = ParserStatus.PARSING;
-              const filename = unparsedFiles[i].name;
-              const logParserResult = await readLogFile(text);
-              store.commit(MutationType.UpdateLogParserResults, {
-                logFilename: filename,
-                logParserResult,
-              });
-              logParserProgressData.consoleMessages.push({
-                status: "success",
-                text: `${filename} parsed successfully.`,
-              });
-              logParserProgressData.parsedFilenames.push(filename);
-              logParserProgressData.numParsed++;
-              if (
-                logParserProgressData.numParsed ===
-                logParserProgressData.filenames.length
-              ) {
-                logParserProgressData.consoleMessages.push({
-                  status: "success",
-                  text: "Done parsing log files.",
-                });
-                logParserProgressData.status = ParserStatus.DONE;
-              }
-            }
-          };
-          logParserProgressData.filenames[i] = unparsedFiles[i].name;
-          reader.readAsText(unparsedFiles[i]);
-        }
-      } else {
-        logParserProgressData.consoleMessages.push({
-          status: "warn",
-          text: "No log files received to parse.",
-        });
-        logParserProgressData.status = ParserStatus.DONE;
-      }
-    }
-
-    function saveAll() {
-      // TODO
-    }
+    // function saveAll() {
+    //   // TODO
+    // }
 
     // In order for the change event to fire, a different file must be uploaded.
     // By setting the input element's value to zero, the same log file can be processed multiple times.
     // document.getElementById("input").value = "";
     return {
       channelName,
-      logFileNames,
-      saveAll,
-      logParserModalIsActive,
-      logParserProgressData,
-      saveResultsToDB,
-      closeModal,
+      // saveAll,
+      // saveResultsToDB,
     };
   },
 });
 </script>
 
-<style lang="scss">
-.options-panel {
+<style lang="scss" scoped>
+.info {
+  width: 80%;
   margin: 1em auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
+
+  ul {
+    list-style-type: circle;
+    list-style-position: inside;
+    margin-left: 1em;
+  }
 }
 </style>

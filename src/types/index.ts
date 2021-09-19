@@ -129,14 +129,10 @@ export enum ParserStatus {
   DONE = "DONE",
 }
 
-export type tLogParserProgressData = {
-  filenames: string[];
-  parsedFilenames: string[];
-  skippedFilenames: string[];
-  consoleMessages: object[];
-  activeIndex: number | null;
-  numParsed: number;
+export type LogParserProgressData = {
+  uploadedList: string[];
+  parsedList: string[];
+  unparsedList: string[];
   status: ParserStatus;
-  errors: string[];
   reset: () => void;
 };
