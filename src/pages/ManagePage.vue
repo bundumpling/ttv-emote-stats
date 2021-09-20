@@ -31,12 +31,12 @@ export default defineComponent({
       {
         text: "Update Emotes",
         background: "UpdateEmotes-background-284x224.png",
-        link: "./update-emotes",
+        link: "manage/update-emotes",
       },
       {
         text: "Parse Logs",
         background: "ParseLogs-background-284x224.png",
-        link: "./parse-logs",
+        link: "manage/parse-logs",
       },
     ];
 
