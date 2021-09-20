@@ -49,7 +49,7 @@ export const mutations: MutationTree<any> & Mutations = {
   },
   [MutationType.OpenEmoteDetailsModal](state, { emote, fromList }) {
     state.channel.emotes[emote.stateIndex].usedBy = emote.usedBy;
-    state.channel.emoteDetails = { fromList, ...emote };
+    state.channel.emoteDetails = { fromList, rank: emote.rank, stateIndex: emote.stateIndex };
     state.channel.emoteDetailsModalOpen = true;
   },
   [MutationType.CloseEmoteDetailsModal](state) {

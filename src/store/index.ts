@@ -113,20 +113,27 @@ export const store = createStore<State>({
         })
     },
     fetchEmoteUsedBy({ state, commit }, { emote, emoteListProvider }) {
-      const URL = `http://localhost:8081/emote/${emote._id}/usedBy`;
-      fetch(URL, {
-        method: 'GET',
-        headers: {
-          'content-type': 'application/json'
-        }
-      })
-        .then(res => res.json())
-        .then(usedBy => {
-          commit(MutationType.OpenEmoteDetailsModal, {
-            emote: { usedBy, ...emote },
-            fromList: emoteListProvider,
+      if (state.channel.emotes[emote.stateIndex].usedBy !== undefined) {
+        commit(MutationType.OpenEmoteDetailsModal, {
+          emote,
+          fromList: emoteListProvider
+        })
+      } else {
+        const URL = `http://localhost:8081/emote/${emote._id}/usedBy`;
+        fetch(URL, {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json'
+          }
+        })
+          .then(res => res.json())
+          .then(usedBy => {
+            commit(MutationType.OpenEmoteDetailsModal, {
+              emote: { usedBy, ...emote },
+              fromList: emoteListProvider,
+            });
           });
-        });
+        }
     },
     async getChannelEmotesFromDatabaseAndProviders({ state, commit }, channelName) {
       const URL = `http://localhost:8081/channel/${channelName}/getChannelEmotesFromDatabaseAndProviders`

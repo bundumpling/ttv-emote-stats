@@ -4,21 +4,21 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <div class="image is-32x32">
-          <img :src="details.image" />
+          <img :src="image" />
         </div>
-        <p class="modal-card-title ml-3">Details for {{ details.code }}</p>
+        <p class="modal-card-title ml-3">Details for {{ code }}</p>
         <span class="close" aria-label="close" @click="close()"
           ><font-awesome-icon icon="window-close"
         /></span>
       </header>
       <section class="modal-card-body">
         <div class="subheader">
-          <span class="rank">#{{ details.rank }}</span> in
-          {{ details.fromList }} Emotes
+          <span class="rank">#{{ rank }}</span> in
+          {{ fromList }} Emotes
         </div>
         <div>
           <p class="subheader-usedinchannel">
-            Used <span class="count">{{ details.count }}</span> times in
+            Used <span class="count">{{ count }}</span> times in
             <span class="channel">{{ channelName }}</span
             >'s channel.
           </p>
@@ -83,6 +83,13 @@ export default defineComponent({
 
     const page = ref(0);
 
+    const stateIndex = computed(() => store.state.channel.emoteDetails.stateIndex)
+    const code = computed(() => store.state.channel.emotes[stateIndex.value].code)
+    const image = computed(() => store.state.channel.emotes[stateIndex.value].image)
+    const count = computed(() => store.state.channel.emotes[stateIndex.value].count)
+    const rank = computed(() => store.state.channel.emoteDetails.rank)
+    const fromList = computed(() => store.state.channel.emoteDetails.fromList)
+
     const details = computed(() => {
       return store.state.channel.emoteDetails;
     });
@@ -92,11 +99,11 @@ export default defineComponent({
     });
 
     const mostUsedBy = computed(() => {
-      return Object.keys(store.state.channel.emoteDetails.usedBy)
+      return Object.keys(store.state.channel.emotes[stateIndex.value].usedBy)
         .map((username) => {
           return {
             username: username.split("-")[0], // format of usernames is <name>-<twitchID>
-            count: store.state.channel.emoteDetails.usedBy[username],
+            count: store.state.channel.emotes[stateIndex.value].usedBy[username],
           };
         })
         .sort((a, b) => b.count - a.count);
@@ -119,7 +126,11 @@ export default defineComponent({
     }
 
     return {
-      details,
+      code,
+      image,
+      count,
+      rank,
+      fromList,
       channelName,
       mostUsedBy,
       page,
