@@ -17,7 +17,7 @@ export interface State {
     emoteDetails: any,
     emoteDetailsModalOpen: boolean,
     emotesPerPage: number,
-    searchInput: string
+    emoteSearchInput: string
   },
   settings: {
     channelEmoteData: {
@@ -47,7 +47,7 @@ export const store = createStore<State>({
       emoteDetailsModalOpen: false,
       emoteDetails: {},
       emotesPerPage: 10,
-      searchInput: ''
+      emoteSearchInput: ''
     },
     settings: {
       channelEmoteData: {
