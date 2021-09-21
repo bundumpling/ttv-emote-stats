@@ -23,7 +23,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const search = computed({
-      get: () => store.state.channel.searchInput,
+      get: () => store.state.channel.emoteSearchInput,
       set(value) {
         store.commit(MutationType.SetEmoteSearchInput, value);
       },
