@@ -43,8 +43,8 @@ export default defineComponent({
       );
     });
 
-    const searchInputValue = computed(() => {
-      return store.state.channel.searchInput;
+    const emoteSearchInput = computed(() => {
+      return store.state.channel.emoteSearchInput;
     });
 
     const countsSorted = computed(() => {
@@ -61,10 +61,10 @@ export default defineComponent({
           };
         })
         .filter((emote: EmoteInList) =>
-          searchInputValue.value.length
+          emoteSearchInput.value.length
             ? emote.code
                 .toLowerCase()
-                .includes(searchInputValue.value.toLowerCase())
+                .includes(emoteSearchInput.value.toLowerCase())
             : emote
         );
     });
@@ -96,10 +96,10 @@ export default defineComponent({
       let result: tResult = {};
       Object.keys(sortedByProvider).forEach((provider) => {
         result[provider] = sortedByProvider[provider].filter((emote: Emote) =>
-          searchInputValue.value.length
+          emoteSearchInput.value.length
             ? emote.code
                 .toLowerCase()
-                .includes(searchInputValue.value.toLowerCase())
+                .includes(emoteSearchInput.value.toLowerCase())
             : emote
         );
       });
@@ -108,7 +108,7 @@ export default defineComponent({
 
     return {
       filterEmoteLists,
-      searchInputValue,
+      emoteSearchInput,
       countsSorted,
       countsByProviderSorted,
       emoteDetailsModalOpen,

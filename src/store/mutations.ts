@@ -2,10 +2,10 @@ import { MutationTree } from "vuex";
 
 export enum MutationType {
   SetChannelNameAndTwitchID = "SET_CHANNEL_NAME_AND_TWITCHID",
-  ResetSearchInput = "RESET_SEARCH_INPUT",
   OpenEmoteDetailsModal = "OPEN_EMOTE_DETAILS_MODAL",
   CloseEmoteDetailsModal = "CLOSE_EMOTE_DETAILS_MODAL",
-  SetSearchInput = "SET_SEARCH_INPUT",
+  SetEmoteSearchInput = "SET_EMOTE_SEARCH_INPUT",
+  ResetEmoteSearchInput = "RESET_EMOTE_SEARCH_INPUT",
   SetEmotesPerPage = "SET_EMOTES_PER_PAGE",
   UpdateEmotes = "UPDATE_EMOTES",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
@@ -17,10 +17,10 @@ export enum MutationType {
 
 export type Mutations = {
   [MutationType.SetChannelNameAndTwitchID](state: any, params: { name: string, twitchID: string }): void;
-  [MutationType.ResetSearchInput](state: any): void;
+  [MutationType.ResetEmoteSearchInput](state: any): void;
   [MutationType.OpenEmoteDetailsModal](state: any, emote: any): void;
   [MutationType.CloseEmoteDetailsModal](state: any): void;
-  [MutationType.SetSearchInput](state: any, value: string): void;
+  [MutationType.SetEmoteSearchInput](state: any, value: string): void;
   [MutationType.SetEmotesPerPage](state: any, emotesPerPage: number): void;
   [MutationType.UpdateEmotes](state: any, emotes: Array<any>): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
@@ -44,8 +44,8 @@ export const mutations: MutationTree<any> & Mutations = {
       }
     }
   },
-  [MutationType.ResetSearchInput](state) {
-    state.channel.searchInput = '';
+  [MutationType.ResetEmoteSearchInput](state) {
+    state.channel.emoteSearchInput = '';
   },
   [MutationType.OpenEmoteDetailsModal](state, { emote, fromList }) {
     state.channel.emotes[emote.stateIndex].usedBy = emote.usedBy;
@@ -55,8 +55,8 @@ export const mutations: MutationTree<any> & Mutations = {
   [MutationType.CloseEmoteDetailsModal](state) {
     state.channel.emoteDetailsModalOpen = false;
   },
-  [MutationType.SetSearchInput](state, value) {
-    state.channel.searchInput = value;
+  [MutationType.SetEmoteSearchInput](state, value) {
+    state.channel.emoteSearchInput = value;
   },
   [MutationType.SetEmotesPerPage](state, emotesPerPage: number) {
     state.channel.emotesPerPage = Number(emotesPerPage);

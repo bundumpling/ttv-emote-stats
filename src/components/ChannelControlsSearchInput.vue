@@ -1,6 +1,6 @@
 <template>
   <div class="search-input-wrapper">
-    <label>Search: </label>
+    <label>Search Emotes: </label>
     <input
       name="search"
       v-model="search"
@@ -25,7 +25,7 @@ export default defineComponent({
     const search = computed({
       get: () => store.state.channel.searchInput,
       set(value) {
-        store.commit(MutationType.SetSearchInput, value);
+        store.commit(MutationType.SetEmoteSearchInput, value);
       },
     });
 
