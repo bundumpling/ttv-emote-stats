@@ -116,7 +116,7 @@ export const store = createStore<State>({
           });
         })
     },
-    fetchEmoteUsageDetails({ state, commit }, { emote, emoteListProvider }) {
+    fetchEmoteUsageDetailsForChannelPage({ state, commit }, { emote, emoteListProvider }) {
       if (state.channel.emotes[emote.stateIndex].usedBy !== undefined && state.channel.emotes[emote.stateIndex].usedOn !== undefined) {
         commit(MutationType.OpenEmoteDetailsModal, {
           emote,
