@@ -132,6 +132,7 @@ export default defineComponent({
       get: () => store.state.channel.userSearchInput,
       set(value) {
         store.commit(MutationType.SetUserSearchInput, value);
+        page.value = 0;
       },
     });
 
@@ -159,7 +160,7 @@ export default defineComponent({
 
     const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(
-      () => (page.value + 1) * 10 < mostUsedBy.value.length
+      () => (page.value + 1) * 10 < (userSearchInput.value.length ? mostUsedByFiltered.value.length : mostUsedBy.value.length)
     );
 
     function prevPage() {
