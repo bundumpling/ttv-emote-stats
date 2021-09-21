@@ -10,6 +10,9 @@ export interface ILogParserEmoteCounts {
     count: number,
     usedBy: {
       [key: string]: number
+    },
+    usedOn: {
+      [key: number]: number
     }
   }
 }
@@ -23,6 +26,9 @@ export type Emote = {
   count?: number,
   usedBy?: {
     [key: string]: number
+  },
+  usedOn?: {
+    [key: number]: number
   }
   stateIndex?: number
 }

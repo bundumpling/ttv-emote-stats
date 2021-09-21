@@ -121,12 +121,17 @@ export const mutations: MutationTree<any> & Mutations = {
     if (!Object.keys(state.settings.logParserResults).length) {
       state.settings.logParserResults = logParserResult;
     } else {
-      const { usernameLastSeen, emoteCounts } = logParserResult;
+      const { logDate, usernameLastSeen, emoteCounts } = logParserResult;
       Object.keys(emoteCounts).forEach((key) => {
         const value = emoteCounts[key];
         if (value.count && value.usedBy) {
           if (state.settings.logParserResults.emoteCounts[key]) {
             state.settings.logParserResults.emoteCounts[key].count += value.count;
+            if (state.settings.logParserResults.emoteCounts[key].usedOn[logDate]) {
+              state.settings.logParserResults.emoteCounts[key].usedOn[logDate] += value.count;
+            } else {
+              state.settings.logParserResults.emoteCounts[key].usedOn[logDate] = value.count;
+            }
             Object.keys(value.usedBy).forEach(username => {
               if (value.usedBy) {
                 if (state.settings.logParserResults.emoteCounts[key].usedBy[username]) {
@@ -137,6 +142,7 @@ export const mutations: MutationTree<any> & Mutations = {
               }
             })
           } else {
+            value.usedOn[logDate] = value.count;
             state.settings.logParserResults.emoteCounts[key] = value;
           }
         }

@@ -4,7 +4,8 @@ async function buildResultsObjectFromEmoteArray(emotes: string[]): Promise<ILogP
   emotes.forEach((emote: string) => {
     emoteCounts[emote] = {
       count: 0,
-      usedBy: {}
+      usedBy: {},
+      usedOn: {}
     }
   })
   return emoteCounts;
@@ -20,23 +21,24 @@ export default async function logParser(log: string, emotes: string[]) {
 
   let cursor = log.indexOf('\n') + 1; // get to the first line;
 
-  const startingTime = (() => {
+  const [logDate, startingTime] = (() => {
     // First line of the log needs to be in the format:
     // # Start logging at 2020-12-10 11:28:54 Eastern Standard Time
 
     const firstLogLine = log.slice(0, cursor);
     const match = firstLogLine.match(/^#.+(\d{4})-(\d{2})-(\d{2}).+\n$/);
     if (match) {
+      const logDate = Number(match.slice(1).join(""));
       const [year, month, day] = match.slice(1).map(Number);
-      const logDate = new Date(year, month - 1, day);
-      return logDate.getTime();
+      const startingTime = new Date(year, month - 1, day).getTime();
+      return [logDate, startingTime];
     } else {
-      return null;
+      return [null, null];
     }
   })();
 
-  if (!startingTime) {
-    console.log("error reading log start time!")
+  if (!logDate || !startingTime) {
+    console.log("error reading log date or start time!")
   }
 
   let startOfCurrentLine = cursor;
@@ -99,6 +101,7 @@ export default async function logParser(log: string, emotes: string[]) {
   }
 
   return {
+    logDate,
     usernameLastSeen,
     emoteCounts
   };
