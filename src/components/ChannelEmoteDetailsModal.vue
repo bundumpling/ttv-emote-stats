@@ -64,7 +64,10 @@
             <font-awesome-icon icon="chevron-right" />
           </span>
         </div>
-        <ol class="mostusedby" type="none">
+        <div v-if="userSearchInput.length && !mostUsedByFiltered.length" class="mostusedby-noresults">
+          No Results
+        </div>
+        <ol v-else class="mostusedby" type="none">
           <li
             v-for="(user) in (userSearchInput.length ? mostUsedByFiltered : mostUsedBy).slice(page * 10, (page + 1) * 10)"
             :key="user.username"
@@ -267,6 +270,14 @@ export default defineComponent({
   text-align: center;
   font-size: 1.1em;
   font-weight: bold;
+  font-variant: small-caps;
+}
+
+.mostusedby-noresults {
+  min-height: 238px;
+  text-align: center;
+  color: maroon;
+  font-size: 1.5em;
   font-variant: small-caps;
 }
 
