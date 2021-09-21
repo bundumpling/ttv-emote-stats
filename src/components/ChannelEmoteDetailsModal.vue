@@ -27,6 +27,9 @@
             <span class="username">{{ mostUsedBy[0].username }}</span> a total
             of <span class="count">{{ mostUsedBy[0].count }}</span> times!
           </p>
+          <p class="subheader-mostusedon">
+            Most used on <span class="date">{{ mostUsedOn.date }}</span> a total of <span class="count">{{ mostUsedOn.count }}</span> times!
+          </p>
         </div>
       </section>
       <section class="modal-card-body mostusedby-wrapper">
@@ -34,8 +37,8 @@
           <font-awesome-icon class="search-input-lock" :icon="searchInputLocked ? 'lock' : 'lock-open'" @click="toggleSearchInputLock" />
           <label>Search Users: </label>
           <input
-            name="search"
-            v-model="search"
+            name="userSearch"
+            v-model="userSearch"
             class="input"
             type="text"
             aria-label="search input"
@@ -108,7 +111,24 @@ export default defineComponent({
       return store.state.channel.name;
     });
 
-    const search = computed({
+    const mostUsedOn = computed(() => {
+      let result = { date: '', count: 0 };
+      for (const dateKey in store.state.channel.emotes[stateIndex.value].usedOn) {
+        const count = store.state.channel.emotes[stateIndex.value].usedOn[dateKey]
+        if (count > result.count) {
+          const year = Number(String(dateKey).slice(0, 4));
+          const month = Number(String(dateKey).slice(4, 6)) - 1;
+          const day = Number(String(dateKey).slice(7));
+          const date = new Date(year, month, day);
+          const dateString = date.toDateString();
+
+          result = { date: dateString, count }
+        }
+      }
+      return result;
+    })
+
+    const userSearch = computed({
       get: () => store.state.channel.userSearchInput,
       set(value) {
         store.commit(MutationType.SetUserSearchInput, value);
@@ -168,9 +188,10 @@ export default defineComponent({
       rank,
       fromList,
       channelName,
-      search,
+      userSearch,
       userSearchInput,
       searchInputLocked,
+      mostUsedOn,
       mostUsedBy,
       mostUsedByFiltered,
       page,
@@ -221,16 +242,23 @@ export default defineComponent({
   }
 }
 
-.subheader-mostusedby {
+.subheader-mostusedby,
+.subheader-mostusedon {
   text-align: center;
   font-size: 1.1em;
 
-  .username,
+  .username, 
   .count {
     font-size: 1.2em;
     font-family: monospace;
     color: black;
     font-weight: bold;
+  }
+
+  .date {
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
   }
 }
 

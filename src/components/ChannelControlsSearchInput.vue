@@ -2,11 +2,11 @@
   <div class="search-input-wrapper">
     <label>Search Emotes: </label>
     <input
-      name="search"
-      v-model="search"
+      name="emoteSearch"
+      v-model="emoteSearch"
       class="input"
       type="text"
-      aria-label="search input"
+      aria-label="emote search input"
       autocomplete="off"
       @keydown.space.prevent
     />
@@ -22,7 +22,7 @@ export default defineComponent({
   name: "ChannelControlsSearchInput",
   setup() {
     const store = useStore();
-    const search = computed({
+    const emoteSearch = computed({
       get: () => store.state.channel.emoteSearchInput,
       set(value) {
         store.commit(MutationType.SetEmoteSearchInput, value);
@@ -30,7 +30,7 @@ export default defineComponent({
     });
 
     return {
-      search,
+      emoteSearch,
     };
   },
 });
