@@ -44,6 +44,7 @@ export default defineComponent({
 
   label {
     padding-right: 0.5em;
+    white-space: nowrap;
   }
 }
 </style>
