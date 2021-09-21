@@ -128,7 +128,7 @@ const getChannelEmoteCounts = (req, res, db) => {
   );
 };
 
-const getEmoteUsedByCounts = async (req, res, db) => {
+const getEmoteUsageDetails = async (req, res, db) => {
   const emoteID = req.params.emoteID;
   db.collection("Emote").findOne({ _id: emoteID }, async (err, emote) => {
     if (err) res.send(err);
@@ -185,7 +185,7 @@ const getEmoteUsedByCounts = async (req, res, db) => {
           usedBy[userID] = combinedCount.count;
         }
       }
-      res.json(usedBy);
+      res.json({ usedBy, usedOn: emote.usedOn });
     }
   });
 };
@@ -652,6 +652,6 @@ module.exports = {
   updateCountsFromLog,
   getChannelEmoteCodes,
   getChannelEmoteCounts,
-  getEmoteUsedByCounts,
+  getEmoteUsageDetails,
   getChannelEmotesFromDatabaseAndProviders,
 };

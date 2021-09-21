@@ -80,7 +80,7 @@ export default defineComponent({
     };
 
     function showEmoteDetails({ emote, emoteListProvider }) {
-      store.dispatch("fetchEmoteUsedBy", { emote, emoteListProvider });
+      store.dispatch("fetchEmoteUsageDetails", { emote, emoteListProvider });
     }
 
     return {

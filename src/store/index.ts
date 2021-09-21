@@ -116,14 +116,14 @@ export const store = createStore<State>({
           });
         })
     },
-    fetchEmoteUsedBy({ state, commit }, { emote, emoteListProvider }) {
-      if (state.channel.emotes[emote.stateIndex].usedBy !== undefined) {
+    fetchEmoteUsageDetails({ state, commit }, { emote, emoteListProvider }) {
+      if (state.channel.emotes[emote.stateIndex].usedBy !== undefined && state.channel.emotes[emote.stateIndex].usedOn !== undefined) {
         commit(MutationType.OpenEmoteDetailsModal, {
           emote,
           fromList: emoteListProvider
         })
       } else {
-        const URL = `http://localhost:8081/emote/${emote._id}/usedBy`;
+        const URL = `http://localhost:8081/emote/${emote._id}/usageDetails`;
         fetch(URL, {
           method: 'GET',
           headers: {
@@ -131,9 +131,9 @@ export const store = createStore<State>({
           }
         })
           .then(res => res.json())
-          .then(usedBy => {
+          .then(({ usedBy, usedOn }) => {
             commit(MutationType.OpenEmoteDetailsModal, {
-              emote: { usedBy, ...emote },
+              emote: { usedBy, usedOn, ...emote },
               fromList: emoteListProvider,
             });
           });
