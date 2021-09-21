@@ -30,6 +30,20 @@
         </div>
       </section>
       <section class="modal-card-body mostusedby-wrapper">
+        <div class="search-input-wrapper">
+          <font-awesome-icon class="search-input-lock" :icon="searchInputLocked ? 'lock' : 'lock-open'" @click="toggleSearchInputLock" />
+          <label>Search Users: </label>
+          <input
+            name="search"
+            v-model="search"
+            class="input"
+            type="text"
+            aria-label="search input"
+            autocomplete="off"
+            @keydown.space.prevent
+          />
+          <span class="search-input-reset" @click="resetSearchInput">Ｘ</span>
+        </div>
         <div class="mostusedby-header">
           <span
             class="pagePrevious"
@@ -49,23 +63,23 @@
         </div>
         <ol class="mostusedby" type="none">
           <li
-            v-for="(user, rank) in mostUsedBy.slice(page * 10, (page + 1) * 10)"
+            v-for="(user) in (userSearchInput.length ? mostUsedByFiltered : mostUsedBy).slice(page * 10, (page + 1) * 10)"
             :key="user.username"
             :class="
-              page === 0 && rank < 3
-                ? ['gold', 'silver', 'bronze'][rank]
-                : ['lightgray', ''][rank % 2]
+              page === 0 && user.rank < 3
+                ? ['gold', 'silver', 'bronze'][user.rank]
+                : ['lightgray', ''][user.rank % 2]
             "
           >
             <div class="mostusedby-rank-and-username">
-              <span class="mostusedby-rank">{{ page * 10 + rank + 1 }}</span>
+              <span class="mostusedby-rank">{{ page * 10 + user.rank + 1 }}</span>
               <span class="mostusedby-username">{{ user.username }}</span>
             </div>
             <span class="mostusedby-count">{{ user.count }}</span>
           </li>
         </ol>
       </section>
-      <footer class="modal-card-foot"></footer>
+      <footer class="modal-card-foot" />
     </div>
   </div>
 </template>
@@ -90,13 +104,20 @@ export default defineComponent({
     const rank = computed(() => store.state.channel.emoteDetails.rank)
     const fromList = computed(() => store.state.channel.emoteDetails.fromList)
 
-    const details = computed(() => {
-      return store.state.channel.emoteDetails;
-    });
-
     const channelName = computed(() => {
       return store.state.channel.name;
     });
+
+    const search = computed({
+      get: () => store.state.channel.userSearchInput,
+      set(value) {
+        store.commit(MutationType.SetUserSearchInput, value);
+      },
+    });
+
+    const userSearchInput = computed(() => store.state.channel.userSearchInput)
+
+    const searchInputLocked = computed(() => store.state.channel.userSearchLock)
 
     const mostUsedBy = computed(() => {
       return Object.keys(store.state.channel.emotes[stateIndex.value].usedBy)
@@ -106,8 +127,15 @@ export default defineComponent({
             count: store.state.channel.emotes[stateIndex.value].usedBy[username],
           };
         })
-        .sort((a, b) => b.count - a.count);
+        .sort((a, b) => b.count - a.count)
+        .map((user, rank) => ({ rank, ...user }));
     });
+
+    const mostUsedByFiltered = computed(() => {
+      return mostUsedBy.value.filter(({ username }) => {
+        return username.includes(userSearchInput.value);
+      })
+    })
 
     const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(
@@ -121,6 +149,14 @@ export default defineComponent({
       page.value++;
     }
 
+    function toggleSearchInputLock() {
+      store.commit(MutationType.ToggleUserSearchLock, undefined);
+    }
+
+    function resetSearchInput() {
+      store.commit(MutationType.ResetUserSearchInput, undefined);
+    }
+
     function close() {
       store.commit(MutationType.CloseEmoteDetailsModal, undefined);
     }
@@ -132,12 +168,18 @@ export default defineComponent({
       rank,
       fromList,
       channelName,
+      search,
+      userSearchInput,
+      searchInputLocked,
       mostUsedBy,
+      mostUsedByFiltered,
       page,
       hasPrevPage,
       hasNextPage,
       prevPage,
       nextPage,
+      toggleSearchInputLock,
+      resetSearchInput,
       close,
     };
   },
@@ -200,6 +242,7 @@ export default defineComponent({
 }
 
 .mostusedby {
+  min-height: 238px;
   width: 50%;
   margin: 0 auto;
   display: flex;
@@ -275,5 +318,35 @@ export default defineComponent({
 }
 .lightgray {
   background-color: #eee;
+}
+
+.search-input-wrapper {
+  margin: 0 auto;
+  padding-bottom: 1em;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+
+  label {
+    padding-right: 0.5em;
+    white-space: nowrap;
+  }
+  input {
+    height: 1.5em;
+  }
+
+  .search-input-lock {
+    text-align: center;
+    min-width: 24px;
+    cursor: pointer;
+  }
+
+  .search-input-reset {
+    padding-left: 4px;
+    font-weight: bold;
+    color: maroon;
+    cursor: pointer;
+  }
 }
 </style>

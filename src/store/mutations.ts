@@ -6,6 +6,9 @@ export enum MutationType {
   CloseEmoteDetailsModal = "CLOSE_EMOTE_DETAILS_MODAL",
   SetEmoteSearchInput = "SET_EMOTE_SEARCH_INPUT",
   ResetEmoteSearchInput = "RESET_EMOTE_SEARCH_INPUT",
+  SetUserSearchInput = "SET_USER_SEARCH_INPUT",
+  ResetUserSearchInput = "RESET_USER_SEARCH_INPUT",
+  ToggleUserSearchLock = "TOGGLE_USER_SEARCH_LOCK",
   SetEmotesPerPage = "SET_EMOTES_PER_PAGE",
   UpdateEmotes = "UPDATE_EMOTES",
   SaveLogParserResults = "SAVE_LOG_PARSER_RESULTS",
@@ -17,10 +20,13 @@ export enum MutationType {
 
 export type Mutations = {
   [MutationType.SetChannelNameAndTwitchID](state: any, params: { name: string, twitchID: string }): void;
-  [MutationType.ResetEmoteSearchInput](state: any): void;
   [MutationType.OpenEmoteDetailsModal](state: any, emote: any): void;
   [MutationType.CloseEmoteDetailsModal](state: any): void;
   [MutationType.SetEmoteSearchInput](state: any, value: string): void;
+  [MutationType.ResetEmoteSearchInput](state: any): void;
+  [MutationType.SetUserSearchInput](state: any, value: string): void;
+  [MutationType.ResetUserSearchInput](state: any): void;
+  [MutationType.ToggleUserSearchLock](state: any): void;
   [MutationType.SetEmotesPerPage](state: any, emotesPerPage: number): void;
   [MutationType.UpdateEmotes](state: any, emotes: Array<any>): void;
   [MutationType.SaveLogParserResults](state: any, resultsMap: any): void;
@@ -44,9 +50,6 @@ export const mutations: MutationTree<any> & Mutations = {
       }
     }
   },
-  [MutationType.ResetEmoteSearchInput](state) {
-    state.channel.emoteSearchInput = '';
-  },
   [MutationType.OpenEmoteDetailsModal](state, { emote, fromList }) {
     state.channel.emotes[emote.stateIndex].usedBy = emote.usedBy;
     state.channel.emoteDetails = { fromList, rank: emote.rank, stateIndex: emote.stateIndex };
@@ -54,9 +57,24 @@ export const mutations: MutationTree<any> & Mutations = {
   },
   [MutationType.CloseEmoteDetailsModal](state) {
     state.channel.emoteDetailsModalOpen = false;
+    if (!state.channel.userSearchLock) {
+      state.channel.userSearchInput = '';
+    }
   },
   [MutationType.SetEmoteSearchInput](state, value) {
     state.channel.emoteSearchInput = value;
+  },
+  [MutationType.ResetEmoteSearchInput](state) {
+    state.channel.emoteSearchInput = '';
+  },
+  [MutationType.SetUserSearchInput](state, value) {
+    state.channel.userSearchInput = value;
+  },
+  [MutationType.ResetUserSearchInput](state) {
+    state.channel.userSearchInput = '';
+  },
+  [MutationType.ToggleUserSearchLock](state) {
+    state.channel.userSearchLock = !state.channel.userSearchLock;
   },
   [MutationType.SetEmotesPerPage](state, emotesPerPage: number) {
     state.channel.emotesPerPage = Number(emotesPerPage);
