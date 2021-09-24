@@ -4,13 +4,12 @@
       :msg="`Parse Emote Usage from Chat Logs for ${channelName}'s Channel`"
     />
     <section class="info">
-      <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: 
-        <ul>
-          <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
-          <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
-          <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
-        </ul>
-      </p>
+      <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: </p>
+      <ul>
+        <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
+        <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
+        <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
+      </ul>
     </section>
     <ParseLogContainer />
   </div>
@@ -79,13 +78,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .info {
-  width: 80%;
+  width: 70%;
   margin: 1em auto;
 
   ul {
+    padding: 0 1em;
     list-style-type: circle;
     list-style-position: inside;
-    margin-left: 1em;
   }
 }
 </style>
