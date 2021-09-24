@@ -32,6 +32,7 @@ export interface State {
     logParserResults: ILogParserResults,
     logParserFilenames: string[],
   }
+  emote: Emote | null
 }
 
 export const store = createStore<State>({
@@ -64,6 +65,7 @@ export const store = createStore<State>({
       logParserResults: {},
       logParserFilenames: [],
     },
+    emote: null
   },
   mutations,
   actions: {
@@ -116,7 +118,7 @@ export const store = createStore<State>({
           });
         })
     },
-    fetchEmoteUsageDetailsForChannelPage({ state, commit }, { emote, emoteListProvider }) {
+    async fetchEmoteUsageDetailsForChannelPage({ state, commit }, { emote, emoteListProvider }) {
       if (state.channel.emotes[emote.stateIndex].usedBy !== undefined && state.channel.emotes[emote.stateIndex].usedOn !== undefined) {
         commit(MutationType.OpenEmoteDetailsModal, {
           emote,
@@ -138,6 +140,19 @@ export const store = createStore<State>({
             });
           });
         }
+    },
+    async fetchEmoteUsageDetailsForEmotePage({ state, commit }, emoteID) {
+      const URL = `http://localhost:8081/emote/${emoteID}/usageDetails`;
+      fetch(URL, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then((emote) => {
+          commit(MutationType.SetEmoteData, emote);
+        })
     },
     async getChannelEmotesFromDatabaseAndProviders({ state, commit }, channelName) {
       const URL = `http://localhost:8081/channel/${channelName}/getChannelEmotesFromDatabaseAndProviders`
@@ -168,7 +183,7 @@ export const store = createStore<State>({
       ).then(json => {
         // post save redirect?
         if (json.ok) {
-          console.log(json);
+          // console.log(json);
         }
       })
     },

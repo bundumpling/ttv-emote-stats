@@ -130,6 +130,12 @@ const getChannelEmoteCounts = (req, res, db) => {
 
 const getEmoteUsageDetails = async (req, res, db) => {
   const emoteID = req.params.emoteID;
+  const channelID = emoteID.split("-")[0];
+  const channelOwner = await db
+    .collection("TwitchLogin")
+    .findOne({ twitchID: channelID });
+  const channelName = channelOwner._id;
+
   db.collection("Emote").findOne({ _id: emoteID }, async (err, emote) => {
     if (err) res.send(err);
     else {
@@ -185,7 +191,7 @@ const getEmoteUsageDetails = async (req, res, db) => {
           usedBy[userID] = combinedCount.count;
         }
       }
-      res.json({ usedBy, usedOn: emote.usedOn });
+      res.json({ ...emote, usedBy, channelName });
     }
   });
 };
@@ -204,6 +210,12 @@ const getChannelEmoteCodes = async (req, res, db) => {
             emoteCodes,
           });
         })
+    )
+    .catch((err) =>
+      res.send({
+        ok: false,
+        error: "Failed to fetch Emote Codes for " + req.params.channelName,
+      })
     );
 };
 
@@ -474,6 +486,7 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
   db.collection("TwitchLogin").findOne(
     { _id: channelName },
     (err, { _id, twitchID }) => {
+      if (err) return res.send({ ok: false });
       db.collection("Channel")
         .aggregate([
           { $match: { _id: twitchID } },
