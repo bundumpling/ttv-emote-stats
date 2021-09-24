@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --mode=development",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@auth0/auth0-spa-js": "^1.18.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
@@ -57,11 +58,7 @@
       "@typescript-eslint/no-unused-vars": "off"
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ],
+  "browserslist": ["> 1%", "last 2 versions", "not dead"],
   "resolutions": {
     "glob-parent": "^6.0.1",
     "electron": "^9.4.0",
