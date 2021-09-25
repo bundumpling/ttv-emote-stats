@@ -65,7 +65,8 @@ export default defineComponent({
       },
       usedOn: {
         [key: string]: number
-      }
+      },
+      error?: string
     }
 
     async function fetchData(): Promise<Response> {
@@ -81,6 +82,7 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const emoteData = await fetchData();
+        if (emoteData.error) throw new Error(emoteData.error)
         state.channelName = emoteData.channelName;
         state.count = emoteData.count;
         state.image = emoteData.image;

@@ -136,8 +136,10 @@ const getEmoteUsageDetails = async (req, res, db) => {
     .findOne({ twitchID: channelID });
   const channelName = channelOwner._id;
   db.collection("Emote").findOne({ _id: emoteID }, async (err, emote) => {
-    if (err) res.send(err);
-    else {
+    if (err || !emote) {
+      console.log("Emote not found with ID: " + emoteID);
+      res.json({ error: "Emote not found" });
+    } else {
       const twitchIDLogins = new Map();
       Object.keys(emote.usedBy).forEach((user) => {
         const [login, twitchID] = user.split("-");
