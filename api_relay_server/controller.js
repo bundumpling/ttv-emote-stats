@@ -135,7 +135,6 @@ const getEmoteUsageDetails = async (req, res, db) => {
     .collection("TwitchLogin")
     .findOne({ twitchID: channelID });
   const channelName = channelOwner._id;
-
   db.collection("Emote").findOne({ _id: emoteID }, async (err, emote) => {
     if (err) res.send(err);
     else {
@@ -305,7 +304,7 @@ const updateCountsFromLog = async (req, res, db) => {
         const usernameBatch = usernameBatches[i];
         const userdata = await requestTwitchIDsFromUsernameArray(usernameBatch);
         console.log(
-          `${Date.now()} - [${i + 1} -  Got results for ${userdata.length}/${
+          `${Date.now()} - [${i + 1}] -  Got results for ${userdata.length}/${
             usernameBatch.length
           } user requests from Twitch API.`
         );
@@ -376,6 +375,8 @@ const updateCountsFromLog = async (req, res, db) => {
             });
             resolve(usernameTwitchIDDictionary);
           });
+        } else {
+          resolve(usernameTwitchIDDictionary);
         }
       } else {
         resolve(usernameTwitchIDDictionary);
