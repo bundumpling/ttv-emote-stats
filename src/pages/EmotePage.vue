@@ -177,7 +177,7 @@ export default defineComponent({
         text: `Usage by User`
       },
       tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        pointFormat: '{series.name}: <b>{point.y}</b>'
       },
       accessibility: {
           point: {
@@ -195,7 +195,7 @@ export default defineComponent({
           }
       },
       series: [{
-        name: 'Users',
+        name: 'Uses',
         colorByPoint: true,
         data: chartifiedUsedByData.value
       }]
