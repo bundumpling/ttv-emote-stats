@@ -4,7 +4,7 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <div class="image is-32x32">
-          <img :src="image" />
+          <img :src="image" :alt="code" />
         </div>
         <p class="modal-card-title ml-3">Details for {{ code }}</p>
         <span class="close" aria-label="close" @click="close()"
