@@ -12,6 +12,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
+    "axios": "^0.21.4",
     "bulma": "^0.9.3",
     "core-js": "^3.6.5",
     "highcharts": "^9.2.2",
@@ -58,7 +59,11 @@
       "@typescript-eslint/no-unused-vars": "off"
     }
   },
-  "browserslist": ["> 1%", "last 2 versions", "not dead"],
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
   "resolutions": {
     "glob-parent": "^6.0.1",
     "electron": "^9.4.0",
