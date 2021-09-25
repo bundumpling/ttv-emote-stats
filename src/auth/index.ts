@@ -1,53 +1,56 @@
 import createAuth0Client, { Auth0Client, Auth0ClientOptions, GetIdTokenClaimsOptions, GetTokenSilentlyOptions, GetTokenWithPopupOptions, LogoutOptions, RedirectLoginOptions, User } from "@auth0/auth0-spa-js";
 import { computed, ComputedRef, reactive, watchEffect } from "vue";
 import { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
+import { useStore } from "../store";
+
+const store = useStore();
 
 const twitchIDAuthWhitelist = require("/auth_whitelist.json");
 
 let client: Auth0Client;
 
-interface IState {
-  loading: boolean,
-  isAuthenticated: boolean,
-  user?: any,
-  popupOpen: boolean,
-  error?: any 
-}
+// interface IState {
+//   loading: boolean,
+//   isAuthenticated: boolean,
+//   user?: any,
+//   popupOpen: boolean,
+//   error?: any 
+// }
 
-const state = reactive<IState>({
-  loading: true,
-  isAuthenticated: false,
-  user: {},
-  popupOpen: false,
-  error: null,
-});
+// const state = reactive<IState>({
+//   loading: true,
+//   isAuthenticated: false,
+//   user: {},
+//   popupOpen: false,
+//   error: null,
+// });
 
 async function loginWithPopup() {
-  state.popupOpen = true;
+  store.state.auth.popupOpen = true;
 
   try {
     await client.loginWithPopup();
   } catch (e) {
     console.error(e);
   } finally {
-    state.popupOpen = false;
+    store.state.auth.popupOpen = false;
   }
 
-  state.user = await client.getUser();
-  state.isAuthenticated = true;
+  store.state.auth.user = await client.getUser();
+  store.state.auth.isAuthenticated = true;
 }
 
 async function handleRedirectCallback() {
-  state.loading = true;
+  store.state.auth.loading = true;
 
   try {
     await client.handleRedirectCallback();
-    state.user = await client.getUser();
-    state.isAuthenticated = true;
+    store.state.auth.user = await client.getUser();
+    store.state.auth.isAuthenticated = true;
   } catch (e) {
-    state.error = e;
+    store.state.auth.error = e;
   } finally {
-    state.loading = false;
+    store.state.auth.loading = false;
   }
 }
 
@@ -80,10 +83,10 @@ function isWhitelistedUser(user: { sub: string; }) {
 }
 
 const authPlugin = {
-  isAuthenticated: computed(() => state.isAuthenticated),
-  isWhitelistedUser: computed(() => isWhitelistedUser(state.user)),
-  loading: computed(() => state.loading),
-  user: computed(() => state.user),
+  isAuthenticated: computed(() => store.state.auth.isAuthenticated),
+  isWhitelistedUser: computed(() => isWhitelistedUser(store.state.auth.user)),
+  loading: computed(() => store.state.auth.loading),
+  user: computed(() => store.state.auth.user),
   getIdTokenClaims,
   getTokenSilently,
   getTokenWithPopup,
@@ -144,19 +147,19 @@ export const setupAuth = async (options: Auth0ClientOptions, callbackRedirect: (
     ) {
       // handle the redirect and retrieve tokens
       const { appState } = await client.handleRedirectCallback();
-      state.error = null;
+      store.state.auth.error = null;
 
       // Notify subscribers that the redirect callback has happened, passing the appState
       // (useful for retrieving any pre-authentication state)
       callbackRedirect(appState);
     }
   } catch (e) {
-    state.error = e;
+    store.state.auth.error = e;
   } finally {
     // Initialize our internal authentication state
-    state.isAuthenticated = await client.isAuthenticated();
-    state.user = await client.getUser();
-    state.loading = false;
+    store.state.auth.isAuthenticated = await client.isAuthenticated();
+    store.state.auth.user = await client.getUser();
+    store.state.auth.loading = false;
   }
 
   return {
