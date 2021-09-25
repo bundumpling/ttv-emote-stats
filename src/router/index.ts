@@ -34,19 +34,19 @@ const routes: Array<RouteRecordRaw> = [
     path: "/channel/:channelName/manage/update-emotes",
     name: "UpdateEmotes",
     component: () => import("../pages/UpdateEmotesPage.vue"),
-    beforeEnter: routeGuard
+    beforeEnter: beforeEnterRouteWithChannelName
   },
   {
     path: "/channel/:channelName/manage/parse-logs",
     name: "ParseLogs",
     component: () => (import("../pages/ParseLogsPage.vue")),
-    beforeEnter: routeGuard
+    beforeEnter: beforeEnterRouteWithChannelName
   },
   {
     path: "/channel/:channelName/manage",
     name: "ManageChannel",
     component: () => import("../pages/ManagePage.vue"),
-    beforeEnter: routeGuard
+    beforeEnter: beforeEnterRouteWithChannelName
   },
   {
     path: "/channel/:channelName",
