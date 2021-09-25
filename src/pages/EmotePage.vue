@@ -129,7 +129,6 @@ export default defineComponent({
     }): {})
 
     const chartifiedUsedByData = computed(() => {
-      const n = 15;
       let result = [];
       const users = Object.keys(state.usedBy);
       const sortedUsers = users.sort(
@@ -138,10 +137,13 @@ export default defineComponent({
         }
       );
 
-      const notTopUserCount = users.length - n;
+      const maxIndividualUserPieSlices = 15;
+      const numberOfTopUsers = users.length > maxIndividualUserPieSlices ? maxIndividualUserPieSlices : users.length;
+
+      const notTopUserCount = users.length - numberOfTopUsers;
       let notTopUsageCount = state.count;
 
-      for (let i = 0; i < n; i++) {
+      for (let i = 0; i < numberOfTopUsers; i++) {
         const user = sortedUsers[i];
         const username = user.split('-')[0];
         const count = state.usedBy[user];
@@ -152,10 +154,12 @@ export default defineComponent({
         notTopUsageCount -= count;
       }
 
-      result.push({
-        name: `${notTopUserCount} other users`,
-        y: notTopUsageCount
-      })
+      if (numberOfTopUsers < users.length) {
+        result.push({
+          name: `${notTopUserCount} other users`,
+          y: notTopUsageCount
+        })
+      }
 
       return result;
     })
