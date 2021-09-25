@@ -59,11 +59,11 @@ const app = createApp(App)
 app.config.performance = true;
 
 
-setupAuth(authConfig, callbackRedirect).then((auth) => {
+// setupAuth(authConfig, callbackRedirect).then((auth) => {
   app
   .use(store)
   // @ts-ignore
-  .use(auth)
+  // .use(auth)
   .use(router)
   .mount('#app')
-})
+// })
