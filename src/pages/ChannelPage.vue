@@ -113,11 +113,14 @@ export default defineComponent({
 
     const getEmoteDetails = async (emote: EmoteFromList, fromList: string) => {
       if (state.emotes[emote.stateIndex].usedBy !== undefined && state.emotes[emote.stateIndex].usedOn !== undefined) {
+        console.log(`Usage details for ${emote.code} already known... skipping API call.`)
         state.openEmoteDetailsModal(emote, fromList)
       } else {
         const URL = `http://localhost:8081/emote/${emote._id}/usageDetails`;
         const response = await axios.get(URL) as AxiosResponse;
         const { usedBy, usedOn } = response.data;
+        state.emotes[emote.stateIndex].usedBy = usedBy;
+        state.emotes[emote.stateIndex].usedOn = usedOn;
         state.openEmoteDetailsModal({ ...emote, usedBy, usedOn }, fromList);
       }
     }
