@@ -91,33 +91,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-import { useStore } from "../store";
-import { MutationType } from "../store/mutations";
+import { ChannelState } from "@/types";
+import { defineComponent, inject, computed, ref } from "vue";
 
 export default defineComponent({
   name: "ChannelEmoteDetailsModal",
   props: {},
   setup() {
-    const store = useStore();
+    const state = inject('state') as ChannelState;
 
     const page = ref(0);
-
-    const stateIndex = computed(() => store.state.channel.emoteDetails.stateIndex)
-    const code = computed(() => store.state.channel.emotes[stateIndex.value].code)
-    const image = computed(() => store.state.channel.emotes[stateIndex.value].image)
-    const count = computed(() => store.state.channel.emotes[stateIndex.value].count)
-    const rank = computed(() => store.state.channel.emoteDetails.rank)
-    const fromList = computed(() => store.state.channel.emoteDetails.fromList)
-
-    const channelName = computed(() => {
-      return store.state.channel.name;
-    });
+    const userSearchInput = computed(() => state.userSearchInput)
+    const searchInputLocked = computed(() => state.userSearchLock)
 
     const mostUsedOn = computed(() => {
       let result = { date: '', count: 0 };
-      for (const dateKey in store.state.channel.emotes[stateIndex.value].usedOn) {
-        const count = store.state.channel.emotes[stateIndex.value].usedOn[dateKey]
+      for (const dateKey in state.emoteDetails.usedOn) {
+        const count = state.emoteDetails.usedOn[dateKey]
         if (count > result.count) {
           const year = Number(String(dateKey).slice(0, 4));
           const month = Number(String(dateKey).slice(4, 6)) - 1;
@@ -131,26 +121,14 @@ export default defineComponent({
       return result;
     })
 
-    const userSearch = computed({
-      get: () => store.state.channel.userSearchInput,
-      set(value) {
-        store.commit(MutationType.SetUserSearchInput, value);
-        page.value = 0;
-      },
-    });
-
-    const userSearchInput = computed(() => store.state.channel.userSearchInput)
-
-    const searchInputLocked = computed(() => store.state.channel.userSearchLock)
-
     const mostUsedBy = computed(() => {
-      return Object.keys(store.state.channel.emotes[stateIndex.value].usedBy)
-        .map((username) => {
-          return {
-            username: username.split("-")[0], // format of usernames is <name>-<twitchID>
-            count: store.state.channel.emotes[stateIndex.value].usedBy[username],
-          };
-        })
+      let result = [];
+      for (const user in state.emoteDetails.usedBy) {
+        const username = user.split("-")[0];
+        const count = state.emoteDetails.usedBy[user]
+        result.push({ username, count });
+      }
+      return result
         .sort((a, b) => b.count - a.count)
         .map((user, rank) => ({ rank, ...user }));
     });
@@ -172,26 +150,21 @@ export default defineComponent({
     function nextPage() {
       page.value++;
     }
-
-    function toggleSearchInputLock() {
-      store.commit(MutationType.ToggleUserSearchLock, undefined);
-    }
-
-    function resetSearchInput() {
-      store.commit(MutationType.ResetUserSearchInput, undefined);
-    }
-
-    function close() {
-      store.commit(MutationType.CloseEmoteDetailsModal, undefined);
-    }
+    const userSearch = computed({
+      get: () => state.userSearchInput,
+      set(value) {
+        state.setUserSearchInput(value);
+        page.value = 0;
+      },
+    });
 
     return {
-      code,
-      image,
-      count,
-      rank,
-      fromList,
-      channelName,
+      code: state.emoteDetails.code,
+      count: state.emoteDetails.count,
+      rank: state.emoteDetails.rank,
+      image: state.emoteDetails.image,
+      fromList: state.emoteDetails.fromList,
+      channelName: state.name,
       userSearch,
       userSearchInput,
       searchInputLocked,
@@ -203,9 +176,9 @@ export default defineComponent({
       hasNextPage,
       prevPage,
       nextPage,
-      toggleSearchInputLock,
-      resetSearchInput,
-      close,
+      toggleSearchInputLock: () => state.toggleUserSearchLock(),
+      resetSearchInput: () => state.setUserSearchInput(''),
+      close: () => state.closeEmoteDetailsModal(),
     };
   },
 });

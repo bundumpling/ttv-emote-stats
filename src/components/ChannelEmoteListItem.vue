@@ -1,5 +1,5 @@
 <template>
-  <li class="emote-list-item" @click="count ? showEmoteDetails() : null">
+  <li class="emote-list-item" @click="count ? getEmoteDetails() : null">
     <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
@@ -27,7 +27,7 @@ export default defineComponent({
     rank: Number,
     stateIndex: Number,
     usedBy: Object,
-    showEmoteDetails: {
+    getEmoteDetails: {
       type: Function,
       required: true,
     },

@@ -14,18 +14,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import { useStore } from "../store";
-import { MutationType } from "../store/mutations";
+import { ChannelState } from "@/types";
+import { defineComponent, computed, inject } from "vue";
 
 export default defineComponent({
   name: "ChannelControlsSearchInput",
   setup() {
-    const store = useStore();
+    const state = inject('state') as ChannelState;
     const emoteSearch = computed({
-      get: () => store.state.channel.emoteSearchInput,
+      get: () => state.emoteSearchInput,
       set(value) {
-        store.commit(MutationType.SetEmoteSearchInput, value);
+        state.setEmoteSearchInput(value)
       },
     });
 

@@ -15,9 +15,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import { useStore } from "../store";
-import { Emote, EmoteInList } from "../types";
+import { defineComponent, computed, inject } from "vue";
+import { ChannelState, Emote, EmoteInList } from "../types";
 
 import EmoteList from "./ChannelEmoteList.vue";
 import EmoteDetails from "./ChannelEmoteDetailsModal.vue";
@@ -29,26 +28,26 @@ export default defineComponent({
     EmoteDetails,
   },
   setup() {
-    const store = useStore();
+    const state = inject('state') as ChannelState;
 
     const emoteDetailsModalOpen = computed(() => {
-      return store.state.channel.emoteDetailsModalOpen;
+      return state.emoteDetailsModalOpen;
     });
 
     const filterEmoteLists = computed(() => {
       return ["Overall"].concat(
         ["Twitch", "FFZ", "BTTV", "7TV"].filter(
-          (provider) => store.state.channel.hasEmotesFrom[provider] === true
+          (provider) => state.hasEmotesFrom[provider] === true
         )
       );
     });
 
     const emoteSearchInput = computed(() => {
-      return store.state.channel.emoteSearchInput;
+      return state.emoteSearchInput;
     });
 
     const countsSorted = computed(() => {
-      return store.state.channel.emotes
+      return state.emotes
         .map((emote: Emote, index: number) => {
           return { ...emote, stateIndex: index };
         })
@@ -73,7 +72,7 @@ export default defineComponent({
       type tResult = {
         [key: string]: EmoteInList[];
       };
-      let emotesWithStateIndex = store.state.channel.emotes.map(
+      let emotesWithStateIndex = state.emotes.map(
         (emote: Emote, index: number) => ({ stateIndex: index, ...emote })
       );
       let sortedByProvider = emotesWithStateIndex

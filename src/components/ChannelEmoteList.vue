@@ -26,7 +26,7 @@
       :image="emote.image"
       :count="emote.count"
       :usedBy="emote.usedBy"
-      :showEmoteDetails="() => showEmoteDetails({ emote, emoteListProvider })"
+      :getEmoteDetails="() => getEmoteDetails(emote, emoteListProvider)"
     />
     <div class="placeholder" v-if="!filteredByRank.length">
       <span>No Results</span>
@@ -34,9 +34,9 @@
   </ul>
 </template>
 
-<script>
-import { defineComponent, computed, ref } from "vue";
-import { useStore } from "../store";
+<script lang="ts">
+import { defineComponent, computed, ref, inject } from "vue";
+import { ChannelState } from "@/types";
 
 import EmoteListItem from "./ChannelEmoteListItem.vue";
 
@@ -55,22 +55,32 @@ export default defineComponent({
     EmoteListItem,
   },
   setup(props) {
-    const store = useStore();
+
+    const state = inject('state') as ChannelState;
+    const getEmoteDetails = inject('getEmoteDetails');
 
     const page = ref(0);
 
     const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(
-      () =>
-        props.emoteList.length >
-        store.state.channel.emotesPerPage * (page.value + 1)
+      () => {
+        if (props && props.emoteList && props.emoteList.length) {
+          return props.emoteList.length > state.emotesPerPage * (page.value + 1)
+        } else {
+          return false;
+        }
+      }
     );
     const filteredByRank = computed(() => {
-      return props.emoteList.filter(
-        (_, rank) =>
-          store.state.channel.emotesPerPage * page.value <= rank &&
-          rank < store.state.channel.emotesPerPage * (page.value + 1)
-      );
+      if (props && props.emoteList) {
+        return props.emoteList.filter(
+          (_, rank) =>
+            state.emotesPerPage * page.value <= rank &&
+            rank < state.emotesPerPage * (page.value + 1)
+        );
+      } else {
+        return [];
+      }
     });
     const prevPage = () => {
       page.value--;
@@ -79,10 +89,6 @@ export default defineComponent({
       page.value++;
     };
 
-    function showEmoteDetails({ emote, emoteListProvider }) {
-      store.dispatch("fetchEmoteUsageDetailsForChannelPage", { emote, emoteListProvider });
-    }
-
     return {
       filteredByRank,
       page,
@@ -90,7 +96,7 @@ export default defineComponent({
       hasNextPage,
       prevPage,
       nextPage,
-      showEmoteDetails,
+      getEmoteDetails
     };
   },
 });

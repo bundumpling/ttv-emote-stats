@@ -18,22 +18,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useStore } from "../store";
-import { MutationType } from "../store/mutations";
+import { ChannelState } from "@/types";
+import { defineComponent, inject } from "vue";
 export default defineComponent({
   name: "ChannelControlsPerPageSelect",
   setup() {
-    const store = useStore();
+    const state = inject('state') as ChannelState;
 
     function isSelected(value: number) {
-      return store.state.channel.emotesPerPage === value;
+      return state.emotesPerPage === value;
     }
 
     function switchSelect(event: Event) {
       const target = event.target as HTMLInputElement;
       const value = Number(target.value);
-      store.commit(MutationType.SetEmotesPerPage, value);
+      state.setEmotesPerPage(value);
     }
 
     return {

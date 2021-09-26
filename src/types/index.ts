@@ -1,3 +1,28 @@
+type EmoteDetails = Emote & {
+  stateIndex: number,
+  fromList: string,
+  rank: number
+}
+
+export interface ChannelState {
+  name: string,
+  twitchID: string | null,
+  emotes: Array<Emote>,
+  hasEmotesFrom: { [index: string]: boolean },
+  emoteDetails: EmoteDetails,
+  emoteDetailsModalOpen: boolean,
+  emotesPerPage: number,
+  emoteSearchInput: string,
+  userSearchInput: string,
+  userSearchLock: boolean,
+  openEmoteDetailsModal: Function,
+  closeEmoteDetailsModal: Function,
+  setEmoteSearchInput: Function,
+  setUserSearchInput: Function,
+  toggleUserSearchLock: Function,
+  setEmotesPerPage: Function
+}
+
 export interface ILogParserResults {
   emoteCounts?: ILogParserEmoteCounts,
   usernameLastSeen?: {
@@ -18,6 +43,7 @@ export interface ILogParserEmoteCounts {
 }
 
 export type Emote = {
+  _id?: string,
   code: string,
   image: string,
   provider: string,
@@ -28,9 +54,13 @@ export type Emote = {
     [key: string]: number
   },
   usedOn?: {
-    [key: number]: number
+    [key: string]: number
   }
-  stateIndex?: number
+}
+
+export type EmoteFromList = Emote & {
+  stateIndex: number,
+  rank: number
 }
 
 export type EmoteForUpdate = Emote & {
