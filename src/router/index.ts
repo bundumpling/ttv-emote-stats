@@ -1,7 +1,5 @@
 import { createWebHistory, createRouter, RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 
-import { routeGuard } from '../auth';
-
 const validateChannelName = (channelName: string | string[]) =>
   (/^[a-zA-Z0-9_]{4,25}$/.test(Array.isArray(channelName) ? channelName.join() : channelName))
 
@@ -61,14 +59,17 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: beforeEnterRouteWithEmoteID
   },
   {
-    path: '/callback',
-    name: 'Callback',
-    component: () => import("../pages/Callback.vue")
+    path: '/login',
+    name: 'Login',
+    component: () => import("../pages/LoginPage.vue")
   },
   {
-    path: '/error',
-    name: 'Error',
-    component: () => import("../pages/ErrorPage.vue"),
+    path: '/admin',
+    name: 'Admin',
+    component: () => import("../pages/AdminPage.vue"),
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: "/:pathMatch(.*)*",
@@ -81,5 +82,22 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.name === from.name) {
+    return next();
+  }
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (localStorage.getItem("user") == null) {
+      next({
+        path: "/login"
+      })
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+})
 
 export default router;
