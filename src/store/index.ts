@@ -31,13 +31,6 @@ export interface State {
     },
     logParserResults: ILogParserResults,
     logParserFilenames: string[],
-  },
-  auth: {
-    loading: boolean,
-    isAuthenticated: boolean,
-    user?: any,
-    popupOpen: boolean,
-    error?: any 
   }
 }
 
@@ -70,13 +63,6 @@ export const store = createStore<State>({
       },
       logParserResults: {},
       logParserFilenames: [],
-    },
-    auth: {
-      loading: true,
-      isAuthenticated: false,
-      user: {},
-      popupOpen: false,
-      error: null,
     }
   },
   mutations,
