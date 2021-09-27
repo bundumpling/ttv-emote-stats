@@ -2,8 +2,8 @@
 node_modules
 /dist
 .env
-auth_whitelist.json
-auth_config.json
+private.pem
+public.pem
 
 # local env files
 .env.local
