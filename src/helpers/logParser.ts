@@ -1,6 +1,6 @@
-import { ILogParserEmoteCounts } from "../types";
-async function buildResultsObjectFromEmoteArray(emotes: string[]): Promise<ILogParserEmoteCounts> {
-  const emoteCounts = <ILogParserEmoteCounts>{}
+import { LogParserEmoteCounts } from "../types";
+async function buildResultsObjectFromEmoteArray(emotes: string[]): Promise<LogParserEmoteCounts> {
+  const emoteCounts = <LogParserEmoteCounts>{}
   emotes.forEach((emote: string) => {
     emoteCounts[emote] = {
       count: 0,
@@ -11,7 +11,7 @@ async function buildResultsObjectFromEmoteArray(emotes: string[]): Promise<ILogP
   return emoteCounts;
 }
 export default async function logParser(log: string, emotes: string[]) {
-  const emoteCounts: ILogParserEmoteCounts = await buildResultsObjectFromEmoteArray(emotes);
+  const emoteCounts: LogParserEmoteCounts = await buildResultsObjectFromEmoteArray(emotes);
   const emoteSet = new Set(emotes);
 
   interface IUsernameLastSeen {
