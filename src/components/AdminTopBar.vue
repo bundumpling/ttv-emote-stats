@@ -4,7 +4,7 @@
       Logged in as <span class="username">{{ username }}</span>
     </div>
     <div class="logout">
-      <button class="button" @click="logout">Log out</button>
+      <button class="button is-small" @click="logout">Logout</button>
     </div>
   </div>
 </template>
@@ -56,8 +56,8 @@ export default defineComponent({
   background-color: #CCC;
 }
 .status {
-  padding: 0 1em;
-  font-size: 2em;
+  padding-left: 4px;
+  font-size: 1.2em;
   font-family: monospace;
   font-variant: small-caps;
   color: #222;
@@ -69,7 +69,6 @@ export default defineComponent({
 }
 
 .logout {
-  padding: 0 1em;
   button {
     background-color: #666;
     color: #EEE;
