@@ -29,24 +29,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/HomePage.vue")
   },
   {
-    path: "/channel/:channelName/manage/update-emotes",
-    name: "UpdateEmotes",
-    component: () => import("../pages/UpdateEmotesPage.vue"),
-    beforeEnter: beforeEnterRouteWithChannelName
-  },
-  {
-    path: "/channel/:channelName/manage/parse-logs",
-    name: "ParseLogs",
-    component: () => (import("../pages/ParseLogsPage.vue")),
-    beforeEnter: beforeEnterRouteWithChannelName
-  },
-  {
-    path: "/channel/:channelName/manage",
-    name: "ManageChannel",
-    component: () => import("../pages/ManagePage.vue"),
-    beforeEnter: beforeEnterRouteWithChannelName
-  },
-  {
     path: "/channel/:channelName",
     name: "Channel",
     component: () => import("../pages/ChannelPage.vue"),
@@ -57,6 +39,33 @@ const routes: Array<RouteRecordRaw> = [
     name: "Emote",
     component: () => import("../pages/EmotePage.vue"),
     beforeEnter: beforeEnterRouteWithEmoteID
+  },
+  {
+    path: "/admin/:channelName/update-emotes",
+    name: "UpdateEmotes",
+    component: () => import("../pages/UpdateEmotesPage.vue"),
+    beforeEnter: beforeEnterRouteWithChannelName,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: "/admin/:channelName/parse-logs",
+    name: "ParseLogs",
+    component: () => (import("../pages/ParseLogsPage.vue")),
+    beforeEnter: beforeEnterRouteWithChannelName,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: "/admin/:channelName",
+    name: "ManageChannel",
+    component: () => import("../pages/ManagePage.vue"),
+    beforeEnter: beforeEnterRouteWithChannelName,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
