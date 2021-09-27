@@ -1,3 +1,5 @@
+import { ComputedRef } from "vue"
+
 type EmoteDetails = Emote & {
   stateIndex: number,
   fromList: string,
@@ -23,14 +25,31 @@ export interface ChannelState {
   setEmotesPerPage: Function
 }
 
-export interface ILogParserResults {
-  emoteCounts?: ILogParserEmoteCounts,
-  usernameLastSeen?: {
+export interface ParseLogsState {
+  channelID: string,
+  emoteCodes: Array<string>,
+  logParserResults: LogParserResults,
+  logParserFilenames: Array<string>,
+  progressData: LogParserProgressData
+}
+
+
+export interface LogParserResults {
+  emoteCounts: LogParserEmoteCounts,
+  usernameLastSeen: {
     [key: string]: number;
   }
 }
 
-export interface ILogParserEmoteCounts {
+export interface LogParserResult {
+  emoteCounts: LogParserEmoteCounts,
+  usernameLastSeen: {
+    [key: string]: number,
+  },
+  logDate: number | null
+}
+
+export interface LogParserEmoteCounts {
   [key: string]: {
     count: number,
     usedBy: {
