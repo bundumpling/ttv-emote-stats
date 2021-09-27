@@ -1,6 +1,11 @@
 require("dotenv").config();
-
 const fetch = require("node-fetch");
+const moment = require("moment");
+
+const { getDb } = require("./db");
+const db = getDb();
+
+const { hashPassword, comparePassword, generateJWT } = require("./auth");
 
 const TWITCH_OPTIONS = {
   method: "GET",
@@ -663,6 +668,108 @@ const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
   );
 };
 
+const getChannelList = async (req, res) => {
+  db.collection("Channel")
+    .aggregate([
+      {
+        $lookup: {
+          from: "TwitchLogin",
+          localField: "_id",
+          foreignField: "twitchID",
+          as: "twitchLogin",
+        },
+      },
+      {
+        $unwind: {
+          path: "$twitchLogin",
+        },
+      },
+      {
+        $project: {
+          channelName: "$twitchLogin._id",
+          emoteCount: {
+            $size: "$emotes",
+          },
+        },
+      },
+    ])
+    .toArray()
+    .then((channelList) => res.json({ channelList }));
+};
+
+const loginUser = async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).send({ message: "Username or password missing" });
+  }
+
+  try {
+    const user = await db.collection("User").findOne({ username });
+    if (!user) {
+      return res.status(400).send({ message: "User not found" });
+    }
+
+    if (!comparePassword(user.hashedPassword, password)) {
+      return res.status(400).send({ message: "Incorrect password" });
+    }
+
+    const token = generateJWT(user);
+    const refreshExpiry = moment()
+      .utc()
+      .add(3, "days")
+      .endOf("day")
+      .format("X");
+    const refreshToken = generateJWT({
+      exp: parseInt(refreshExpiry),
+      data: user._id,
+    });
+    delete user.password;
+
+    return res.status(200).send({
+      status: true,
+      message: "Logged in successfully",
+      data: {
+        user,
+        token,
+        refresh: refreshToken,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({ message: error });
+  }
+};
+
+/** Disabled */
+/*
+const registerUser = async (req, res) => {
+  const { username, password } = req.body;
+
+  const createdOn = moment(new Date());
+
+  const hashedPassword = hashPassword(password);
+
+  db.collection("User").insertOne(
+    {
+      username,
+      hashedPassword,
+      createdOn,
+    },
+    (error, result) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send({ error });
+      } else {
+        delete result.password;
+        return res.status(201).send({
+          body: { user: result },
+          message: "User created successfully",
+        });
+      }
+    }
+  );
+};
+*/
+
 module.exports = {
   saveUpdatedEmotes,
   updateCountsFromLog,
@@ -670,4 +777,7 @@ module.exports = {
   getChannelEmoteCounts,
   getEmoteUsageDetails,
   getChannelEmotesFromDatabaseAndProviders,
+  getChannelList,
+  loginUser,
+  /*  registerUser, */
 };
