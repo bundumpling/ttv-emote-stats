@@ -4,7 +4,7 @@
     <Controls />
     <EmoteListContainer />
   </div>
-  <div v-else-if="!error" class="loading">Loading</div>
+  <Loading v-else-if="!error" />
   <div v-else class="error">Error</div>
 </template>
 
@@ -13,6 +13,7 @@ import { defineComponent, ref, reactive, onMounted, provide } from "vue";
 import { useRoute } from "vue-router";
 
 import TheSubheader from "../components/TheSubheader.vue";
+import Loading from "../components/TheLoadingSpinner.vue";
 import Controls from "../components/ChannelControls.vue";
 import EmoteListContainer from "../components/ChannelEmoteListContainer.vue";
 import { ChannelState, Emote, EmoteFromList } from "@/types";
@@ -22,6 +23,7 @@ export default defineComponent({
   name: "ChannelPage",
   components: {
     TheSubheader,
+    Loading,
     Controls,
     EmoteListContainer,
   },
