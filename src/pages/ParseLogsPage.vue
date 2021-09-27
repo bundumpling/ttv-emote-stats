@@ -3,49 +3,308 @@
     <TheSubheader
       :msg="`Parse Emote Usage from Chat Logs for ${channelName}'s Channel`"
     />
-    <section class="info">
-      <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: </p>
-      <ul>
-        <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
-        <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
-        <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
-      </ul>
-    </section>
-    <ParseLogContainer />
+    <div v-if="!loading">
+      <section class="info">
+        <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: </p>
+        <ul>
+          <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
+          <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
+          <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
+        </ul>
+      </section>
+      <div class="container box">
+        <section class="main">
+          <div class="input-side">
+            <Filelist header="Uploaded" :list="progressData.uploadedList" />
+          </div>
+          <div class="middle">
+            <UploadButton
+              v-if="!uploadButtonDisabled"
+              :disabled="uploadButtonDisabled"
+              :handleUpload="handleLogFilesUpload"
+            />
+            <Status v-else :status="progressData.status" :reset="reset" />
+            <Statistics :stats="
+              {
+                emotesUsed,
+                emotesTotal,
+                uniqueUsers,
+                totalUsageCount
+              }
+            " />
+          </div>
+          <div class="output-side">
+            <Filelist header="Parsed" :list="progressData.parsedList" />
+            <Filelist header="Skipped/Error" :list="progressData.unparsedList" />
+          </div>
+        </section>
+        <footer>
+          <ProgressBar :progress="progress" />
+        </footer>
+      </div>
+    </div>
+    <Loading v-else-if="!error" />
+    <div v-else class="error">Error</div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
-import { useStore } from "../store";
+import { defineComponent, ref, reactive, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { MutationType } from "../store/mutations";
+import axios from 'axios';
+import { LogParserResult, LogParserResults, ParseLogsState, ParserStatus } from "@/types";
+import logParser from "../helpers/logParser";
 import TheSubheader from "../components/TheSubheader.vue";
-import ParseLogContainer from "../components/ManageParseLogContainer.vue";
-
+import Loading from "../components/TheLoadingSpinner.vue";
+import Filelist from "../components/ManageParseLogFilelist.vue";
+import UploadButton from "../components/ManageParseLogUploadButton.vue";
+import Status from "../components/ManageParseLogStatus.vue";
+import Statistics from "../components/ManageParseLogStatistics.vue";
+import ProgressBar from "../components/ManageParseLogProgressBar.vue";
 export default defineComponent({
   name: "ParseLogsPage",
   components: {
     TheSubheader,
-    ParseLogContainer,
+    Filelist,
+    UploadButton,
+    Status,
+    Statistics,
+    ProgressBar,
+    Loading
   },
   setup() {
-    const store = useStore();
     const route = useRoute();
     const channelName = route.params.channelName;
 
-    onMounted(() => {
-      // reduce unnecessary backend api calls
-      if (
-        !store.state.settings.channelEmoteData ||
-        !store.state.settings.channelEmoteData.emotesFromProviders ||
-        !store.state.settings.channelEmoteData.emotesFromProviders.length ||
-        store.state.settings.channelEmoteData.channelName !== channelName
-      ) {
-        store.commit(MutationType.ResetLogParserResults, undefined);
-        store.dispatch("getChannelEmoteCodes", channelName);
+    const loading = ref(true);
+    const error = ref(false);
+
+    const state = reactive<ParseLogsState>({
+      channelID: '',
+      emoteCodes: [],
+      progressData: {
+        uploadedList: [],
+        parsedList: [],
+        unparsedList: [],
+        status: ParserStatus.IDLE
+      },
+      logParserResults: {
+        emoteCounts: {},
+        usernameLastSeen: {}
+      },
+      logParserFilenames: []
+    })
+
+    async function fetchData() {
+      try {
+        const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
+        const response = await axios.get(URL);
+        return response.data;
+      } catch (err) {
+        throw new Error(err);
+      }
+    }
+
+    onMounted(async () => {
+      try {
+        const { channelID, emoteCodes } = await fetchData();
+        state.channelID = channelID;
+        state.emoteCodes = emoteCodes;
+        loading.value = false;
+      } catch (err) {
+        error.value = true;
+      }
+    })
+
+    const channelID = computed(() => state.channelID);
+    const emoteCodes = computed(() => state.emoteCodes);
+
+    const emotesUsed = computed(() => {
+      let total = 0;
+      Object.keys(state.logParserResults.emoteCounts).forEach((code) => {
+        if (state.logParserResults.emoteCounts[code].count) {
+          total++;
+        }
+      });
+      return total;
+    });
+    const emotesTotal = computed(() => state.emoteCodes.length);
+    const uniqueUsers = computed(() => Object.keys(state.logParserResults.usernameLastSeen).length);
+    const totalUsageCount = computed(calcTotalUsageCount);
+    
+    const uploadButtonDisabled = computed(() =>
+      Boolean(state.progressData.uploadedList.length)
+    );
+
+    const progress = computed(() => {
+      if (state.progressData.status === ParserStatus.DONE) {
+        return 100;
+      } else {
+        const { uploadedList, parsedList, unparsedList } = state.progressData;
+        const result = Math.floor(
+          ((parsedList.length + unparsedList.length) / uploadedList.length) *
+            100
+        );
+        return isNaN(result) ? 0 : result;
       }
     });
+
+    function calcTotalUsageCount() {
+      const emoteCodes = Object.keys(state.logParserResults.emoteCounts);
+      let total = 0;
+      emoteCodes.forEach((code) => {
+        total +=
+          state.logParserResults.emoteCounts[code].count;
+      });
+      return total;
+    }
+
+    async function fetchListOfParsedLogFilenames() {
+      return fetch(
+        `http://localhost:8081/channel/${channelName}/listofParsedLogFilesnames`,
+        { method: "GET" }
+      ).then((res) => res.json());
+    }
+
+    async function readLogFile(log: string | ArrayBuffer) {
+      const results: LogParserResult = await logParser(
+        log as string,
+        state.emoteCodes
+      );
+      return results;
+    }
+
+    async function handleLogFilesUpload() {
+      state.progressData.status = ParserStatus.LOADING;
+      let fileInput = document.getElementById(
+        "logfile-input"
+      ) as HTMLInputElement;
+      if (fileInput.files) {
+        const alreadyParsed = (await fetchListOfParsedLogFilenames()) || [];
+        const files: FileList = fileInput.files;
+        let unparsedFiles: File[] = [];
+
+        for (let i = 0; i < files.length; i++) {
+          const filename = files[i].name;
+          state.progressData.uploadedList.push(filename);
+          if (alreadyParsed.includes(filename)) {
+            state.progressData.unparsedList.push(filename);
+          } else {
+            unparsedFiles.push(files[i]);
+          }
+        }
+
+        if (!unparsedFiles.length) {
+          state.progressData.status = ParserStatus.DONE;
+        }
+
+        for (let i = 0; i < unparsedFiles.length; i++) {
+          let reader = new FileReader();
+          reader.onerror = (e) => {
+            if (e.target && e.target.error) {
+              state.progressData.unparsedList.push(unparsedFiles[i].name);
+            }
+          };
+          reader.onload = async (e) => {
+            if (e.target && e.target.result) {
+              let text = e.target.result;
+              state.progressData.status = ParserStatus.PARSING;
+              const filename = unparsedFiles[i].name;
+              const logParserResult = await readLogFile(text);
+              updateLogParserResults(filename, logParserResult);
+              state.progressData.parsedList.push(filename);
+              if (
+                state.progressData.parsedList.length +
+                  state.progressData.unparsedList.length ===
+                state.progressData.uploadedList.length
+              ) {
+                saveLogParserResultsToDb().then((response) => {
+                  // TODO Add error handling
+                  state.progressData.status = ParserStatus.DONE;
+                });
+              }
+            }
+          };
+          reader.readAsText(unparsedFiles[i]);
+        }
+      } else {
+        state.progressData.status = ParserStatus.DONE;
+      }
+    }
+
+    async function saveLogParserResultsToDb() {
+      const logFilenames = state.logParserFilenames;
+      const logParserResults = state.logParserResults;
+      const URL = `http://localhost:8081/channel/${channelName}/updateCountsFromLog`;
+      return fetch(
+        URL,
+        {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            logFilenames,
+            logParserResults
+          })
+        }
+      ).then(response => response.json())
+    }
+
+    function updateLogParserResults (logFilename: string, logParserResult: LogParserResult) {
+      if (!Object.keys(state.logParserResults).length) {
+        state.logParserResults = logParserResult;
+      } else {
+        const { logDate, usernameLastSeen, emoteCounts } = logParserResult;
+        Object.keys(emoteCounts).forEach((key) => {
+          const value = emoteCounts[key];
+          if (value.count && value.usedBy) {
+            if (state.logParserResults.emoteCounts[key]) {
+              state.logParserResults.emoteCounts[key].count += value.count;
+              if (logDate && state.logParserResults.emoteCounts[key].usedOn[logDate]) {
+                state.logParserResults.emoteCounts[key].usedOn[logDate] += value.count;
+              } else if (logDate) {
+                state.logParserResults.emoteCounts[key].usedOn[logDate] = value.count;
+              }
+              Object.keys(value.usedBy).forEach(username => {
+                if (value.usedBy) {
+                  if (state.logParserResults.emoteCounts[key].usedBy[username]) {
+                    state.logParserResults.emoteCounts[key].usedBy[username] += value.usedBy[username];
+                  } else {
+                    state.logParserResults.emoteCounts[key].usedBy[username] = value.usedBy[username];
+                  }
+                }
+              })
+            } else if (logDate) {
+              value.usedOn[logDate] = value.count;
+              state.logParserResults.emoteCounts[key] = value;
+            }
+          }
+        })
+        Object.keys(usernameLastSeen).forEach((username) => {
+          const timestamp = usernameLastSeen[username];
+          if (timestamp) {
+            if (state.logParserResults.usernameLastSeen[username]) {
+              state.logParserResults.usernameLastSeen[username] = Math.max(state.logParserResults.usernameLastSeen[username], timestamp)
+            } else {
+              state.logParserResults.usernameLastSeen[username] = timestamp;
+            }
+          }
+        })
+      }
+      state.logParserFilenames = [logFilename, ...state.logParserFilenames];
+    }
+
+    function reset() {
+      state.progressData.uploadedList = [];
+      state.progressData.parsedList = [];
+      state.progressData.unparsedList = [];
+      state.progressData.status = ParserStatus.IDLE;
+      state.logParserResults.emoteCounts = {};
+      state.logParserResults.usernameLastSeen = {};
+      state.logParserFilenames = [];
+    }
 
     // function resetFileInputElement() {
     //   const inputElement = document.getElementById(
@@ -69,6 +328,19 @@ export default defineComponent({
     // document.getElementById("input").value = "";
     return {
       channelName,
+      channelID,
+      emoteCodes,
+      uploadButtonDisabled,
+      emotesUsed,
+      emotesTotal,
+      uniqueUsers,
+      totalUsageCount,
+      progress,
+      handleLogFilesUpload,
+      progressData: computed(() => state.progressData),
+      reset,
+      loading,
+      error
       // saveAll,
       // saveResultsToDB,
     };
@@ -86,5 +358,49 @@ export default defineComponent({
     list-style-type: circle;
     list-style-position: inside;
   }
+}
+.main {
+  min-height: 600px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-evenly;
+
+  & > div {
+    width: 100%;
+    max-height: 600px;
+  }
+}
+
+.input-side {
+  position: relative;
+
+  & > div {
+    height: 600px;
+  }
+}
+
+.middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.output-side {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+
+  & > :not(:last-child) {
+    margin-bottom: 20px;
+  }
+
+  & > div {
+    height: 290px;
+  }
+}
+
+footer {
+  margin-top: 1em;
 }
 </style>
