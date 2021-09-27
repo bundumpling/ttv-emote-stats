@@ -22,8 +22,6 @@ import {
   faLockOpen,
 } from "@fortawesome/free-solid-svg-icons";
 
-import authConfig from "../auth_config.json";
-import { setupAuth } from "./auth";
 import { RouteLocationRaw } from "vue-router";
 
 library.add(
@@ -45,25 +43,13 @@ library.add(
 
 require("./assets/sass/main.scss");
 
-function callbackRedirect(appState: { targetUrl: RouteLocationRaw; }) {
-  router.push(
-    appState && appState.targetUrl
-      ? appState.targetUrl
-      : '/'
-  );
-}
 
 const app = createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon);
   
 app.config.performance = true;
 
-
-// setupAuth(authConfig, callbackRedirect).then((auth) => {
-  app
-  .use(store)
-  // @ts-ignore
-  // .use(auth)
-  .use(router)
-  .mount('#app')
-// })
+app
+.use(store)
+.use(router)
+.mount('#app')
