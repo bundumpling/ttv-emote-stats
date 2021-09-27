@@ -39,6 +39,7 @@ export default async function logParser(log: string, emotes: string[]) {
 
   if (!logDate || !startingTime) {
     console.log("error reading log date or start time!")
+    return null;
   }
 
   let startOfCurrentLine = cursor;

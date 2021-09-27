@@ -19,7 +19,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "ManageParseLogStatistics",
+  name: "ParseLogsStatistics",
   props: {
     stats: {
       type: Object,

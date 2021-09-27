@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <span class="status">{{ message }}</span>
+  <div class="status">
+    <span>{{ message }}</span>
     <p v-if="isDone" @click="reset">[ Reset Form ]</p>
   </div>
 </template>
@@ -10,7 +10,7 @@ import { defineComponent, PropType, computed } from "vue";
 import { ParserStatus } from "../types";
 
 export default defineComponent({
-  name: "ManageParseLogStatus",
+  name: "ParseLogsStatus",
   props: {
     status: {
       type: String as PropType<ParserStatus>,
@@ -33,11 +33,11 @@ export default defineComponent({
         case ParserStatus.DONE:
           return "Results Saved";
         default:
-          return "";
+          return "Ready";
       }
     });
 
-    const isDone = computed(() => props.status === ParserStatus.DONE);
+    const isDone = computed(() => props.status === ParserStatus.DONE || props.status === ParserStatus.IDLE);
 
     return {
       message,
@@ -48,11 +48,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-p,
-span {
+.status {
   text-align: center;
 }
-.status {
+span {
   font-size: 2em;
   font-variant: small-caps;
   font-weight: bold;

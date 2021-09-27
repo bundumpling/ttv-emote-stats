@@ -15,7 +15,14 @@
       <div class="container box">
         <section class="main">
           <div class="input-side">
-            <Filelist header="Uploaded" :list="progressData.uploadedList" />
+            <div class="filelist">
+              <h3>Uploaded</h3>
+              <ul>
+                <li v-for="(filename, i) in progressData.uploadedList" :key="`${filename}-${i}`">
+                  {{ filename }}
+                </li>
+              </ul>
+            </div>            
           </div>
           <div class="middle">
             <UploadButton
@@ -24,18 +31,28 @@
               :handleUpload="handleLogFilesUpload"
             />
             <Status v-else :status="progressData.status" :reset="reset" />
-            <Statistics :stats="
-              {
-                emotesUsed,
-                emotesTotal,
-                uniqueUsers,
-                totalUsageCount
-              }
-            " />
+            <Statistics :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }" />
           </div>
           <div class="output-side">
-            <Filelist header="Parsed" :list="progressData.parsedList" />
-            <Filelist header="Skipped/Error" :list="progressData.unparsedList" />
+            <div class="filelist">
+              <h3>Parsed</h3>
+              <ul>
+                <li v-for="(filename, i) in progressData.parsedList" :key="`${filename}-${i}`">
+                  {{ filename }}
+                </li>
+              </ul>
+            </div>
+            <div class="filelist">
+              <h3>Skipped/Error</h3>
+              <ul>
+                <li v-for="(filename, i) in progressData.skippedList" :key="`${filename}-${i}`" class="listitem-skipped">
+                  {{ filename }}
+                </li>
+                <li v-for="(filename, i) in progressData.errorList" :key="`${filename}-${i}`" class="listitem-error">
+                  {{ filename }}
+                </li>
+              </ul>
+            </div>
           </div>
         </section>
         <footer>
@@ -52,20 +69,18 @@
 import { defineComponent, ref, reactive, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from 'axios';
-import { LogParserResult, LogParserResults, ParseLogsState, ParserStatus } from "@/types";
+import { LogParserResult, ParseLogsState, ParserStatus } from "@/types";
 import logParser from "../helpers/logParser";
 import TheSubheader from "../components/TheSubheader.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
-import Filelist from "../components/ManageParseLogFilelist.vue";
-import UploadButton from "../components/ManageParseLogUploadButton.vue";
-import Status from "../components/ManageParseLogStatus.vue";
-import Statistics from "../components/ManageParseLogStatistics.vue";
-import ProgressBar from "../components/ManageParseLogProgressBar.vue";
+import UploadButton from "../components/ParseLogsUploadButton.vue";
+import Status from "../components/ParseLogsStatus.vue";
+import Statistics from "../components/ParseLogsStatistics.vue";
+import ProgressBar from "../components/ParseLogsProgressBar.vue";
 export default defineComponent({
   name: "ParseLogsPage",
   components: {
     TheSubheader,
-    Filelist,
     UploadButton,
     Status,
     Statistics,
@@ -85,7 +100,8 @@ export default defineComponent({
       progressData: {
         uploadedList: [],
         parsedList: [],
-        unparsedList: [],
+        skippedList: [],
+        errorList: [],
         status: ParserStatus.IDLE
       },
       logParserResults: {
@@ -140,9 +156,9 @@ export default defineComponent({
       if (state.progressData.status === ParserStatus.DONE) {
         return 100;
       } else {
-        const { uploadedList, parsedList, unparsedList } = state.progressData;
+        const { uploadedList, parsedList, skippedList, errorList } = state.progressData;
         const result = Math.floor(
-          ((parsedList.length + unparsedList.length) / uploadedList.length) *
+          ((parsedList.length + skippedList.length + errorList.length) / uploadedList.length) *
             100
         );
         return isNaN(result) ? 0 : result;
@@ -166,8 +182,8 @@ export default defineComponent({
       ).then((res) => res.json());
     }
 
-    async function readLogFile(log: string | ArrayBuffer) {
-      const results: LogParserResult = await logParser(
+    async function readLogFile(log: string | ArrayBuffer | null) {
+      const results: LogParserResult | null = await logParser(
         log as string,
         state.emoteCodes
       );
@@ -188,7 +204,7 @@ export default defineComponent({
           const filename = files[i].name;
           state.progressData.uploadedList.push(filename);
           if (alreadyParsed.includes(filename)) {
-            state.progressData.unparsedList.push(filename);
+            state.progressData.skippedList.push(filename);
           } else {
             unparsedFiles.push(files[i]);
           }
@@ -202,7 +218,7 @@ export default defineComponent({
           let reader = new FileReader();
           reader.onerror = (e) => {
             if (e.target && e.target.error) {
-              state.progressData.unparsedList.push(unparsedFiles[i].name);
+              state.progressData.errorList.push(unparsedFiles[i].name);
             }
           };
           reader.onload = async (e) => {
@@ -211,17 +227,25 @@ export default defineComponent({
               state.progressData.status = ParserStatus.PARSING;
               const filename = unparsedFiles[i].name;
               const logParserResult = await readLogFile(text);
-              updateLogParserResults(filename, logParserResult);
-              state.progressData.parsedList.push(filename);
+              if (!logParserResult) {
+                state.progressData.errorList.push(filename);
+              } else {
+                updateLogParserResults(filename, logParserResult);
+                state.progressData.parsedList.push(filename);
+              }
               if (
                 state.progressData.parsedList.length +
-                  state.progressData.unparsedList.length ===
+                  state.progressData.skippedList.length + 
+                  state.progressData.errorList.length ===
                 state.progressData.uploadedList.length
               ) {
-                saveLogParserResultsToDb().then((response) => {
-                  // TODO Add error handling
-                  state.progressData.status = ParserStatus.DONE;
-                });
+                if (state.progressData.parsedList.length) {
+                  saveLogParserResultsToDb().then((response) => {
+                    state.progressData.status = ParserStatus.DONE;
+                  })
+                } else {
+                  state.progressData.status = ParserStatus.IDLE;
+                }
               }
             }
           };
@@ -299,33 +323,14 @@ export default defineComponent({
     function reset() {
       state.progressData.uploadedList = [];
       state.progressData.parsedList = [];
-      state.progressData.unparsedList = [];
+      state.progressData.skippedList = [];
+      state.progressData.errorList = [];
       state.progressData.status = ParserStatus.IDLE;
       state.logParserResults.emoteCounts = {};
       state.logParserResults.usernameLastSeen = {};
       state.logParserFilenames = [];
     }
 
-    // function resetFileInputElement() {
-    //   const inputElement = document.getElementById(
-    //     "logfile-input"
-    //   ) as HTMLInputElement;
-    //   if (inputElement) {
-    //     inputElement.value = "";
-    //   }
-    // }
-    // function saveResultsToDB(): void {
-    //   store.dispatch("saveLogParserResultsToDB");
-    //   resetFileInputElement();
-    // }
-
-    // function saveAll() {
-    //   // TODO
-    // }
-
-    // In order for the change event to fire, a different file must be uploaded.
-    // By setting the input element's value to zero, the same log file can be processed multiple times.
-    // document.getElementById("input").value = "";
     return {
       channelName,
       channelID,
@@ -357,7 +362,13 @@ export default defineComponent({
     padding: 0 1em;
     list-style-type: circle;
     list-style-position: inside;
+    text-align: left;
+
+    li {
+      text-align: left;
+    }
   }
+
 }
 .main {
   min-height: 600px;
@@ -402,5 +413,35 @@ export default defineComponent({
 
 footer {
   margin-top: 1em;
+}
+
+.filelist {
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  & > h3 {
+    border-bottom: 1px solid black;
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+  }
+  & > ul {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #eee;
+    font-size: 0.9em;
+    font-family: monospace;
+  }
+}
+
+li {
+  text-align: center;
+  padding: 2px;
+}
+.listitem-skipped {
+  text-decoration: line-through;
+}
+.listitem-error {
+  color: maroon;
 }
 </style>

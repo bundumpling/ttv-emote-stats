@@ -187,6 +187,7 @@ export enum ParserStatus {
 export type LogParserProgressData = {
   uploadedList: string[];
   parsedList: string[];
-  unparsedList: string[];
+  skippedList: string[];
+  errorList: string[];
   status: ParserStatus;
 };

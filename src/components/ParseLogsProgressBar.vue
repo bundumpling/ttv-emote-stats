@@ -6,7 +6,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "ManageParseLogProgressBar",
+  name: "ParseLogsProgressBar",
   props: {
     progress: {
       type: Number,

@@ -24,7 +24,7 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "ManageLogParserUploadButton",
+  name: "ParseLogsUploadButton",
   props: {
     disabled: {
       type: Boolean,
