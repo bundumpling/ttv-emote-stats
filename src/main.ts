@@ -20,6 +20,7 @@ import {
   faWindowClose,
   faLock,
   faLockOpen,
+  faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
 import { RouteLocationRaw } from "vue-router";
@@ -38,7 +39,8 @@ library.add(
   faCompressAlt,
   faWindowClose,
   faLock,
-  faLockOpen
+  faLockOpen,
+  faSpinner
 );
 
 require("./assets/sass/main.scss");
