@@ -11,7 +11,6 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted, provide } from "vue";
 import { useRoute } from "vue-router";
-
 import TheSubheader from "../components/TheSubheader.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
 import Controls from "../components/ChannelControls.vue";
@@ -57,6 +56,7 @@ export default defineComponent({
         usedOn: {},
         fromList: ''
       },
+      loadingEmoteDetails: false,
       emoteDetailsModalOpen: false,
       emotesPerPage: 10,
       emoteSearchInput: '',
@@ -74,6 +74,7 @@ export default defineComponent({
       openEmoteDetailsModal: function(emote: EmoteFromList, fromList: string) { 
         this.emoteDetails = { ...emote, fromList }  
         this.emoteDetailsModalOpen = true 
+        this.loadingEmoteDetails = false;
       },
       closeEmoteDetailsModal: function() { this.emoteDetailsModalOpen = false },
       setEmotesPerPage: function(value: number) { this.emotesPerPage = value }
@@ -114,6 +115,7 @@ export default defineComponent({
     });
 
     const getEmoteDetails = async (emote: EmoteFromList, fromList: string) => {
+      state.loadingEmoteDetails = true;
       if (state.emotes[emote.stateIndex].usedBy !== undefined && state.emotes[emote.stateIndex].usedOn !== undefined) {
         console.log(`Usage details for ${emote.code} already known... skipping API call.`)
         state.openEmoteDetailsModal(emote, fromList)

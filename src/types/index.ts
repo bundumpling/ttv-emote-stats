@@ -12,6 +12,7 @@ export interface ChannelState {
   emotes: Array<Emote>,
   hasEmotesFrom: { [index: string]: boolean },
   emoteDetails: EmoteDetails,
+  loadingEmoteDetails: boolean,
   emoteDetailsModalOpen: boolean,
   emotesPerPage: number,
   emoteSearchInput: string,

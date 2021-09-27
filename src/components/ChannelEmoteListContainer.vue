@@ -11,24 +11,31 @@
       "
     />
   </div>
-  <EmoteDetails v-if="emoteDetailsModalOpen" />
+  <Loading v-if="loadingEmoteDetails" />
+  <EmoteDetails v-if="!loadingEmoteDetails && emoteDetailsModalOpen" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, inject } from "vue";
+import { defineComponent, ref, computed, inject } from "vue";
 import { ChannelState, Emote, EmoteInList } from "../types";
 
 import EmoteList from "./ChannelEmoteList.vue";
 import EmoteDetails from "./ChannelEmoteDetailsModal.vue";
+import Loading from "./TheLoadingSpinner.vue";
 
 export default defineComponent({
   name: "ChannelEmoteListContainer",
   components: {
     EmoteList,
     EmoteDetails,
+    Loading
   },
   setup() {
     const state = inject('state') as ChannelState;
+
+    const loadingEmoteDetails = computed(() => {
+      return state.loadingEmoteDetails;
+    });
 
     const emoteDetailsModalOpen = computed(() => {
       return state.emoteDetailsModalOpen;
@@ -111,6 +118,7 @@ export default defineComponent({
       countsSorted,
       countsByProviderSorted,
       emoteDetailsModalOpen,
+      loadingEmoteDetails
     };
   },
 });
