@@ -20,6 +20,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .list-controls-wrapper {
+  margin-bottom: 1em;
   display: flex;
   justify-content: center;
   align-items: stretch;
