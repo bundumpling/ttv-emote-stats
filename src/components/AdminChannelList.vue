@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="header">
-      Channel List
-    </h2>
+    <TheSubheader msg="Channel List" />
     <ul class="channel-list">
       <li v-for="({ channelName, emoteCount }, index) in channelList" :key="channelName + index" class="channel-listitem box" @click="goToChannel(channelName)">
         <div class="channel-listitem-name">{{ channelName }}</div>
@@ -16,10 +14,13 @@
 import { defineComponent, ref, reactive, onMounted, computed } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router';
+import TheSubheader from "./TheSubheader.vue";
 
 export default defineComponent({
   name: "AdminChannelList",
-  components: {},
+  components: { 
+    TheSubheader 
+  },
   setup() {
     interface ChannelListItem {
       channelName: string,
@@ -95,11 +96,17 @@ export default defineComponent({
 }
 
 .channel-listitem {
+  background-color: #EEE;
   text-align: center;
   font-size: 1.2em;
   font-variant: small-caps;
   font-weight: bold;
   cursor: pointer;
+
+  &:hover {
+    background-color: rgb(241, 206, 117);
+    color: #111;
+  }
 }
 
 .channel-listitem-name {
