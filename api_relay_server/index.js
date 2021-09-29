@@ -2,9 +2,12 @@
   require("dotenv").config();
   const express = require("express");
   const cors = require("cors");
+  // const morgan = require("morgan");
   const fetch = require("node-fetch");
   const port = 8081;
   const app = express();
+
+  // app.use(morgan("combined"));
 
   const { connectToDb } = require("./db");
   const db = await connectToDb();
@@ -12,6 +15,7 @@
   const {
     saveUpdatedEmotes,
     updateCountsFromLog,
+    updateCountsFromBot,
     getChannelEmoteCounts,
     getChannelEmoteCodes,
     getEmoteUsageDetails,
@@ -24,7 +28,7 @@
 
   app.use(
     cors({
-      origin: "http://localhost:8080",
+      origin: ["http://localhost:8080", "172.17.144.1"],
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
     })
   );
@@ -217,6 +221,13 @@
     (req, res) => updateCountsFromLog(req, res, db)
   );
 
+  app.post(
+    "/admin/updateCountsFromBot",
+    express.json({ limit: "10MB" }),
+    decodeJWT,
+    updateCountsFromBot
+  );
+
   /* Disabled */
   /* app.post("/auth/register", express.json(), validateCreatedUser, registerUser);
    */
@@ -225,7 +236,7 @@
 
   app.get("/admin/getChannelList", decodeJWT, getChannelList);
 
-  app.listen(port, () =>
+  app.listen(port, "0.0.0.0", () =>
     console.log(`API Relay Server listening on port ${port}`)
   );
 })();

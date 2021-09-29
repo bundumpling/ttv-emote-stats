@@ -739,6 +739,55 @@ const loginUser = async (req, res) => {
   }
 };
 
+const updateCountsFromBot = async (req, res) => {
+  const start = Date.now();
+  const { channel, username, userID, timestamp, counts } = req.body;
+
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateKey = `${year}${month}${day}`;
+
+  const channelOwner = await db
+    .collection("TwitchLogin")
+    .findOne({ _id: channel });
+  const channelID = channelOwner.twitchID;
+
+  Object.keys(counts).forEach(async (emoteCode) => {
+    const emoteID = `${channelID}-${emoteCode}`;
+    const count = counts[emoteCode];
+
+    const usedByKey = `usedBy.${username}`;
+    const usedOnKey = `usedOn.${dateKey}`;
+    const incrementObj = {
+      count,
+      [usedByKey]: count,
+      [usedOnKey]: count,
+    };
+
+    await db.collection("Emote").updateOne(
+      { _id: emoteID },
+      {
+        $inc: incrementObj,
+      }
+    );
+  });
+
+  await db
+    .collection("TwitchLogin")
+    .updateOne(
+      { _id: username },
+      { $set: { twitchID: userID, lastSeen: timestamp } },
+      { upsert: true }
+    );
+
+  const duration = Date.now() - start;
+  console.log(`Updated ${Object.keys(counts).length} emotes in ${duration}ms`);
+
+  res.status(200).send({ duration });
+};
+
 /** Disabled */
 /*
 const registerUser = async (req, res) => {
@@ -773,6 +822,7 @@ const registerUser = async (req, res) => {
 module.exports = {
   saveUpdatedEmotes,
   updateCountsFromLog,
+  updateCountsFromBot,
   getChannelEmoteCodes,
   getChannelEmoteCounts,
   getEmoteUsageDetails,
