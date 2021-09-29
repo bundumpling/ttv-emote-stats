@@ -111,7 +111,7 @@ export default defineComponent({
         if (count > result.count) {
           const year = Number(String(dateKey).slice(0, 4));
           const month = Number(String(dateKey).slice(4, 6)) - 1;
-          const day = Number(String(dateKey).slice(7));
+          const day = Number(String(dateKey).slice(6));
           const date = new Date(year, month, day);
           const dateString = date.toDateString();
 
