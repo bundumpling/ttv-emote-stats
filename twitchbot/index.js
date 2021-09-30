@@ -6,5 +6,5 @@ const { MessageHandler } = require("./handlers/MessageHandler");
   let messageHandler = await MessageHandler.build();
   client.connect();
 
-  client.on("message", messageHandler.messageHandler);
+  client.on("message", messageHandler.parser);
 })();
