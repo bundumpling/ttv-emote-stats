@@ -1,6 +1,8 @@
 const axios = require("axios");
 const client = require("../client");
 
+const { dateToDateKey, dateKeyToDateString } = require("../helpers/date");
+
 async function login() {
   try {
     let response = await axios.post(
@@ -89,6 +91,45 @@ async function getEmoteTopUser(emoteID) {
   }
 }
 
+async function getEmoteTopUsers(emoteID) {
+  try {
+    let response = await axios.get(
+      `http://localhost:8081/emote/${emoteID}/usedBy`
+    );
+    let { usedBy } = response.data;
+
+    const n = 3; // number of top users to return
+
+    const topUsernames = Object.keys(usedBy)
+      .slice()
+      .sort((a, b) => usedBy[b] - usedBy[a])
+      .slice(0, n);
+
+    const topUsers = topUsernames.map((username) => {
+      return {
+        username: username.split("-")[0],
+        count: usedBy[username],
+      };
+    });
+    return topUsers;
+  } catch (error) {
+    throw new Error(error.response);
+  }
+}
+
+async function getEmoteCountForDate(emoteID, dateKey) {
+  try {
+    let response = await axios.get(
+      `http://localhost:8081/emote/${emoteID}/usedOn`
+    );
+    let { usedOn } = response.data;
+    const count = usedOn[dateKey] ? usedOn[dateKey] : null;
+    return count;
+  } catch (error) {
+    throw new Error(error.response);
+  }
+}
+
 async function getEmoteTopDate(emoteID) {
   try {
     let response = await axios.get(
@@ -106,11 +147,7 @@ async function getEmoteTopDate(emoteID) {
         topDate.count = usedOn[dateKey];
       }
     });
-    const year = Number(String(topDate.dateKey).slice(0, 4));
-    const month = Number(String(topDate.dateKey).slice(4, 6)) - 1;
-    const day = Number(String(topDate.dateKey).slice(6));
-    const date = new Date(year, month, day);
-    const dateString = date.toDateString();
+    const dateString = dateKeyToDateString(topDate.dateKey);
 
     return { date: dateString, count: topDate.count };
   } catch (error) {
@@ -123,7 +160,9 @@ class MessageHandler {
     this._commands = {
       "%ecount": this._ecount,
       "%ecountuser": this._ecountuser,
+      "%ecountdate": this._ecountdate,
       "%etopuser": this._etopuser,
+      "%etopusers": this._etopusers,
       "%etopdate": this._etopdate,
     };
   }
@@ -174,6 +213,32 @@ class MessageHandler {
     }
   }
 
+  async _ecountdate({ channelName, channelID, words }) {
+    const emoteCode = words[0];
+    const dateKey = words[1] ? words[1] : dateToDateKey(Date.now());
+
+    // TODO validate date
+
+    if (this._emoteCodes[channelName].includes(emoteCode)) {
+      const emoteID = `${channelID}-${emoteCode}`;
+
+      try {
+        let count = await getEmoteCountForDate(emoteID, dateKey);
+        if (count !== null) {
+          const dateString = dateKeyToDateString(dateKey);
+          client.say(
+            `#${channelName}`,
+            `${emoteCode} used ${count} times on ${dateString}`
+          );
+        }
+      } catch (error) {
+        console.log(
+          `Error getting count for dateKey: ${dateKey} and emoteID: ${emoteID}`
+        );
+      }
+    }
+  }
+
   async _etopuser({ channelName, channelID, words }) {
     const emoteCode = words[0];
     if (this._emoteCodes[channelName].includes(emoteCode)) {
@@ -185,6 +250,32 @@ class MessageHandler {
           client.say(
             `#${channelName}`,
             `${emoteCode} used most by ${topUser.username} (${topUser.count} times)`
+          );
+        }
+      } catch (error) {
+        console.log(`Error getting top user for emoteID: ${emoteID}`);
+      }
+    }
+  }
+
+  async _etopusers({ channelName, channelID, words }) {
+    // gets top 3 users
+    const emoteCode = words[0];
+    if (this._emoteCodes[channelName].includes(emoteCode)) {
+      const emoteID = `${channelID}-${emoteCode}`;
+
+      try {
+        let topUsers = await getEmoteTopUsers(emoteID);
+        if (topUsers && topUsers.length) {
+          const topUsersString = topUsers
+            .map(
+              ({ username, count }, index) =>
+                `${index + 1}. ${username} (${count})`
+            )
+            .join(" ");
+          client.say(
+            `#${channelName}`,
+            `Top users of ${emoteCode} : ${topUsersString}`
           );
         }
       } catch (error) {
