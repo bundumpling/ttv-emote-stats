@@ -697,6 +697,12 @@ const getChannelList = async (req, res) => {
     .then((channelList) => res.json({ channelList }));
 };
 
+const getEmoteCount = async (req, res) => {
+  const emoteID = req.params.emoteID;
+  const { count } = await db.collection("Emote").findOne({ _id: emoteID });
+  return res.status(200).send({ count });
+};
+
 const loginUser = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -741,7 +747,7 @@ const loginUser = async (req, res) => {
 
 const updateCountsFromBot = async (req, res) => {
   const start = Date.now();
-  const { channel, username, userID, timestamp, counts } = req.body;
+  const { channelName, username, userID, timestamp, counts } = req.body;
 
   const date = new Date(timestamp);
   const year = date.getFullYear();
@@ -751,7 +757,7 @@ const updateCountsFromBot = async (req, res) => {
 
   const channelOwner = await db
     .collection("TwitchLogin")
-    .findOne({ _id: channel });
+    .findOne({ _id: channelName });
   const channelID = channelOwner.twitchID;
 
   Object.keys(counts).forEach(async (emoteCode) => {
@@ -825,6 +831,7 @@ module.exports = {
   updateCountsFromBot,
   getChannelEmoteCodes,
   getChannelEmoteCounts,
+  getEmoteCount,
   getEmoteUsageDetails,
   getChannelEmotesFromDatabaseAndProviders,
   getChannelList,
