@@ -230,6 +230,11 @@ class MessageHandler {
             `#${channelName}`,
             `${emoteCode} used ${count} times on ${dateString}`
           );
+        } else {
+          client.say(
+            `#${channelName}`,
+            `No record of ${emoteCode} used on that date (Format is YYYYMMDD)`
+          );
         }
       } catch (error) {
         console.log(
