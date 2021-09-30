@@ -46,10 +46,34 @@ async function getEmoteCount(emoteID) {
   }
 }
 
+async function getEmoteTopUser(emoteID) {
+  try {
+    let response = await axios.get(
+      `http://localhost:8081/emote/${emoteID}/usedBy`
+    );
+    let { usedBy } = response.data;
+
+    let topUser = {
+      username: null,
+      count: 0,
+    };
+    Object.keys(usedBy).forEach((username) => {
+      if (usedBy[username] > topUser.count) {
+        topUser.username = username.split("-")[0];
+        topUser.count = usedBy[username];
+      }
+    });
+    return topUser;
+  } catch (error) {
+    throw new Error(error.response);
+  }
+}
+
 class MessageHandler {
   constructor() {
     this._commands = {
       "%ecount": this._ecount,
+      "%etopuser": this._etopuser,
     };
   }
 
@@ -68,6 +92,25 @@ class MessageHandler {
         }
       } catch (error) {
         console.log(`Error getting emote count for emoteID: ${emoteID}`);
+      }
+    }
+  }
+
+  async _etopuser({ channelName, channelID, words }) {
+    const emoteCode = words[0];
+    if (this._emoteCodes[channelName].includes(emoteCode)) {
+      const emoteID = `${channelID}-${emoteCode}`;
+
+      try {
+        let topUser = await getEmoteTopUser(emoteID);
+        if (topUser && topUser.username && topUser.count) {
+          client.say(
+            `#${channelName}`,
+            `${emoteCode} has been used most by ${topUser.username} (${topUser.count} times)`
+          );
+        }
+      } catch (error) {
+        console.log(`Error getting top user for emoteID: ${emoteID}`);
       }
     }
   }

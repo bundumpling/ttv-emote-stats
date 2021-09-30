@@ -703,6 +703,12 @@ const getEmoteCount = async (req, res) => {
   return res.status(200).send({ count });
 };
 
+const getEmoteUsedBy = async (req, res) => {
+  const emoteID = req.params.emoteID;
+  const { usedBy } = await db.collection("Emote").findOne({ _id: emoteID });
+  return res.status(200).send({ usedBy });
+};
+
 const loginUser = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -832,6 +838,7 @@ module.exports = {
   getChannelEmoteCodes,
   getChannelEmoteCounts,
   getEmoteCount,
+  getEmoteUsedBy,
   getEmoteUsageDetails,
   getChannelEmotesFromDatabaseAndProviders,
   getChannelList,
