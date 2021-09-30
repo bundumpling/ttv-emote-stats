@@ -20,6 +20,7 @@
     getChannelEmoteCodes,
     getEmoteCount,
     getEmoteUsedBy,
+    getEmoteUsedOn,
     getEmoteUsageDetails,
     getChannelEmotesFromDatabaseAndProviders,
     getChannelList,
@@ -198,6 +199,7 @@
 
   app.get("/emote/:emoteID/count", getEmoteCount);
   app.get("/emote/:emoteID/usedBy", getEmoteUsedBy);
+  app.get("/emote/:emoteID/usedOn", getEmoteUsedOn);
 
   app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
     const channelName = req.params.channelName;

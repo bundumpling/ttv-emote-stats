@@ -46,6 +46,26 @@ async function getEmoteCount(emoteID) {
   }
 }
 
+async function getEmoteCountForUsername(emoteID, username) {
+  try {
+    let response = await axios.get(
+      `http://localhost:8081/emote/${emoteID}/usedBy`
+    );
+    let { usedBy } = response.data;
+
+    const result = Object.keys(usedBy).find(
+      (user) => user.split("-")[0] === username
+    );
+    if (result !== undefined) {
+      return usedBy[result];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error(error.response);
+  }
+}
+
 async function getEmoteTopUser(emoteID) {
   try {
     let response = await axios.get(
@@ -69,11 +89,42 @@ async function getEmoteTopUser(emoteID) {
   }
 }
 
+async function getEmoteTopDate(emoteID) {
+  try {
+    let response = await axios.get(
+      `http://localhost:8081/emote/${emoteID}/usedOn`
+    );
+    let { usedOn } = response.data;
+
+    let topDate = {
+      dateKey: null,
+      count: 0,
+    };
+    Object.keys(usedOn).forEach((dateKey) => {
+      if (usedOn[dateKey] > topDate.count) {
+        topDate.dateKey = dateKey;
+        topDate.count = usedOn[dateKey];
+      }
+    });
+    const year = Number(String(topDate.dateKey).slice(0, 4));
+    const month = Number(String(topDate.dateKey).slice(4, 6)) - 1;
+    const day = Number(String(topDate.dateKey).slice(6));
+    const date = new Date(year, month, day);
+    const dateString = date.toDateString();
+
+    return { date: dateString, count: topDate.count };
+  } catch (error) {
+    throw new Error(error.response);
+  }
+}
+
 class MessageHandler {
   constructor() {
     this._commands = {
       "%ecount": this._ecount,
+      "%ecountuser": this._ecountuser,
       "%etopuser": this._etopuser,
+      "%etopdate": this._etopdate,
     };
   }
 
@@ -85,13 +136,40 @@ class MessageHandler {
       try {
         let count = await getEmoteCount(emoteID);
         if (!isNaN(count)) {
-          client.say(
-            `#${channelName}`,
-            `${emoteCode} has been used ${count} times.`
-          );
+          client.say(`#${channelName}`, `${emoteCode} used ${count} times.`);
         }
       } catch (error) {
         console.log(`Error getting emote count for emoteID: ${emoteID}`);
+      }
+    }
+  }
+
+  async _ecountuser({ channelName, channelID, username, words }) {
+    const emoteCode = words[0];
+
+    // Get count for requesting user if no user specified as second parameter
+    username = words[1] ? words[1].toLowerCase() : username.toLowerCase();
+
+    if (this._emoteCodes[channelName].includes(emoteCode)) {
+      const emoteID = `${channelID}-${emoteCode}`;
+
+      try {
+        let count = await getEmoteCountForUsername(emoteID, username);
+        if (count !== null) {
+          client.say(
+            `#${channelName}`,
+            `${username} used ${emoteCode} ${count} times.`
+          );
+        } else {
+          client.say(
+            `#${channelName}`,
+            `No record of ${username} using ${emoteCode}`
+          );
+        }
+      } catch (error) {
+        console.log(
+          `Error getting ${username}'s count for emoteID: ${emoteID}`
+        );
       }
     }
   }
@@ -106,11 +184,30 @@ class MessageHandler {
         if (topUser && topUser.username && topUser.count) {
           client.say(
             `#${channelName}`,
-            `${emoteCode} has been used most by ${topUser.username} (${topUser.count} times)`
+            `${emoteCode} used most by ${topUser.username} (${topUser.count} times)`
           );
         }
       } catch (error) {
         console.log(`Error getting top user for emoteID: ${emoteID}`);
+      }
+    }
+  }
+
+  async _etopdate({ channelName, channelID, words }) {
+    const emoteCode = words[0];
+    if (this._emoteCodes[channelName].includes(emoteCode)) {
+      const emoteID = `${channelID}-${emoteCode}`;
+
+      try {
+        let topDate = await getEmoteTopDate(emoteID);
+        if (topDate && topDate.date && topDate.count) {
+          client.say(
+            `#${channelName}`,
+            `${emoteCode} used most on ${topDate.date} (${topDate.count} times)`
+          );
+        }
+      } catch (error) {
+        console.log(`Error getting top date for emoteID: ${emoteID}`);
       }
     }
   }
@@ -164,6 +261,8 @@ class MessageHandler {
           const args = {
             channelName,
             channelID: this._channelNameToChannelID[channelName],
+            username,
+            userID,
             words: words.slice(1),
           };
           this._commands[words[0]].apply(this, [args]);
