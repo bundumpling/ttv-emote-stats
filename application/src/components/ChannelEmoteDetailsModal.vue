@@ -91,7 +91,7 @@
 </template>
 
 <script lang="ts">
-import { ChannelState } from "@/types";
+import { ChannelState } from "../types";
 import { defineComponent, inject, computed, ref } from "vue";
 
 export default defineComponent({
