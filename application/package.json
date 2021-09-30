@@ -1,5 +1,5 @@
 {
-  "name": "ttv-emote-stats",
+  "name": "@ttv-emote-stats/application",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -59,11 +59,7 @@
       "@typescript-eslint/no-unused-vars": "off"
     }
   },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ],
+  "browserslist": ["> 1%", "last 2 versions", "not dead"],
   "resolutions": {
     "glob-parent": "^6.0.1",
     "electron": "^9.4.0",

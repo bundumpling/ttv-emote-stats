@@ -21,21 +21,6 @@ Needed `sass-loader@^10` to get Bulma to work properly in dev environment.
   - Implement real-time view using web sockets
   - Batch updates to database from the chat monitoring bot
 
-## **Feature**: Detailed statistics
-Rewrite parser to track who used the emote being counted (**done**) and when it was used (per-day basis seems ideal).
-  - Usage within a range of dates
-    - emotes by day
-    - days by emote
-  - Usage by specific users
-    - usernames by emote
-    - emote by username 
-#### *This all points to the relational nature of the data, and the usefulness of an RDBMS.*
-
-## **Feature**: User Accounts
-  Given a user account system tied to a channel in which a bot is present, the current Settings page would become part of an onboarding process.
-
-  Other functionality would then be accessible from a **Management Panel**.
-
 ## **Feature**: Search
 Emote usage data by specific users in a channel would ideally have the option to search for a group of names.
   - Use case would be someone that changes their name and wishes to combine the data recorded under multiple aliases.
@@ -54,12 +39,5 @@ Emote usage data by specific users in a channel would ideally have the option to
   - For existing emote codes update with new art or provider (if previous one was removed)
   
 ## ***Current Tasks***
-  - Update Settings page to be a protected route using Twitch OAuth credentials.
-  - Used to manage channel emote updates by comparing freshly fetched data from emote provider APIs to what's currently in the database.
-  - If an existing emote is no longer accessible from the provider, option given to flag as obsolete in the database.
-  - If an existing emote has changed (for instance, the emote code now applies to a different emote, possible from a different provider entirely, or was previously flagged as obsolete and is now available again), option given to update in the database.
-  - If a new emote is provided, option given to add it to the database.
-  - If multiple emotes use the same emote code, warn of the conflict and force a choice of one among them to store in the database.
-  - View will have a Condensed and a Detailed view.
-    - Condensed is similar to the current view, where each provider's emotes appear as a grid of image thumbnails. Added will be a summary of pending changes.
-    - Detailed is a table view, with attribute columns and functionality to sort by any attribute.
+  - Create command list for interacting with the twitch bot.
+    - Channel owners should be able to update the channel's emote set in the database via bot command.

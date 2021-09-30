@@ -1,0 +1,16 @@
+{
+  "name": "@ttv-emote-stats/twitchbot",
+  "version": "1.0.0",
+  "description": "Twitch chat bot for TTV Emote Stats",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "bundumpling",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "tmi.js": "^1.8.3"
+  }
+}
