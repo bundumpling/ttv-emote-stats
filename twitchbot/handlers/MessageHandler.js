@@ -459,9 +459,6 @@ class MessageHandler {
 
   _sayStatusOfChannel(channelName) {
     const now = Date.now();
-    console.log(
-      `Now: ${now} Last message time: ${this._channelLastStatusMessageSent[channelName]}`
-    );
     if (
       now - this._statusMessageCooldownPeriod >
       this._channelLastStatusMessageSent[channelName]
