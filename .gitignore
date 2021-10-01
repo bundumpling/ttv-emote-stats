@@ -2,6 +2,9 @@
 **/node_modules
 application/dist
 
+# bot channel config
+twitchbot/config.json
+
 # encryption keys
 private.pem
 public.pem
