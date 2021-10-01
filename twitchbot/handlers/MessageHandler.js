@@ -2,6 +2,7 @@ const axios = require("axios");
 const client = require("../client");
 
 const { dateToDateKey, dateKeyToDateString } = require("../helpers/date");
+const { readConfigJSON, writeConfigJSON } = require("../helpers/config");
 
 async function login() {
   try {
@@ -164,147 +165,318 @@ class MessageHandler {
       "%etopuser": this._etopuser,
       "%etopusers": this._etopusers,
       "%etopdate": this._etopdate,
+      "%commands": this._commands,
+      "%restricted": this._restricted,
     };
+
+    this._config = {};
   }
 
-  async _ecount({ channelName, channelID, words }) {
-    const emoteCode = words[0];
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+  _commands({ channelName, username, words }) {
+    if (this.userIsChannelOwner(channelName, username)) {
+      const eCommandsOn =
+        this._config.channel_settings[channelName].ecommands_on;
+      const onOrOff = words[0] ? words[0].toLowerCase() : "";
+      let message = "";
 
-      try {
-        let count = await getEmoteCount(emoteID);
-        if (!isNaN(count)) {
-          client.say(`#${channelName}`, `${emoteCode} used ${count} times.`);
+      if (eCommandsOn) {
+        if (onOrOff === "off") {
+          this._config.channel_settings[channelName].ecommands_on = false;
+          writeConfigJSON(this._config);
+          message = "ECommands are now OFF";
+        } else if (onOrOff === "on") {
+          message = "ECommands are ON";
+        } else {
+          message = 'Usage: "%commands on|off" ...current status is ON';
         }
-      } catch (error) {
-        console.log(`Error getting emote count for emoteID: ${emoteID}`);
+      } else {
+        if (onOrOff === "on") {
+          this._config.channel_settings[channelName].ecommands_on = true;
+          writeConfigJSON(this._config);
+          message = "ECommands are now ON";
+        } else if (onOrOff === "off") {
+          message = "ECommands are OFF";
+        } else {
+          message = 'Usage: "%commands on|off" ...current status is OFF';
+        }
       }
+
+      client.say(`#${channelName}`, message);
+    }
+  }
+
+  _restricted({ channelName, username, words }) {
+    if (this.userIsChannelOwner(channelName, username)) {
+      const eCommandsRestricted =
+        this._config.channel_settings[channelName].ecommands_restricted;
+      const onOrOff = words[0] ? words[0].toLowerCase() : "";
+      let message = "";
+
+      if (eCommandsRestricted) {
+        if (onOrOff === "off") {
+          this._config.channel_settings[
+            channelName
+          ].ecommands_restricted = false;
+          writeConfigJSON(this._config);
+          message = "Restricted Mode is now OFF";
+        } else if (onOrOff === "on") {
+          message = "Restricted Mode is ON";
+        } else {
+          message = 'Usage: "%restricted on|off" ...current status is ON';
+        }
+      } else {
+        if (onOrOff === "on") {
+          this._config.channel_settings[
+            channelName
+          ].ecommands_restricted = true;
+          writeConfigJSON(this._config);
+          message = "Restricted Mode is now ON";
+        } else if (onOrOff === "off") {
+          message = "Restricted Mode is OFF";
+        } else {
+          message = 'Usage: "%restricted on|off" ...current status is OFF';
+        }
+      }
+
+      client.say(`#${channelName}`, message);
+    }
+  }
+
+  async _ecount({ channelName, channelID, username, words }) {
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
+
+        try {
+          let count = await getEmoteCount(emoteID);
+          if (!isNaN(count)) {
+            client.say(`#${channelName}`, `${emoteCode} used ${count} times.`);
+          }
+        } catch (error) {
+          console.log(`Error getting emote count for emoteID: ${emoteID}`);
+        }
+      }
+    } else {
+      this._sayStatusOfChannel(channelName);
     }
   }
 
   async _ecountuser({ channelName, channelID, username, words }) {
-    const emoteCode = words[0];
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
 
-    // Get count for requesting user if no user specified as second parameter
-    username = words[1] ? words[1].toLowerCase() : username.toLowerCase();
+      // Get count for requesting user if no user specified as second parameter
+      username = words[1] ? words[1].toLowerCase() : username.toLowerCase();
 
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
 
-      try {
-        let count = await getEmoteCountForUsername(emoteID, username);
-        if (count !== null) {
-          client.say(
-            `#${channelName}`,
-            `${username} used ${emoteCode} ${count} times.`
-          );
-        } else {
-          client.say(
-            `#${channelName}`,
-            `No record of ${username} using ${emoteCode}`
+        try {
+          let count = await getEmoteCountForUsername(emoteID, username);
+          if (count !== null) {
+            client.say(
+              `#${channelName}`,
+              `${username} used ${emoteCode} ${count} times.`
+            );
+          } else {
+            client.say(
+              `#${channelName}`,
+              `No record of ${username} using ${emoteCode}`
+            );
+          }
+        } catch (error) {
+          console.log(
+            `Error getting ${username}'s count for emoteID: ${emoteID}`
           );
         }
-      } catch (error) {
-        console.log(
-          `Error getting ${username}'s count for emoteID: ${emoteID}`
-        );
       }
+    } else {
+      this._sayStatusOfChannel(channelName);
     }
   }
 
-  async _ecountdate({ channelName, channelID, words }) {
-    const emoteCode = words[0];
-    const dateKey = words[1] ? words[1] : dateToDateKey(Date.now());
+  async _ecountdate({ channelName, channelID, username, words }) {
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
+      const dateKey = words[1] ? words[1] : dateToDateKey(Date.now());
 
-    // TODO validate date
+      // TODO validate date
 
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
 
-      try {
-        let count = await getEmoteCountForDate(emoteID, dateKey);
-        if (count !== null) {
-          const dateString = dateKeyToDateString(dateKey);
-          client.say(
-            `#${channelName}`,
-            `${emoteCode} used ${count} times on ${dateString}`
-          );
-        } else {
-          client.say(
-            `#${channelName}`,
-            `No record of ${emoteCode} used on that date (Format is YYYYMMDD)`
+        try {
+          let count = await getEmoteCountForDate(emoteID, dateKey);
+          if (count !== null) {
+            const dateString = dateKeyToDateString(dateKey);
+            client.say(
+              `#${channelName}`,
+              `${emoteCode} used ${count} times on ${dateString}`
+            );
+          } else {
+            client.say(
+              `#${channelName}`,
+              `No record of ${emoteCode} used on that date (Format is YYYYMMDD)`
+            );
+          }
+        } catch (error) {
+          console.log(
+            `Error getting count for dateKey: ${dateKey} and emoteID: ${emoteID}`
           );
         }
-      } catch (error) {
-        console.log(
-          `Error getting count for dateKey: ${dateKey} and emoteID: ${emoteID}`
-        );
       }
+    } else {
+      this._sayStatusOfChannel(channelName);
     }
   }
 
-  async _etopuser({ channelName, channelID, words }) {
-    const emoteCode = words[0];
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+  async _etopuser({ channelName, channelID, username, words }) {
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
 
-      try {
-        let topUser = await getEmoteTopUser(emoteID);
-        if (topUser && topUser.username && topUser.count) {
-          client.say(
-            `#${channelName}`,
-            `${emoteCode} used most by ${topUser.username} (${topUser.count} times)`
-          );
+        try {
+          let topUser = await getEmoteTopUser(emoteID);
+          if (topUser && topUser.username && topUser.count) {
+            client.say(
+              `#${channelName}`,
+              `${emoteCode} used most by ${topUser.username} (${topUser.count} times)`
+            );
+          }
+        } catch (error) {
+          console.log(`Error getting top user for emoteID: ${emoteID}`);
         }
-      } catch (error) {
-        console.log(`Error getting top user for emoteID: ${emoteID}`);
       }
+    } else {
+      this._sayStatusOfChannel(channelName);
     }
   }
 
-  async _etopusers({ channelName, channelID, words }) {
+  async _etopusers({ channelName, channelID, username, words }) {
     // gets top 3 users
-    const emoteCode = words[0];
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
 
-      try {
-        let topUsers = await getEmoteTopUsers(emoteID);
-        if (topUsers && topUsers.length) {
-          const topUsersString = topUsers
-            .map(
-              ({ username, count }, index) =>
-                `${index + 1}. ${username} (${count})`
-            )
-            .join(" ");
-          client.say(
-            `#${channelName}`,
-            `Top users of ${emoteCode} : ${topUsersString}`
-          );
+        try {
+          let topUsers = await getEmoteTopUsers(emoteID);
+          if (topUsers && topUsers.length) {
+            const topUsersString = topUsers
+              .map(
+                ({ username, count }, index) =>
+                  `${index + 1}. ${username} (${count})`
+              )
+              .join(" ");
+            client.say(
+              `#${channelName}`,
+              `Top users of ${emoteCode} : ${topUsersString}`
+            );
+          }
+        } catch (error) {
+          console.log(`Error getting top user for emoteID: ${emoteID}`);
         }
-      } catch (error) {
-        console.log(`Error getting top user for emoteID: ${emoteID}`);
       }
+    } else {
+      this._sayStatusOfChannel(channelName);
     }
   }
 
-  async _etopdate({ channelName, channelID, words }) {
-    const emoteCode = words[0];
-    if (this._emoteCodes[channelName].includes(emoteCode)) {
-      const emoteID = `${channelID}-${emoteCode}`;
+  async _etopdate({ channelName, channelID, username, words }) {
+    if (
+      this.channelECommandsOn(channelName) ||
+      (this.channelECommandsOn(channelName) &&
+        this.channelIsInRestrictedMode(channelName) &&
+        this.userIsChannelOwner(channelName, username))
+    ) {
+      const emoteCode = words[0];
+      if (this._emoteCodes[channelName].includes(emoteCode)) {
+        const emoteID = `${channelID}-${emoteCode}`;
 
-      try {
-        let topDate = await getEmoteTopDate(emoteID);
-        if (topDate && topDate.date && topDate.count) {
-          client.say(
-            `#${channelName}`,
-            `${emoteCode} used most on ${topDate.date} (${topDate.count} times)`
-          );
+        try {
+          let topDate = await getEmoteTopDate(emoteID);
+          if (topDate && topDate.date && topDate.count) {
+            client.say(
+              `#${channelName}`,
+              `${emoteCode} used most on ${topDate.date} (${topDate.count} times)`
+            );
+          }
+        } catch (error) {
+          console.log(`Error getting top date for emoteID: ${emoteID}`);
         }
-      } catch (error) {
-        console.log(`Error getting top date for emoteID: ${emoteID}`);
       }
+    } else {
+      this._sayStatusOfChannel(channelName);
+    }
+  }
+
+  userIsChannelOwner(channelName, username) {
+    return channelName === username;
+  }
+
+  channelIsInRestrictedMode(channelName) {
+    return (
+      this._config.channel_settings &&
+      this._config.channel_settings[channelName] &&
+      this._config.channel_settings[channelName].ecommands_restricted
+    );
+  }
+
+  channelECommandsOn(channelName) {
+    return (
+      this._config.channel_settings &&
+      this._config.channel_settings[channelName] &&
+      this._config.channel_settings[channelName].ecommands_on
+    );
+  }
+
+  _sayStatusOfChannel(channelName) {
+    const now = Date.now();
+    console.log(
+      `Now: ${now} Last message time: ${this._channelLastStatusMessageSent[channelName]}`
+    );
+    if (
+      now - this._statusMessageCooldownPeriod >
+      this._channelLastStatusMessageSent[channelName]
+    ) {
+      const eCommandsOnOrOff = this._config.channel_settings[channelName]
+        .ecommands_on
+        ? "ON"
+        : "OFF";
+      const restrictedModeOnOrOff = this._config.channel_settings[channelName]
+        .ecommands_restricted
+        ? "ON"
+        : "OFF";
+      const message = `STATUS: ECommands are ${eCommandsOnOrOff} | Restricted Mode is ${restrictedModeOnOrOff}`;
+      client.say(`#${channelName}`, message);
+      this._channelLastStatusMessageSent[channelName] = now;
     }
   }
 
@@ -323,8 +495,19 @@ class MessageHandler {
       console.log(error);
     }
 
+    let config = await readConfigJSON();
+    if (config) this._config = config;
+    console.log(this._config);
+
     this._emoteCodes = {};
     this._channelNameToChannelID = {};
+
+    // used for cooldown period between status messages
+    this._statusMessageCooldownPeriod = 60000;
+    this._channelLastStatusMessageSent = {};
+    process.env.CHANNELS.split(",").forEach((channelName) => {
+      this._channelLastStatusMessageSent[channelName] = 0;
+    });
 
     try {
       process.env.CHANNELS.split(",").forEach(async (channelName) => {
@@ -344,12 +527,14 @@ class MessageHandler {
     this._messageParser = async (channel, tags, message, self) => {
       // const start = Date.now();
       if (self) return;
+
       // remove # at start of channel name
       const channelName = channel.slice(1);
+
       try {
-        const codes = this._emoteCodes[channelName];
         const username = tags.username;
         const userID = tags["user-id"];
+        const codes = this._emoteCodes[channelName];
 
         const words = message.split(" ");
 
