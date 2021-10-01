@@ -23,8 +23,6 @@ import {
   faSpinner
 } from "@fortawesome/free-solid-svg-icons";
 
-import { RouteLocationRaw } from "vue-router";
-
 library.add(
   faUpload,
   faDownload,
@@ -43,7 +41,7 @@ library.add(
   faSpinner
 );
 
-require("./assets/sass/main.scss");
+// require("./assets/sass/main.scss");
 
 
 const app = createApp(App)

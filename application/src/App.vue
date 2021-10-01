@@ -1,6 +1,8 @@
 <template>
+<div>
   <TheHeader />
   <router-view />
+  </div>
 </template>
 
 <script lang="ts">
@@ -15,7 +17,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="scss">
+@import "./assets/sass/main.scss";
 html {
   overflow-y: auto;
 }
