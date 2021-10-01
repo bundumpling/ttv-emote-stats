@@ -65,7 +65,7 @@ export default defineComponent({
     const channelList = computed(() => state.channelList)
 
     function goToChannel(channelName: string) {
-      router.push(`/channel/${channelName}`)
+      router.push(`/admin/${channelName}`)
     }
 
     return {
