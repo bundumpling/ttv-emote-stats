@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter, RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 
+const baseTitle = import.meta.env.VITE_APP_BASE_TITLE;
+
 const validateChannelName = (channelName: string | string[]) =>
   (/^[a-zA-Z0-9_]{4,25}$/.test(Array.isArray(channelName) ? channelName.join() : channelName))
 
@@ -8,6 +10,7 @@ const validateEmoteID = (emoteID: string | string[]) =>
 
 const beforeEnterRouteWithChannelName = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   if (validateChannelName(to.params.channelName)) {
+    document.title = `${baseTitle} | ${to.params.channelName} | ${String(to.name)}`
     next()
   } else {
     next({ name: "NotFound" });
@@ -16,6 +19,7 @@ const beforeEnterRouteWithChannelName = (to: RouteLocationNormalized, from: Rout
 
 const beforeEnterRouteWithEmoteID = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   if (validateEmoteID(to.params.emoteID)) {
+    document.title = `${baseTitle} | Emote | ${String(to.params.emoteID).split("-")[1]}`;
     next()
   } else {
     next({ name: "NotFound" })
@@ -26,12 +30,18 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: () => import("../pages/HomePage.vue")
+    component: () => import("../pages/HomePage.vue"),
+    meta: {
+      setTitle: true
+    }
   },
   {
     path: "/channel/:channelName",
-    name: "Channel",
+    name: "Channel Stats",
     component: () => import("../pages/ChannelPage.vue"),
+    meta: {
+      title: import.meta.env.VITE_APP_BASE_TITLE 
+    },
     beforeEnter: beforeEnterRouteWithChannelName
   },
   {
@@ -42,7 +52,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/admin/:channelName/update-emotes",
-    name: "UpdateEmotes",
+    name: "Update Emotes",
     component: () => import("../pages/UpdateEmotesPage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName,
     meta: {
@@ -51,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/admin/:channelName/parse-logs",
-    name: "ParseLogs",
+    name: "Parse Logs",
     component: () => (import("../pages/ParseLogsPage.vue")),
     beforeEnter: beforeEnterRouteWithChannelName,
     meta: {
@@ -60,7 +70,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/admin/:channelName",
-    name: "ManageChannel",
+    name: "Manage",
     component: () => import("../pages/ManagePage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName,
     meta: {
@@ -70,20 +80,27 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import("../pages/LoginPage.vue")
+    component: () => import("../pages/LoginPage.vue"),
+    meta: {
+      setTitle: true
+    }
   },
   {
     path: '/admin',
     name: 'Admin',
     component: () => import("../pages/AdminPage.vue"),
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      setTitle: true
     }
   },
   {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../pages/NotFoundPage.vue")
+    component: () => import("../pages/NotFoundPage.vue"),
+    meta: {
+      setTitle: true
+    }
   }
 ];
 
@@ -93,6 +110,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  if (to.meta.setTitle) {
+    document.title = `${baseTitle} | ${String(to.name)}`
+  }
   if (to.name === from.name) {
     return next();
   }
