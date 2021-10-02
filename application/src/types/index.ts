@@ -35,6 +35,12 @@ export interface ParseLogsState {
   progressData: LogParserProgressData
 }
 
+export interface UpdateEmotesState {
+  channelID: string | null,
+  emotesFromDatabase: Emote[],
+  emotesFromProviders: EmoteFromProvider[],
+  emoteCodes: string[]
+}
 
 export interface LogParserResults {
   emoteCounts: LogParserEmoteCounts,
@@ -193,3 +199,10 @@ export type LogParserProgressData = {
   errorList: string[];
   status: ParserStatus;
 };
+
+export type EmoteFromProvider = {
+  code: string,
+  image: string,
+  provider: string,
+  providerID: string
+}
