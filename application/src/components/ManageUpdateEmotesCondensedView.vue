@@ -9,14 +9,14 @@
         >
           <div
             class="pending-changes-summary-group-item-header"
-            @click="toggleCategoryExpanded(category.displayText)"
-            v-bind:style="{
+            :style="{
               'background-color': `${colorFromKey(index)}50`,
               'border-color': colorFromKey(index),
               'border-bottom-width': category.emotes.length
                 ? `4px solid ${colorFromKey(index)}`
                 : `8px solid ${colorFromKey(index)}`,
             }"
+            @click="toggleCategoryExpanded(category.displayText)"
           >
             <div class="pending-changes-summary-group-item-header-icon">
               <font-awesome-icon
@@ -42,7 +42,7 @@
               v-for="(emote, emoteIndex) in category.emotes"
               :key="emote.code"
               class="pending-changes-summary-group-item-emotelist-item"
-              v-bind:style="{
+              :style="{
                 'border-color': colorFromKey(index),
                 'border-bottom-width':
                   emoteIndex + 1 < category.emotes.length ? '0px' : '8px',
@@ -66,11 +66,11 @@
     </div>
     <div class="box emoteset">
       <img
-        class="emote"
         v-for="emote in updatedEmotes"
         :key="emote.code"
+        class="emote"
         :src="emote.image"
-        v-bind:style="{ 'border-color': colorFromEmote(emote) }"
+        :style="{ 'border-color': colorFromEmote(emote) }"
       />
     </div>
   </div>
@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive, computed } from "vue";
-import { EmoteForUpdate } from "../types";
+import { EmoteForUpdate } from "@/types";
 
 export default defineComponent({
   name: "ManageUpdateEmotesCondensedView",
@@ -97,19 +97,25 @@ export default defineComponent({
       isUpdated: "#1d61ae",
     };
 
-    const categoryExpandedState = reactive<{ [key: string]: any }>({
+    type CategoryExpandedState = {
+      [key: string]: boolean
+    }
+
+    const categoryExpandedState = reactive<CategoryExpandedState>({
       New: false,
       Unavailable: false,
       Updated: false,
     });
 
     const summary = computed(() => {
-      const result: {
+
+      type Result = {
         [key: string]: {
           displayText: string;
           emotes: EmoteForUpdate[];
         };
-      } = {
+      }
+      const result: Result = {
         isNew: {
           displayText: "New",
           emotes: [],
@@ -130,7 +136,7 @@ export default defineComponent({
         else if (emote.isUpdated) result.isUpdated.emotes.push(emote);
       });
 
-      return Object.keys(result).reduce((acc: any, cur) => {
+      return Object.keys(result).reduce((acc: Result, cur) => {
         if (result[cur].emotes.length) {
           acc[cur] = result[cur];
           return acc;

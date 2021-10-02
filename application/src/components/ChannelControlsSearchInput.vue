@@ -2,8 +2,8 @@
   <div class="search-input-wrapper">
     <label>Search Emotes: </label>
     <input
-      name="emoteSearch"
       v-model="emoteSearch"
+      name="emoteSearch"
       class="input"
       type="text"
       aria-label="emote search input"

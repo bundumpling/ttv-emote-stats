@@ -6,7 +6,10 @@
 export default {
   name: "TheSubheader",
   props: {
-    msg: String,
+    msg: {
+      type: String,
+      required: true
+    }
   },
 };
 </script>

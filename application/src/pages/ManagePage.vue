@@ -3,10 +3,10 @@
   <div class="container tile-wrapper">
     <ManageMenuTile
       v-for="(tile, index) in tiles"
-      v-bind:key="`${index}-${tile.text}`"
+      :key="`${index}-${tile.text}`"
       :text="tile.text"
-      :backgroundPath="tile.background"
-      :linkPath="tile.link"
+      :background-path="tile.background"
+      :link-path="tile.link"
     />
   </div>
 </template>

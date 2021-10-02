@@ -19,45 +19,66 @@
     </div>
     <EmoteListItem
       v-for="emote in filteredByRank"
-      v-bind:key="emote.code"
+      :key="emote.code"
       :code="emote.code"
-      :stateIndex="emote.stateIndex"
+      :state-index="emote.stateIndex"
       :rank="emote.rank"
       :image="emote.image"
       :count="emote.count"
-      :usedBy="emote.usedBy"
-      :getEmoteDetails="() => getEmoteDetails(emote, emoteListProvider)"
+      :used-by="emote.usedBy"
+      :get-emote-details="() => getEmoteDetails(emote, emoteListProvider)"
     />
-    <div class="placeholder" v-if="!filteredByRank.length">
+    <div v-if="!filteredByRank.length" class="placeholder">
       <span>No Results</span>
     </div>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, inject } from "vue";
-import { ChannelState } from "@/types";
+import { defineComponent, computed, ref, inject, ComputedRef } from "vue";
+import { ChannelState, EmoteFromList } from "@/types";
 
 import EmoteListItem from "./ChannelEmoteListItem.vue";
 
 export default defineComponent({
   name: "ChannelEmoteList",
-  props: {
-    emoteListProvider: String,
-    emoteList: Array,
-    pageNumber: Number,
-    emotesPerPage: Number,
-    rangeStart: Number,
-    rangeEnd: Number,
-    searchInputValue: String,
-  },
   components: {
     EmoteListItem,
+  },
+  props: {
+    emoteListProvider: {
+      type: String,
+      default: ''
+    },
+    emoteList: {
+      type: Array,
+      default: null
+    },
+    pageNumber: {
+      type: Number,
+      default: 0
+    },
+    emotesPerPage: {
+      type: Number,
+      default: 10
+    },
+    rangeStart: {
+      type: Number,
+      default: 0
+    },
+    rangeEnd: { 
+      type: Number, 
+      default: 10 
+    },
+    searchInputValue: { 
+      type: String, 
+      default: '' 
+    }
   },
   setup(props) {
 
     const state = inject('state') as ChannelState;
-    const getEmoteDetails = inject('getEmoteDetails');
+    const getEmoteDetails = inject('getEmoteDetails') as (emote: EmoteFromList, emoteListProvider: string) => void;
 
     const page = ref(0);
 
@@ -81,7 +102,7 @@ export default defineComponent({
       } else {
         return [];
       }
-    });
+    }) as  ComputedRef<EmoteFromList[]>;
     const prevPage = () => {
       page.value--;
     };

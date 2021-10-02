@@ -7,8 +7,8 @@
         name="logs"
         type="file"
         multiple
-        @change="handleUpload"
         :disabled="disabled"
+        @change="handleUpload"
       />
       <span class="file-cta">
         <span class="file-icon">

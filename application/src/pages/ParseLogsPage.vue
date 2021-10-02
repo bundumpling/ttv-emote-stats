@@ -28,7 +28,7 @@
             <UploadButton
               v-if="!uploadButtonDisabled"
               :disabled="uploadButtonDisabled"
-              :handleUpload="handleLogFilesUpload"
+              :handle-upload="handleLogFilesUpload"
             />
             <Status v-else :status="progressData.status" :reset="reset" />
             <Statistics :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }" />
@@ -240,7 +240,7 @@ export default defineComponent({
                 state.progressData.uploadedList.length
               ) {
                 if (state.progressData.parsedList.length) {
-                  saveLogParserResultsToDb().then((response) => {
+                  saveLogParserResultsToDb().then(() => {
                     state.progressData.status = ParserStatus.DONE;
                   })
                 } else {

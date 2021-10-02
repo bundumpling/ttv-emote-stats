@@ -37,8 +37,8 @@
           <font-awesome-icon class="search-input-lock" :icon="searchInputLocked ? 'lock' : 'lock-open'" @click="toggleSearchInputLock" />
           <label>Search Users: </label>
           <input
-            name="userSearch"
             v-model="userSearch"
+            name="userSearch"
             class="input"
             type="text"
             aria-label="search input"

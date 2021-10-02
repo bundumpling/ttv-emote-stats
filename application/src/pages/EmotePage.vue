@@ -25,7 +25,7 @@ export default defineComponent({
     const route = useRoute();
 
     const emoteID = Array.isArray(route.params.emoteID) ? route.params.emoteID.join() : route.params.emoteID;
-    const [channelID, emoteCode] = emoteID.split('-');
+    const emoteCode = emoteID.split('-')[1];
 
     const ready = ref(false);
     const error = ref(false);

@@ -5,13 +5,13 @@
       <div class="field">
         <label class="label">Username</label>
         <div class="control">
-          <input type="text" id="username" class="input" aria-label="username" v-model="login.username" />
+          <input id="username" v-model="login.username" type="text" class="input" aria-label="username" />
         </div>
       </div>
       <div class="field">
         <label class="label">Password</label>
         <div class="control">
-          <input type="password" id="password" class="input" aria-label="password" v-model="login.password" />
+          <input id="password" v-model="login.password" type="password" class="input" aria-label="password" />
         </div>
       </div>
       <button class="button" type="submit">Login</button>
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from 'vue';
+import { defineComponent, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import axios, { AxiosResponse } from 'axios';
 

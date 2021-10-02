@@ -2,9 +2,9 @@
   <div class="emote-list-container">
     <EmoteList
       v-for="emoteListProvider in filterEmoteLists"
-      v-bind:key="emoteListProvider"
-      :emoteListProvider="emoteListProvider"
-      :emoteList="
+      :key="emoteListProvider"
+      :emote-list-provider="emoteListProvider"
+      :emote-list="
         emoteListProvider === 'Overall'
           ? countsSorted
           : countsByProviderSorted[emoteListProvider]
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, inject } from "vue";
+import { defineComponent, computed, inject } from "vue";
 import { ChannelState, Emote, EmoteInList } from "../types";
 
 import EmoteList from "./ChannelEmoteList.vue";

@@ -1,27 +1,25 @@
 <template>
   <TheSubheader :msg="`Update ${channelName}'s Channel Emotes`" />
   <div class="control-wrapper">
-    <button @click="saveUpdatedEmotes" :disabled="!hasUpdates">
+    <button :disabled="!hasUpdates" @click="saveUpdatedEmotes">
       Save Updated Emotes
     </button>
     <span @click="toggleDetailedView">
       {{ `[ Switch to ${showDetailedView ? "condensed" : "detailed"} view ]` }}
     </span>
   </div>
-  <DetailedView v-if="showDetailedView" :updatedEmotes="updatedEmotes" />
-  <CondensedView v-if="!showDetailedView" :updatedEmotes="updatedEmotes" />
+  <DetailedView v-if="showDetailedView" :updated-emotes="updatedEmotes" />
+  <CondensedView v-if="!showDetailedView" :updated-emotes="updatedEmotes" />
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "../store";
-import { Emote, EmoteForUpdate } from "../types";
+import { Emote, EmoteForUpdate } from "@/types";
 import TheSubheader from "../components/TheSubheader.vue";
 import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
 import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
-// import OptionsPanel from "../components/SettingsControlPanel.vue";
-// import APIControlContainer from "../components/SettingsAPIControlContainer.vue";
 
 export default defineComponent({
   name: "UpdateEmotesPage",

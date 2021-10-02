@@ -3,7 +3,7 @@
     <div class="emote-rank">{{ rank }}</div>
     <div class="emote-data">
       <div class="emote-image">
-        <img :alt="code" v-bind:src="image" />
+        <img :alt="code" :src="image" />
       </div>
       <div class="emote-code">
         <span>{{ code }}</span>
@@ -21,12 +21,30 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "ChannelEmoteListItem",
   props: {
-    code: String,
-    count: Number,
-    image: String,
-    rank: Number,
-    stateIndex: Number,
-    usedBy: Object,
+    code: {
+      type: String,
+      required: true
+    },
+    count: {
+      type: Number,
+      required: true
+    },
+    image: {
+      type: String,
+      required: true
+    },
+    rank: {
+      type: Number,
+      required: true
+    },
+    stateIndex: {
+      type: Number,
+      required: true
+    },
+    usedBy: {
+      type: Object,
+      required: true
+    },
     getEmoteDetails: {
       type: Function,
       required: true,

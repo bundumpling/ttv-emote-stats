@@ -4,8 +4,8 @@
       class="menu-tile"
       :class="isHoveredOver ? 'menu-tile-hovered' : ''"
       :style="`background-image: url('/img/ManageMenuTile/${$props.backgroundPath}')`"
-      v-on:mouseover="mouseOver"
-      v-on:mouseout="mouseOut"
+      @mouseover="mouseOver"
+      @mouseout="mouseOut"
     >
       <div class="menu-tile-text">
         <span>{{ $props.text }}</span>
@@ -21,9 +21,18 @@ export default defineComponent({
   name: "ManageMenuTile",
   components: {},
   props: {
-    text: String,
-    backgroundPath: String,
-    linkPath: String,
+    text: {
+      type: String,
+      required: true
+    },
+    backgroundPath: {
+      type: String,
+      required: true
+    },
+    linkPath: {
+      type: String,
+      required: true
+    },
   },
   setup() {
     const isHoveredOver = ref(false);
