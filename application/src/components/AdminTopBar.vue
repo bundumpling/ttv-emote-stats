@@ -12,8 +12,8 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useRouter } from 'vue-router';
-//@ts-expect-error
-import VueJwtDecode from 'vue-jwt-decode'; // No Type Definitions Available
+//@ts-expect-error No Type Definitions Available
+import VueJwtDecode from 'vue-jwt-decode';
 
 export default defineComponent({
   name: "AdminTopBar",
