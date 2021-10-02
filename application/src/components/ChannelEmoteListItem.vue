@@ -43,7 +43,7 @@ export default defineComponent({
     },
     usedBy: {
       type: Object,
-      required: true
+      default: {} as { [key: string]: number }
     },
     getEmoteDetails: {
       type: Function,
