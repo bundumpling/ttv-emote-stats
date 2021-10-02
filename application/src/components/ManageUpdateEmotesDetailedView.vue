@@ -12,7 +12,7 @@
     </thead>
     <tbody>
       <tr v-for="emote in updatedEmotes" :key="emote.code">
-        <td><img :src="emote.image" /></td>
+        <td><img :src="emote.image" :alt="emote.code" /></td>
         <td class="emote-code">{{ emote.code }}</td>
         <td class="emote-provider">{{ emote.provider }}</td>
         <td>
