@@ -41,9 +41,6 @@ library.add(
   faSpinner
 );
 
-// require("./assets/sass/main.scss");
-
-
 const app = createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon);
   
