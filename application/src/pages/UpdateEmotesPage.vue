@@ -16,7 +16,7 @@
 import { defineComponent, onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "../store";
-import { Emote, EmoteForUpdate } from "@/types";
+import { Emote, EmoteForUpdate } from "../types";
 import TheSubheader from "../components/TheSubheader.vue";
 import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
 import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
@@ -72,7 +72,7 @@ export default defineComponent({
       });
 
       emotesFromProviders.forEach((emote: Emote) => {
-        const { code, image, provider, providerID, obsolete } = emote;
+        const { code, image, provider, providerID } = emote;
 
         if (!result[code]) {
           // NEW EMOTE
@@ -141,6 +141,12 @@ export default defineComponent({
     function saveUpdatedEmotes() {
       const emotes = updatedEmotes.value.filter((emote: EmoteForUpdate) => {
         return emote.isNew || emote.isUnavailable || emote.isUpdated;
+      }).map((emote: EmoteForUpdate) => {
+        if (emote.isUnavailable) {
+          return { ...emote, obsolete: true }
+        } else {
+          return emote;
+        }
       });
       store.dispatch("saveUpdatedEmotesToDB", {
         channelName,

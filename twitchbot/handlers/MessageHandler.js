@@ -26,9 +26,10 @@ async function login() {
 }
 
 async function getChannelEmoteCodes(channelName) {
+  // Bot should not track or respond to requests regarding obsolete (removed by channel owner or provider) emotes.
   try {
     let response = await axios.get(
-      `http://localhost:8081/channel/${channelName}/emoteCodes`
+      `http://localhost:8081/channel/${channelName}/emoteCodes?ignoreObsolete=true`
     );
     let { emoteCodes, channelID } = response.data;
     return { emoteCodes, channelID };

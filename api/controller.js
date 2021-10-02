@@ -203,14 +203,53 @@ const getEmoteUsageDetails = async (req, res, db) => {
 };
 
 const getChannelEmoteCodes = async (req, res, db) => {
+  const ignoreObsolete = Boolean(req.query.ignoreObsolete);
   db.collection("TwitchLogin")
     .findOne({ _id: req.params.channelName })
     .then(({ _id, twitchID }) =>
       db
         .collection("Channel")
-        .findOne({ _id: twitchID })
-        .then(({ emotes }) => {
-          const emoteCodes = emotes.map((emote) => emote.replace(/^\d+\-/, ""));
+        .aggregate([
+          {
+            $match: { _id: twitchID },
+          },
+          {
+            $lookup: {
+              from: "Emote",
+              localField: "emotes",
+              foreignField: "_id",
+              as: "emotes",
+            },
+          },
+          {
+            $addFields: {
+              emotes: {
+                $map: {
+                  input: "$emotes",
+                  as: "emote",
+                  in: {
+                    code: "$$emote.code",
+                    obsolete: "$$emote.obsolete",
+                  },
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              emotes: "$emotes",
+            },
+          },
+        ])
+        .toArray()
+        .then((result) => {
+          const emotes = result[0].emotes;
+          const emoteCodes = ignoreObsolete
+            ? emotes
+                .filter((emote) => !emote.obsolete)
+                .map((emote) => emote.code)
+            : emotes.map((emote) => emote.code);
+
           res.json({
             channelID: twitchID,
             emoteCodes,
