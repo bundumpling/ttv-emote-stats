@@ -29,3 +29,4 @@ workspace.code-workspace
 *.njsproj
 *.sln
 *.sw?
+vetur.config.js
