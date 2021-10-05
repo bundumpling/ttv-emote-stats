@@ -62,13 +62,5 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ],
-  "resolutions": {
-    "glob-parent": "^6.0.1",
-    "electron": "^9.4.0",
-    "tar": "^6.1.9",
-    "set-value": "^4.0.1",
-    "nth-check": "^2.0.1",
-    "ansi-regex": "^5.0.1"
-  }
+  ]
 }
