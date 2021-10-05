@@ -43,7 +43,7 @@
             type="text"
             aria-label="search input"
             autocomplete="off"
-            @keydown.space.prevent
+            @input="validateInput"
           />
           <span class="search-input-reset" @click="resetSearchInput">Ｘ</span>
         </div>
@@ -150,13 +150,25 @@ export default defineComponent({
     function nextPage() {
       page.value++;
     }
+
+    const invalidInputRegExp = new RegExp(/[^a-z0-9_]/, 'gi');
+
     const userSearch = computed({
       get: () => state.userSearchInput,
       set(value) {
-        state.setUserSearchInput(value);
+        state.setUserSearchInput(value.replace(invalidInputRegExp, ''));
         page.value = 0;
       },
     });
+
+    function validateInput(event: InputEvent) {      
+      if (invalidInputRegExp.test(event.target.value)) {
+        let resetEvent = document.createEvent('Event');
+        resetEvent.initEvent('userSearch', true, true);
+        event.target.value = userSearch.value;
+        event.target.dispatchEvent(resetEvent);
+      }
+    }
 
     return {
       code: state.emoteDetails.code,
@@ -167,6 +179,7 @@ export default defineComponent({
       channelName: state.name,
       userSearch,
       userSearchInput,
+      validateInput,
       searchInputLocked,
       mostUsedOn,
       mostUsedBy,

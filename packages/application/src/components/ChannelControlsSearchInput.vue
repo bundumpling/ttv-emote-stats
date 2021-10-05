@@ -8,7 +8,7 @@
       type="text"
       aria-label="emote search input"
       autocomplete="off"
-      @keydown.space.prevent
+      @input="validateInput"
     />
   </div>
 </template>
@@ -21,15 +21,28 @@ export default defineComponent({
   name: "ChannelControlsSearchInput",
   setup() {
     const state = inject('state') as ChannelState;
+
+    const invalidInputRegExp = new RegExp(/[^a-z0-9]/, 'gi');
+
     const emoteSearch = computed({
       get: () => state.emoteSearchInput,
       set(value) {
-        state.setEmoteSearchInput(value)
+        state.setEmoteSearchInput(value.replace(invalidInputRegExp, ''))
       },
     });
 
+    function validateInput(event: InputEvent) {      
+      if (invalidInputRegExp.test(event.target.value)) {
+        let resetEvent = document.createEvent('Event');
+        resetEvent.initEvent('emoteSearch', true, true);
+        event.target.value = emoteSearch.value;
+        event.target.dispatchEvent(resetEvent);
+      }
+    }
+
     return {
       emoteSearch,
+      validateInput
     };
   },
 });
