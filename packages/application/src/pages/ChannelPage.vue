@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, provide } from "vue";
+import { defineComponent, ref, reactive, onBeforeMount, provide } from "vue";
 import { useRoute } from "vue-router";
 import TheSubheader from "../components/TheSubheader.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
@@ -95,7 +95,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       try {
         const { _id, emotes } = await fetchData();
         const twitchID = _id;

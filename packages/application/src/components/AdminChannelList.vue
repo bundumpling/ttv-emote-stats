@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, computed } from 'vue';
+import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router';
 import TheSubheader from "./TheSubheader.vue";
@@ -52,7 +52,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       try {
         const { channelList } = await fetchData();
         state.channelList = channelList;

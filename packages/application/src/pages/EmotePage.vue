@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, computed } from 'vue';
+import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
 import { Chart } from 'highcharts-vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
@@ -79,7 +79,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       try {
         const emoteData = await fetchData();
         if (emoteData.error) throw new Error(emoteData.error)

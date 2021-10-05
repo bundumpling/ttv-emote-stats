@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, computed, ref } from "vue";
+import { defineComponent, onBeforeMount, reactive, computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { UpdateEmotesState, Emote, EmoteForUpdate, EmoteFromProvider } from "@/types";
 import TheSubheader from "../components/TheSubheader.vue";
@@ -67,7 +67,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       try {
         const { channelID, emotesFromDatabase, emotesFromProviders, emoteCodes } = await fetchData();
         state.channelID = channelID;

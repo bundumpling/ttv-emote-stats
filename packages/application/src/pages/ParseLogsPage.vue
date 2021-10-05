@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed, onMounted } from "vue";
+import { defineComponent, ref, reactive, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import axios from 'axios';
 import { LogParserResult, ParseLogsState, ParserStatus } from "@/types";
@@ -121,7 +121,7 @@ export default defineComponent({
       }
     }
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       try {
         const { channelID, emoteCodes } = await fetchData();
         state.channelID = channelID;
