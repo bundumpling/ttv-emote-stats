@@ -1,0 +1,7 @@
+{
+  "name": "ttv-emote-stats",
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true
+}
