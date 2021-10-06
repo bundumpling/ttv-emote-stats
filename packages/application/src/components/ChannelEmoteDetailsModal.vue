@@ -35,7 +35,7 @@
       <section class="modal-card-body mostusedby-wrapper">
         <div class="search-input-wrapper">
           <font-awesome-icon class="search-input-lock" :icon="searchInputLocked ? 'lock' : 'lock-open'" @click="toggleSearchInputLock" />
-          <SearchInput injected-name="usernameSearch" label="Search Usernames" />
+          <SearchInput injected-name="usernameSearch" label="Search Users" />
           <span class="search-input-reset" @click="resetSearchInput">Ｘ</span>
         </div>
         <div class="mostusedby-header">
@@ -83,7 +83,7 @@
 
 <script lang="ts">
 import { ChannelState } from "../types";
-import { defineComponent, inject, computed, ref } from "vue";
+import { defineComponent, inject, computed, ref, provide } from "vue";
 import SearchInput from "./SearchInput.vue";
 
 export default defineComponent({
@@ -146,24 +146,11 @@ export default defineComponent({
       page.value++;
     }
 
-    const invalidInputRegExp = new RegExp(/[^a-z0-9_]/, 'gi');
-
-    const userSearch = computed({
-      get: () => state.userSearchInput,
-      set(value) {
-        state.setUserSearchInput(value.replace(invalidInputRegExp, ''));
-        page.value = 0;
-      },
-    });
-
-    function validateInput(event: InputEvent) {      
-      if (invalidInputRegExp.test(event.target.value)) {
-        let resetEvent = document.createEvent('Event');
-        resetEvent.initEvent('userSearch', true, true);
-        event.target.value = userSearch.value;
-        event.target.dispatchEvent(resetEvent);
-      }
-    }
+    provide('usernameSearch', {
+      getInput: () => state.userSearchInput,
+      setInput: (value) => state.setUserSearchInput(value),
+      validationRegExp: new RegExp(/[^a-z0-9_]/, 'gi')
+    })
 
     return {
       code: state.emoteDetails.code,
@@ -172,10 +159,8 @@ export default defineComponent({
       image: state.emoteDetails.image,
       fromList: state.emoteDetails.fromList,
       channelName: state.name,
-      userSearch,
-      userSearchInput,
-      validateInput,
       searchInputLocked,
+      userSearchInput,
       mostUsedOn,
       mostUsedBy,
       mostUsedByFiltered,

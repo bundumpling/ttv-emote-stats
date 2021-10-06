@@ -1,6 +1,8 @@
 <template>
   <div class="list-controls-wrapper">
-    <SearchInput injected-name="emoteSearch" label="Search Emotes" />
+    <div class="search-input-wrapper">
+      <SearchInput injected-name="emoteSearch" label="Search Emotes" />
+    </div>
     <PerPageSelect />
   </div>
 </template>
@@ -23,10 +25,16 @@ export default defineComponent({
   margin-bottom: 1em;
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: baseline;
 
   & > div {
     margin: 0 0.5em;
   }
+}
+
+.search-input-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
 }
 </style>

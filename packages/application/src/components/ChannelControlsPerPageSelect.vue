@@ -1,7 +1,7 @@
 <template>
   <div class="emotes-per-page">
     <label>Emotes per page: </label>
-    <div class="select">
+    <div class="select is-small">
       <select @change="switchSelect($event)">
         <option :value="10" :selected="isSelected(10)">10</option>
         <option :value="25" :selected="isSelected(25)">25</option>

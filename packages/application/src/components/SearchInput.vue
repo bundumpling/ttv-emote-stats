@@ -1,16 +1,14 @@
 <template>
-  <div class="search-input-wrapper">
     <label>{{ label }}:</label>
     <input
       v-model="searchInput"
       :name="injectedName"
-      class="input"
+      class="input is-small"
       type="text"
       :aria-label="ariaLabel"
       autocomplete="off"
       @input="validateInput"
     />
-  </div>
 </template>
 
 <script lang="ts">
@@ -74,14 +72,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.search-input-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-
-  label {
-    padding-right: 0.5em;
-    white-space: nowrap;
-  }
+label {
+  padding-right: 0.5em;
+  white-space: nowrap;
 }
 </style>
