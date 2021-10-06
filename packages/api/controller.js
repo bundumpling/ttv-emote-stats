@@ -815,7 +815,7 @@ const updateCountsFromBot = async (req, res) => {
     const emoteID = `${channelID}-${emoteCode}`;
     const count = counts[emoteCode];
 
-    const usedByKey = `usedBy.${username}`;
+    const usedByKey = `usedBy.${username}-${userID}`;
     const usedOnKey = `usedOn.${dateKey}`;
     const incrementObj = {
       count,
