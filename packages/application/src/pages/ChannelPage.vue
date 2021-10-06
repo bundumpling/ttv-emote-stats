@@ -76,7 +76,12 @@ export default defineComponent({
         this.emoteDetailsModalOpen = true 
         this.loadingEmoteDetails = false;
       },
-      closeEmoteDetailsModal: function() { this.emoteDetailsModalOpen = false },
+      closeEmoteDetailsModal: function() { 
+        this.emoteDetailsModalOpen = false;
+        if (!this.userSearchLock) {
+          this.userSearchInput = '';
+        }
+      },
       setEmotesPerPage: function(value: number) { this.emotesPerPage = value }
     })
 
@@ -136,11 +141,6 @@ export default defineComponent({
       setInput: (value) => state.setEmoteSearchInput(value),
       validationRegExp: new RegExp(/[^a-z0-9]/, 'gi')
     });
-    provide('usernameSearch', {
-      getInput: () => state.userSearchInput,
-      setInput: (value) => state.setUserSearchInput(value),
-      validationRegExp: new RegExp(/[^a-z0-9_]/, 'gi')
-    })
 
     return {
       channelName,
