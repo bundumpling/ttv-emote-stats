@@ -1,6 +1,6 @@
 <template>
   <div class="list-controls-wrapper">
-    <SearchInput />
+    <SearchInput injected-name="emoteSearch" label="Search Emotes" />
     <PerPageSelect />
   </div>
 </template>
@@ -8,7 +8,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import PerPageSelect from "./ChannelControlsPerPageSelect.vue";
-import SearchInput from "./ChannelControlsSearchInput.vue";
+import SearchInput from "./SearchInput.vue";
 export default defineComponent({
   name: "ChannelListControls",
   components: {

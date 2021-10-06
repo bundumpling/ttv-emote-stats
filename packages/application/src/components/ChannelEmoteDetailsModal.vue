@@ -35,16 +35,7 @@
       <section class="modal-card-body mostusedby-wrapper">
         <div class="search-input-wrapper">
           <font-awesome-icon class="search-input-lock" :icon="searchInputLocked ? 'lock' : 'lock-open'" @click="toggleSearchInputLock" />
-          <label>Search Users: </label>
-          <input
-            v-model="userSearch"
-            name="userSearch"
-            class="input"
-            type="text"
-            aria-label="search input"
-            autocomplete="off"
-            @input="validateInput"
-          />
+          <SearchInput injected-name="usernameSearch" label="Search Usernames" />
           <span class="search-input-reset" @click="resetSearchInput">Ｘ</span>
         </div>
         <div class="mostusedby-header">
@@ -93,9 +84,13 @@
 <script lang="ts">
 import { ChannelState } from "../types";
 import { defineComponent, inject, computed, ref } from "vue";
+import SearchInput from "./SearchInput.vue";
 
 export default defineComponent({
   name: "ChannelEmoteDetailsModal",
+  components: {
+    SearchInput
+  },
   props: {},
   setup() {
     const state = inject('state') as ChannelState;

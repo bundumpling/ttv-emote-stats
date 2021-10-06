@@ -131,6 +131,16 @@ export default defineComponent({
 
     provide('state', state);
     provide('getEmoteDetails', getEmoteDetails);
+    provide('emoteSearch', {
+      getInput: () => state.emoteSearchInput,
+      setInput: (value) => state.setEmoteSearchInput(value),
+      validationRegExp: new RegExp(/[^a-z0-9]/, 'gi')
+    });
+    provide('usernameSearch', {
+      getInput: () => state.userSearchInput,
+      setInput: (value) => state.setUserSearchInput(value),
+      validationRegExp: new RegExp(/[^a-z0-9_]/, 'gi')
+    })
 
     return {
       channelName,
