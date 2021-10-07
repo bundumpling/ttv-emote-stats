@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import TheSubheader from './TheSubheader.vue';
+import TheSubheader from '@/components/TheSubheader.vue';
 
 describe('TheSubheader', () => {
   it('should display header text', () => {
