@@ -26,7 +26,8 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+    "types": ["vite/client", "@types/jest"],
   },
   "include": [
     "src/**/*.ts",
