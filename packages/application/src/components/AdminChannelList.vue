@@ -2,7 +2,8 @@
   <div class="container">
     <TheSubheader msg="Channel List" />
     <ul class="channel-list">
-      <li v-for="({ channelName, emoteCount }, index) in channelList" :key="channelName + index" class="channel-listitem box" @click="goToChannel(channelName)">
+      <li v-for="({ channelName, emoteCount, profileImageURL }, index) in channelList" :key="channelName + index" class="channel-listitem" @click="goToChannel(channelName)">
+        <div class="channel-listitem-pfp"><img :src="profileImageURL" :alt="`profile image for ${channelName}`" /></div>
         <div class="channel-listitem-name">{{ channelName }}</div>
         <div><span class="channel-listitem-emotecount">{{ emoteCount }}</span> Emotes</div>
       </li>
@@ -92,11 +93,14 @@ export default defineComponent({
   list-style: none;
   margin: 2em;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-evenly;;
 }
 
 .channel-listitem {
+  margin: 8px;
   background-color: #EEE;
+  border: 4px solid #999;
+  border-radius: 4px;
   text-align: center;
   font-size: 1.2em;
   font-variant: small-caps;
@@ -105,6 +109,7 @@ export default defineComponent({
 
   &:hover {
     background-color: rgb(241, 206, 117);
+    border-color: #333;
     color: #111;
   }
 }

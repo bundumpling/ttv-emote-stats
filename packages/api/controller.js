@@ -744,6 +744,7 @@ const getChannelList = async (req, res) => {
           emoteCount: {
             $size: "$emotes",
           },
+          profileImageURL: "$profileImageURL",
         },
       },
     ])
