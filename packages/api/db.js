@@ -7,7 +7,7 @@ let _db = null;
 
 async function connectToDb() {
   return new Promise((resolve, reject) => {
-    if (_db) resolve(_db);
+    if (_db) resolve();
 
     MongoClient.connect(url, (err, client) => {
       if (err) {
@@ -16,7 +16,7 @@ async function connectToDb() {
       } else {
         _db = client.db(dbName);
         console.log("Successfully connected to MongoDB");
-        resolve(_db);
+        resolve();
       }
     });
   });

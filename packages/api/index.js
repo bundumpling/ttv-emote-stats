@@ -2,15 +2,15 @@
   require("dotenv").config();
   const express = require("express");
   const cors = require("cors");
-  // const morgan = require("morgan");
   const fetch = require("node-fetch");
   const port = 8081;
   const app = express();
 
+  // const morgan = require("morgan");
   // app.use(morgan("combined"));
 
   const { connectToDb } = require("./db");
-  const db = await connectToDb();
+  await connectToDb();
 
   const {
     saveUpdatedEmotes,
