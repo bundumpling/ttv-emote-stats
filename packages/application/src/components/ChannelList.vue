@@ -14,11 +14,11 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
 import axios, { AxiosResponse } from 'axios';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import TheSubheader from "./TheSubheader.vue";
 
 export default defineComponent({
-  name: "AdminChannelList",
+  name: "ChannelList",
   components: { 
     TheSubheader 
   },
@@ -30,11 +30,14 @@ export default defineComponent({
     interface State {
       channelList: Array<ChannelListItem>
     }
-    interface AdminChannelListResponse {
+    interface ChannelListResponse {
       channelList: Array<ChannelListItem>
     }
 
+    const route = useRoute();
     const router = useRouter();
+    
+    const path = computed(() => route.path)
 
     const loading = ref(true);
     const error = ref(false);
@@ -42,11 +45,10 @@ export default defineComponent({
       channelList: []
     });
 
-    async function fetchData(): Promise<AdminChannelListResponse> {
+    async function fetchData(): Promise<ChannelListResponse> {
       try {
-        const URL = `http://localhost:8081/admin/getChannelList`;
-        const token = localStorage.getItem("user");
-        const response = await axios.get(URL, { headers: { authorization: token } }) as AxiosResponse;
+        const URL = `http://localhost:8081/channels`;
+        const response = await axios.get(URL) as AxiosResponse;
         return response.data;
       } catch (err) {
         throw new Error(err);
@@ -66,7 +68,11 @@ export default defineComponent({
     const channelList = computed(() => state.channelList)
 
     function goToChannel(channelName: string) {
-      router.push(`/admin/${channelName}`)
+      if (path.value === "/admin/") {
+        router.push(`/admin/${channelName}`)
+      } else {
+        router.push(`/channel/${channelName}`)
+      }
     }
 
     return {
