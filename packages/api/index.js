@@ -181,28 +181,41 @@
       });
   });
 
+  app.get("/channels", getChannelList);
+
   app.get("/channel/:channelName/emoteCounts", getChannelEmoteCounts);
   app.get("/channel/:channelName/emoteCodes", getChannelEmoteCodes);
-  app.get(
-    "/channel/:channelName/emotesFromDbAndProviders",
-    getEmotesFromDbAndProviders
-  );
-  app.get("/channel/:channelName/listOfParsedLogs", getListOfParsedLogs);
 
   app.get("/emote/:emoteID/usageDetails", getEmoteUsageDetails);
   app.get("/emote/:emoteID/count", getEmoteCount);
   app.get("/emote/:emoteID/usedBy", getEmoteUsedBy);
   app.get("/emote/:emoteID/usedOn", getEmoteUsedOn);
 
+  // Protected Endpoints
+
+  app.get(
+    "/channel/:channelName/emotesFromDbAndProviders",
+    decodeJWT,
+    getEmotesFromDbAndProviders
+  );
+
+  app.get(
+    "/channel/:channelName/listOfParsedLogs",
+    decodeJWT,
+    getListOfParsedLogs
+  );
+
   app.post(
     "/channel/:channelName/saveUpdatedEmotes",
     express.json({ limit: "10MB" }),
+    decodeJWT,
     saveUpdatedEmotes
   );
 
   app.post(
     "/channel/:channelName/updateCountsFromLog",
     express.json({ limit: "10MB" }),
+    decodeJWT,
     updateCountsFromLog
   );
 
@@ -218,8 +231,6 @@
    */
 
   app.post("/auth/login", express.json(), loginUser);
-
-  app.get("/admin/getChannelList", decodeJWT, getChannelList);
 
   app.listen(port, "0.0.0.0", () =>
     console.log(`API Relay Server listening on port ${port}`)

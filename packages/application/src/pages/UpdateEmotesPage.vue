@@ -60,7 +60,8 @@ export default defineComponent({
     async function fetchData(): Promise<ChannelEmoteDataResponse> {
       try {
         const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`
-        const response = await axios.get(URL);
+        const token = localStorage.getItem("user");
+        const response = await axios.get(URL, { headers: { authorization: token }});
         return response.data;
       } catch (err) {
         throw new Error(err);
@@ -183,7 +184,8 @@ export default defineComponent({
 
       try {
         const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
-        await axios.post(URL, { channelID: state.channelID, emotes });
+        const token = localStorage.getItem("user");
+        await axios.post(URL, { headers: { authorization: token }, channelID: state.channelID, emotes });
       } catch (err) {
         console.log(err)
       }

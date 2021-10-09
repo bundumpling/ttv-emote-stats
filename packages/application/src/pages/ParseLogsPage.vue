@@ -68,7 +68,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { LogParserResult, ParseLogsState, ParserStatus } from "@/types";
 import logParser from "../helpers/logParser";
 import TheSubheader from "../components/TheSubheader.vue";
@@ -114,7 +114,8 @@ export default defineComponent({
     async function fetchData() {
       try {
         const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
-        const response = await axios.get(URL);
+        const token = localStorage.getItem("user");
+        const response = await axios.get(URL, { headers: { authorization: token }});
         return response.data;
       } catch (err) {
         throw new Error(err);
@@ -176,10 +177,14 @@ export default defineComponent({
     }
 
     async function fetchListOfParsedLogs() {
-      return fetch(
-        `http://localhost:8081/channel/${channelName}/listOfParsedLogs`,
-        { method: "GET" }
-      ).then((res) => res.json());
+      try {
+        const URL = `http://localhost:8081/channel/${channelName}/listOfParsedLogs`;
+        const token = localStorage.getItem("user");
+        const response = await axios.get(URL, { headers: { authorization: token }});
+        return response.data;
+      } catch (error) {
+        console.log(error)
+      }
     }
 
     async function readLogFile(log: string | ArrayBuffer | null) {
@@ -260,20 +265,28 @@ export default defineComponent({
       const logFilenames = state.logParserFilenames;
       const logParserResults = state.logParserResults;
       const URL = `http://localhost:8081/channel/${channelName}/updateCountsFromLog`;
-      return fetch(
-        URL,
-        {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            logFilenames,
-            logParserResults
-          })
-        }
-      ).then(response => response.json())
+      const token = localStorage.getItem("user");
+      const headers = {
+        authorization: token,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      };
+      const response = await axios.post(URL, { headers, logFilenames, logParserResults }) as AxiosResponse;
+      return response;
+      // return fetch(
+      //   URL,
+      //   {
+      //     method: 'POST',
+      //     headers: {
+      //       'Accept': 'application/json',
+      //       'Content-Type': 'application/json'
+      //     },
+      //     body: JSON.stringify({
+      //       logFilenames,
+      //       logParserResults
+      //     })
+      //   }
+      // ).then(response => response.json())
     }
 
     function updateLogParserResults (logFilename: string, logParserResult: LogParserResult) {
