@@ -4,7 +4,7 @@
       Usage of <img :src="emoteImage" :alt="emoteCode" /> in <b>{{ channelName }}</b>'s Channel
     </div>
     <highcharts class="chart" :options="usedOnChartOptions"></highcharts>
-    <highcharts class="chart" :options="usedByChartOptions"></highcharts>
+    <UsedByChart :emote-code="emoteCode" :used-by="usedBy" />
   </div>
   <div v-else-if="error" class="error">Error retrieving emote data.</div>
   <div v-else class="loading">Loading...</div>
@@ -15,11 +15,13 @@ import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
 import { Chart } from 'highcharts-vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import UsedByChart from "../components/EmoteUsedByChart.vue";
 
 export default defineComponent({
   name: 'EmotePage',
   components: {
-    highcharts: Chart
+    highcharts: Chart,
+    UsedByChart
   },
   setup() {
     const route = useRoute();
@@ -128,87 +130,14 @@ export default defineComponent({
       }]
     }): {})
 
-    const chartifiedUsedByData = computed(() => {
-      let result = [];
-      const users = Object.keys(state.usedBy);
-      const sortedUsers = users.sort(
-        (a, b) => {
-          return state.usedBy[b] - state.usedBy[a]
-        }
-      );
-
-      const maxIndividualUserPieSlices = 15;
-      const numberOfTopUsers = users.length > maxIndividualUserPieSlices ? maxIndividualUserPieSlices : users.length;
-
-      const notTopUserCount = users.length - numberOfTopUsers;
-      let notTopUsageCount = state.count;
-
-      for (let i = 0; i < numberOfTopUsers; i++) {
-        const user = sortedUsers[i];
-        const username = user.split('-')[0];
-        const count = state.usedBy[user];
-        result.push({
-          name: username,
-          y: count
-        })
-        notTopUsageCount -= count;
-      }
-
-      if (numberOfTopUsers < users.length) {
-        result.push({
-          name: `${notTopUserCount} other users`,
-          y: notTopUsageCount
-        })
-      }
-
-      return result;
-    })
-
-
-    const usedByChartOptions = computed(() => ready.value ? {
-      chart: {
-        plotBackgroundColor: null,
-        plotBorderWidth: null,
-        plotShadow: false,
-        type: 'pie'
-      },
-      title: {
-        useHTML: true,
-        text: `Usage by User`
-      },
-      tooltip: {
-        pointFormat: '{series.name}: <b>{point.y}</b>'
-      },
-      accessibility: {
-          point: {
-              valueSuffix: '%'
-          }
-      },
-      plotOptions: {
-          pie: {
-              allowPointSelect: true,
-              cursor: 'pointer',
-              dataLabels: {
-                  enabled: true,
-                  format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-              }
-          }
-      },
-      series: [{
-        name: 'Uses',
-        colorByPoint: true,
-        data: chartifiedUsedByData.value
-      }]
-    }: {})
-
     return {
       ready,
       error,
       emoteImage,
       emoteCode,
+      usedBy: computed(() => state.usedBy),
       channelName,
-      usedOnChartOptions,
-      usedByChartOptions
+      usedOnChartOptions
     }
   }
 })
