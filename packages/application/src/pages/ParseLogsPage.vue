@@ -175,9 +175,9 @@ export default defineComponent({
       return total;
     }
 
-    async function fetchListOfParsedLogFilenames() {
+    async function fetchListOfParsedLogs() {
       return fetch(
-        `http://localhost:8081/channel/${channelName}/listofParsedLogFilesnames`,
+        `http://localhost:8081/channel/${channelName}/listOfParsedLogs`,
         { method: "GET" }
       ).then((res) => res.json());
     }
@@ -196,7 +196,7 @@ export default defineComponent({
         "logfile-input"
       ) as HTMLInputElement;
       if (fileInput.files) {
-        const alreadyParsed = (await fetchListOfParsedLogFilenames()) || [];
+        const alreadyParsed = (await fetchListOfParsedLogs()) || [];
         const files: FileList = fileInput.files;
         let unparsedFiles: File[] = [];
 

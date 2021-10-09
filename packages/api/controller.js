@@ -15,7 +15,7 @@ const TWITCH_OPTIONS = {
   },
 };
 
-const saveUpdatedEmotes = async (req, res, db) => {
+const saveUpdatedEmotes = async (req, res) => {
   const channelName = req.params.channelName;
   const channelID = req.body.channelID;
   const emotes = req.body.emotes;
@@ -92,7 +92,7 @@ const saveUpdatedEmotes = async (req, res, db) => {
     });
 };
 
-const getChannelEmoteCounts = (req, res, db) => {
+const getChannelEmoteCounts = (req, res) => {
   db.collection("TwitchLogin").findOne(
     { _id: req.params.channelName },
     (err, { _id, twitchID }) => {
@@ -133,7 +133,7 @@ const getChannelEmoteCounts = (req, res, db) => {
   );
 };
 
-const getEmoteUsageDetails = async (req, res, db) => {
+const getEmoteUsageDetails = async (req, res) => {
   const emoteID = req.params.emoteID;
   const channelID = emoteID.split("-")[0];
   const channelOwner = await db
@@ -202,7 +202,7 @@ const getEmoteUsageDetails = async (req, res, db) => {
   });
 };
 
-const getChannelEmoteCodes = async (req, res, db) => {
+const getChannelEmoteCodes = async (req, res) => {
   const ignoreObsolete = Boolean(req.query.ignoreObsolete);
   db.collection("TwitchLogin")
     .findOne({ _id: req.params.channelName })
@@ -264,7 +264,22 @@ const getChannelEmoteCodes = async (req, res, db) => {
     );
 };
 
-const updateCountsFromLog = async (req, res, db) => {
+const getListOfParsedLogs = async (req, res) => {
+  const channelName = req.params.channelName;
+  db.collection("TwitchLogin").findOne(
+    { _id: channelName },
+    (err, { twitchID }) => {
+      db.collection("Channel").findOne(
+        { _id: twitchID },
+        (err, channelData) => {
+          res.send(JSON.stringify(channelData.parsedLogfiles));
+        }
+      );
+    }
+  );
+};
+
+const updateCountsFromLog = async (req, res) => {
   const channelName = req.params.channelName;
   const { usernameLastSeen, emoteCounts } = req.body.logParserResults;
   const logFilenames = req.body.logFilenames;
@@ -519,7 +534,7 @@ const updateCountsFromLog = async (req, res, db) => {
   );
 };
 
-const getChannelEmotesFromDatabaseAndProviders = async (req, res, db) => {
+const getChannelEmotesFromDatabaseAndProviders = async (req, res) => {
   const channelName = req.params.channelName;
   let results = {
     emotesFromDatabase: [],
@@ -880,6 +895,7 @@ module.exports = {
   saveUpdatedEmotes,
   updateCountsFromLog,
   updateCountsFromBot,
+  getListOfParsedLogs,
   getChannelEmoteCodes,
   getChannelEmoteCounts,
   getEmoteCount,

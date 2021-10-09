@@ -16,6 +16,7 @@
     saveUpdatedEmotes,
     updateCountsFromLog,
     updateCountsFromBot,
+    getListOfParsedLogs,
     getChannelEmoteCounts,
     getChannelEmoteCodes,
     getEmoteCount,
@@ -180,52 +181,29 @@
       });
   });
 
-  app.get("/channel/:channelName/emoteCounts", (req, res) =>
-    getChannelEmoteCounts(req, res, db)
-  );
-
-  app.get("/channel/:channelName/emoteCodes", (req, res) =>
-    getChannelEmoteCodes(req, res, db)
-  );
-
+  app.get("/channel/:channelName/emoteCounts", getChannelEmoteCounts);
+  app.get("/channel/:channelName/emoteCodes", getChannelEmoteCodes);
   app.get(
     "/channel/:channelName/getChannelEmotesFromDatabaseAndProviders",
-    (req, res) => getChannelEmotesFromDatabaseAndProviders(req, res, db)
+    getChannelEmotesFromDatabaseAndProviders
   );
+  app.get("/channel/:channelName/listOfParsedLogs", getListOfParsedLogs);
 
-  app.get("/emote/:emoteID/usageDetails", (req, res) =>
-    getEmoteUsageDetails(req, res, db)
-  );
-
+  app.get("/emote/:emoteID/usageDetails", getEmoteUsageDetails);
   app.get("/emote/:emoteID/count", getEmoteCount);
   app.get("/emote/:emoteID/usedBy", getEmoteUsedBy);
   app.get("/emote/:emoteID/usedOn", getEmoteUsedOn);
 
-  app.get("/channel/:channelName/listofParsedLogFilesnames", (req, res) => {
-    const channelName = req.params.channelName;
-    db.collection("TwitchLogin").findOne(
-      { _id: channelName },
-      (err, { twitchID }) => {
-        db.collection("Channel").findOne(
-          { _id: twitchID },
-          (err, channelData) => {
-            res.send(JSON.stringify(channelData.parsedLogfiles));
-          }
-        );
-      }
-    );
-  });
-
   app.post(
     "/channel/:channelName/saveUpdatedEmotes",
     express.json({ limit: "10MB" }),
-    (req, res) => saveUpdatedEmotes(req, res, db)
+    saveUpdatedEmotes
   );
 
   app.post(
     "/channel/:channelName/updateCountsFromLog",
     express.json({ limit: "10MB" }),
-    (req, res) => updateCountsFromLog(req, res, db)
+    updateCountsFromLog
   );
 
   app.post(
