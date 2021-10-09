@@ -3,7 +3,7 @@
     <div class="header">
       Usage of <img :src="emoteImage" :alt="emoteCode" /> in <b>{{ channelName }}</b>'s Channel
     </div>
-    <highcharts class="chart" :options="usedOnChartOptions"></highcharts>
+    <UsedOnChart :emote-code="emoteCode" :used-on="usedOn" />
     <UsedByChart :emote-code="emoteCode" :used-by="usedBy" />
   </div>
   <div v-else-if="error" class="error">Error retrieving emote data.</div>
@@ -12,16 +12,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
-import { Chart } from 'highcharts-vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import UsedByChart from "../components/EmoteUsedByChart.vue";
+import UsedOnChart from "../components/EmoteUsedOnChart.vue";
 
 export default defineComponent({
   name: 'EmotePage',
   components: {
-    highcharts: Chart,
-    UsedByChart
+    UsedByChart,
+    UsedOnChart
   },
   setup() {
     const route = useRoute();
@@ -98,46 +98,17 @@ export default defineComponent({
 
     const channelName = computed(() => state.channelName)
     const emoteImage = computed(() => state.image)
-
-    const usedOnChartOptions = computed(() => ready.value ? ({
-      chart: {
-        //type: 'bar'
-      },
-      title: {
-        useHTML: true,
-        text: `Usage by Date`
-      },
-      xAxis: {
-        type: 'datetime',
-        title: {
-          text: 'Date'
-        },
-      },
-      yAxis: {
-        title: {
-          text: '# of Uses'
-        }
-      },
-      series: [{
-        name: emoteCode,
-        data: Object.keys(state.usedOn).map(date => {
-          const year = Number(String(date).slice(0, 4));
-          const month = Number(String(date).slice(4, 6)) - 1;
-          const day = Number(String(date).slice(6));
-          const dateTime = new Date(year, month, day).getTime();
-          return [ dateTime, state.usedOn[date] ]
-        }).sort((a, b) => b[0] - a[0])
-      }]
-    }): {})
+    const usedOn = computed(() => state.usedOn)
+    const usedBy = computed(() => state.usedBy)
 
     return {
       ready,
       error,
       emoteImage,
       emoteCode,
-      usedBy: computed(() => state.usedBy),
-      channelName,
-      usedOnChartOptions
+      usedOn,
+      usedBy,
+      channelName
     }
   }
 })
