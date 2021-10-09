@@ -534,7 +534,7 @@ const updateCountsFromLog = async (req, res) => {
   );
 };
 
-const getChannelEmotesFromDatabaseAndProviders = async (req, res) => {
+const getEmotesFromDbAndProviders = async (req, res) => {
   const channelName = req.params.channelName;
   let results = {
     emotesFromDatabase: [],
@@ -902,7 +902,7 @@ module.exports = {
   getEmoteUsedBy,
   getEmoteUsedOn,
   getEmoteUsageDetails,
-  getChannelEmotesFromDatabaseAndProviders,
+  getEmotesFromDbAndProviders,
   getChannelList,
   loginUser,
   /*  registerUser, */

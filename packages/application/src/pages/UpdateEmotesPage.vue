@@ -59,7 +59,7 @@ export default defineComponent({
 
     async function fetchData(): Promise<ChannelEmoteDataResponse> {
       try {
-        const URL = `http://localhost:8081/channel/${channelName}/getChannelEmotesFromDatabaseAndProviders`
+        const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`
         const response = await axios.get(URL);
         return response.data;
       } catch (err) {

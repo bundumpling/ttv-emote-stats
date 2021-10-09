@@ -23,7 +23,7 @@
     getEmoteUsedBy,
     getEmoteUsedOn,
     getEmoteUsageDetails,
-    getChannelEmotesFromDatabaseAndProviders,
+    getEmotesFromDbAndProviders,
     getChannelList,
     loginUser,
   } = require("./controller");
@@ -184,8 +184,8 @@
   app.get("/channel/:channelName/emoteCounts", getChannelEmoteCounts);
   app.get("/channel/:channelName/emoteCodes", getChannelEmoteCodes);
   app.get(
-    "/channel/:channelName/getChannelEmotesFromDatabaseAndProviders",
-    getChannelEmotesFromDatabaseAndProviders
+    "/channel/:channelName/emotesFromDbAndProviders",
+    getEmotesFromDbAndProviders
   );
   app.get("/channel/:channelName/listOfParsedLogs", getListOfParsedLogs);
 
