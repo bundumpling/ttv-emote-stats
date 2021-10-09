@@ -7,7 +7,7 @@
     <UsedByChart :emote-code="emoteCode" :used-by="usedBy" />
   </div>
   <div v-else-if="error" class="error">Error retrieving emote data.</div>
-  <div v-else class="loading">Loading...</div>
+  <Loading v-else-if="!error" />
 </template>
 
 <script lang="ts">
@@ -16,12 +16,14 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import UsedByChart from "../components/EmoteUsedByChart.vue";
 import UsedOnChart from "../components/EmoteUsedOnChart.vue";
+import Loading from "../components/TheLoadingSpinner.vue";
 
 export default defineComponent({
   name: 'EmotePage',
   components: {
     UsedByChart,
-    UsedOnChart
+    UsedOnChart,
+    Loading
   },
   setup() {
     const route = useRoute();
