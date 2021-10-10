@@ -15,7 +15,7 @@ import TheSubheader from "../components/TheSubheader.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
 import Controls from "../components/ChannelControls.vue";
 import EmoteListContainer from "../components/ChannelEmoteListContainer.vue";
-import { ChannelState, Emote, EmoteFromList } from "@/types";
+import { ChannelState, Emote, EmoteFromList, ISearchInput } from "@/types";
 import axios, { AxiosResponse } from "axios";
 
 export default defineComponent({
@@ -29,7 +29,9 @@ export default defineComponent({
   setup() {
     const route = useRoute();
 
-    const channelName = Array.isArray(route.params.channelName) ? route.params.channelName.join() : route.params.channelName;
+    const channelName = Array.isArray(route.params.channelName)
+      ? route.params.channelName.join()
+      : route.params.channelName;
 
     const loading = ref(true);
     const error = ref(false);
@@ -39,55 +41,57 @@ export default defineComponent({
       twitchID: null,
       emotes: [],
       hasEmotesFrom: {
-        'Twitch': false,
-        'FFZ': false,
-        'BTTV': false,
-        '7TV': false
+        Twitch: false,
+        FFZ: false,
+        BTTV: false,
+        "7TV": false,
       },
       emoteDetails: {
-        code: '',
+        code: "",
         rank: 0,
         stateIndex: 0,
-        image: '',
-        provider: '',
-        providerID: '',
+        image: "",
+        provider: "",
+        providerID: "",
         obsolete: false,
         usedBy: {},
         usedOn: {},
-        fromList: ''
+        fromList: "",
       },
       loadingEmoteDetails: false,
       emoteDetailsModalOpen: false,
       emotesPerPage: 10,
-      emoteSearchInput: '',
-      userSearchInput: '',
-      userSearchLock: false,
-      setEmoteSearchInput: function(input: string) {
+      emoteSearchInput: "",
+      userSearchInput: "",
+      setEmoteSearchInput: function (input: string) {
         this.emoteSearchInput = input;
       },
-      setUserSearchInput: function(input: string) {
+      setUserSearchInput: function (input: string) {
         this.userSearchInput = input;
       },
-      toggleUserSearchLock: function() {
-        this.userSearchLock = !this.userSearchLock;
+      userSearchLocked: false,
+      toggleUserSearchLock: function () {
+        this.userSearchLocked = !this.userSearchLocked;
       },
-      openEmoteDetailsModal: function(emote: EmoteFromList, fromList: string) { 
-        this.emoteDetails = { ...emote, fromList }  
-        this.emoteDetailsModalOpen = true 
+      openEmoteDetailsModal: function (emote: EmoteFromList, fromList: string) {
+        this.emoteDetails = { ...emote, fromList };
+        this.emoteDetailsModalOpen = true;
         this.loadingEmoteDetails = false;
       },
-      closeEmoteDetailsModal: function() { 
+      closeEmoteDetailsModal: function () {
         this.emoteDetailsModalOpen = false;
-        if (!this.userSearchLock) {
-          this.userSearchInput = '';
+        if (!this.userSearchLocked) {
+          this.userSearchInput = "";
         }
       },
-      setEmotesPerPage: function(value: number) { this.emotesPerPage = value }
-    })
+      setEmotesPerPage: function (value: number) {
+        this.emotesPerPage = value;
+      },
+    });
 
     interface ChannelEmoteCountsResponse {
-      _id: string,
-      emotes: Array<Emote>
+      _id: string;
+      emotes: Array<Emote>;
     }
 
     async function fetchData(): Promise<ChannelEmoteCountsResponse> {
@@ -105,11 +109,15 @@ export default defineComponent({
         const { _id, emotes } = await fetchData();
         const twitchID = _id;
 
-        Object.keys(state.hasEmotesFrom).forEach(provider => {
-          if (emotes.some((emote: { provider: string; }) => emote.provider === provider)) {
+        Object.keys(state.hasEmotesFrom).forEach((provider) => {
+          if (
+            emotes.some(
+              (emote: { provider: string }) => emote.provider === provider
+            )
+          ) {
             state.hasEmotesFrom[provider] = true;
           }
-        })
+        });
 
         state.twitchID = twitchID;
         state.emotes = emotes;
@@ -121,35 +129,52 @@ export default defineComponent({
 
     const getEmoteDetails = async (emote: EmoteFromList, fromList: string) => {
       state.loadingEmoteDetails = true;
-      if (state.emotes[emote.stateIndex].usedBy !== undefined && state.emotes[emote.stateIndex].usedOn !== undefined) {
-        console.log(`Usage details for ${emote.code} already known... skipping API call.`)
-        state.openEmoteDetailsModal(emote, fromList)
+      if (
+        state.emotes[emote.stateIndex].usedBy !== undefined &&
+        state.emotes[emote.stateIndex].usedOn !== undefined
+      ) {
+        console.log(
+          `Usage details for ${emote.code} already known... skipping API call.`
+        );
+        state.openEmoteDetailsModal(emote, fromList);
       } else {
         const URL = `http://localhost:8081/emote/${emote._id}/usageDetails`;
-        const response = await axios.get(URL) as AxiosResponse;
+        const response = (await axios.get(URL)) as AxiosResponse;
         const { usedBy, usedOn } = response.data;
         state.emotes[emote.stateIndex].usedBy = usedBy;
         state.emotes[emote.stateIndex].usedOn = usedOn;
         state.openEmoteDetailsModal({ ...emote, usedBy, usedOn }, fromList);
       }
-    }
+    };
 
-    provide('state', state);
-    provide('getEmoteDetails', getEmoteDetails);
-    provide('emoteSearch', {
+    provide("state", state);
+    provide("getEmoteDetails", getEmoteDetails);
+    provide("emoteSearch", {
+      name: "emoteSearch",
       getInput: () => state.emoteSearchInput,
       setInput: (value) => state.setEmoteSearchInput(value),
-      validationRegExp: new RegExp(/[^a-z0-9]/, 'gi')
-    });
+      validationRegExp: new RegExp(/[^a-z0-9]/, "gi"),
+      reset: () => state.setEmoteSearchInput(""),
+    } as ISearchInput);
+
+    provide("userSearch", {
+      name: "userSearch",
+      getInput: () => state.userSearchInput,
+      setInput: (value) => state.setUserSearchInput(value),
+      validationRegExp: new RegExp(/[^a-z0-9_]/, "gi"),
+      reset: () => state.setUserSearchInput(""),
+      lockable: true,
+      isLocked: () => state.userSearchLocked,
+      toggleLock: () => state.toggleUserSearchLock(),
+    } as ISearchInput);
 
     return {
       channelName,
       loading,
-      error
+      error,
     };
   },
 });
 </script>
 
-<style>
-</style>
+<style></style>

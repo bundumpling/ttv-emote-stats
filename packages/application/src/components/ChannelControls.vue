@@ -1,8 +1,6 @@
 <template>
   <div class="list-controls-wrapper">
-    <div class="search-input-wrapper">
-      <SearchInput injected-name="emoteSearch" label="Search Emotes" />
-    </div>
+    <SearchInput inject="emoteSearch" />
     <PerPageSelect />
   </div>
 </template>
@@ -16,7 +14,7 @@ export default defineComponent({
   components: {
     PerPageSelect,
     SearchInput,
-  }
+  },
 });
 </script>
 
@@ -30,11 +28,5 @@ export default defineComponent({
   & > div {
     margin: 0 0.5em;
   }
-}
-
-.search-input-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
 }
 </style>
