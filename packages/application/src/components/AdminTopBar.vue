@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, computed } from "vue";
+import { useRouter } from "vue-router";
 //@ts-expect-error No Type Definitions Available
-import VueJwtDecode from 'vue-jwt-decode';
+import VueJwtDecode from "vue-jwt-decode";
 
 export default defineComponent({
   name: "AdminTopBar",
@@ -26,22 +26,22 @@ export default defineComponent({
         let decoded = VueJwtDecode.decode(token);
         return decoded.username;
       } catch (error) {
-        console.log(error, "error decoding token")
-        return null
+        console.log(error, "error decoding token");
+        return null;
       }
-    })
+    });
 
     function logout() {
       localStorage.removeItem("user");
       router.push("/login");
     }
-    
+
     return {
       username,
-      logout
-    }
-  }
-})
+      logout,
+    };
+  },
+});
 </script>
 
 <style lang="scss">
@@ -53,7 +53,7 @@ export default defineComponent({
   border-width: 4px 0px;
   border-style: solid;
   border-color: #666;
-  background-color: #CCC;
+  background-color: #ccc;
 }
 .status {
   padding-left: 4px;
@@ -71,7 +71,7 @@ export default defineComponent({
 .logout {
   button {
     background-color: #666;
-    color: #EEE;
+    color: #eee;
     font-weight: bold;
     font-family: monospace;
     border-color: black;

@@ -28,10 +28,10 @@ export default defineComponent({
   components: {
     EmoteList,
     EmoteDetails,
-    Loading
+    Loading,
   },
   setup() {
-    const state = inject('state') as ChannelState;
+    const state = inject("state") as ChannelState;
 
     const loadingEmoteDetails = computed(() => {
       return state.loadingEmoteDetails;
@@ -118,7 +118,7 @@ export default defineComponent({
       countsSorted,
       countsByProviderSorted,
       emoteDetailsModalOpen,
-      loadingEmoteDetails
+      loadingEmoteDetails,
     };
   },
 });

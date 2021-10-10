@@ -1,15 +1,15 @@
 <template>
-    <div class="container">
-      <div class="spinner">
-        <font-awesome-icon icon="spinner" class="spinner" />
-      </div>
+  <div class="container">
+    <div class="spinner">
+      <font-awesome-icon icon="spinner" class="spinner" />
     </div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'TheLoadingSpinner'
-}
+  name: "TheLoadingSpinner",
+};
 </script>
 
 <style lang="scss" scoped>
@@ -29,10 +29,10 @@ export default {
 }
 @keyframes spin {
   from {
-      transform:rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-      transform:rotate(359deg);
+    transform: rotate(359deg);
   }
 }
 </style>

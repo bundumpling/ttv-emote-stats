@@ -5,11 +5,28 @@
     />
     <div v-if="!loading">
       <section class="info">
-        <p>This is a tool for parsing log files from <strong>Chatterino</strong>. In order to work properly, a log file <strong>must</strong> follow a particular format: </p>
+        <p>
+          This is a tool for parsing log files from <strong>Chatterino</strong>.
+          In order to work properly, a log file <strong>must</strong> follow a
+          particular format:
+        </p>
         <ul>
-          <li>The first line is a 'start logging' status message providing the date, e.g. <code># Start logging at 2021-09-13 00:21:25 Eastern Daylight Time</code></li>
-          <li>Each chat line must begin with a timestamp, e.g. <code>[00:24:44]</code></li>
-          <li>Each chat line must have a colon following the username, e.g. <code>[01:41:29]  twitchuser: hi streamer and chat FrankerZ</code></li>
+          <li>
+            The first line is a 'start logging' status message providing the
+            date, e.g.
+            <code
+              ># Start logging at 2021-09-13 00:21:25 Eastern Daylight
+              Time</code
+            >
+          </li>
+          <li>
+            Each chat line must begin with a timestamp, e.g.
+            <code>[00:24:44]</code>
+          </li>
+          <li>
+            Each chat line must have a colon following the username, e.g.
+            <code>[01:41:29] twitchuser: hi streamer and chat FrankerZ</code>
+          </li>
         </ul>
       </section>
       <div class="container box">
@@ -18,11 +35,14 @@
             <div class="filelist">
               <h3>Uploaded</h3>
               <ul>
-                <li v-for="(filename, i) in progressData.uploadedList" :key="`${filename}-${i}`">
+                <li
+                  v-for="(filename, i) in progressData.uploadedList"
+                  :key="`${filename}-${i}`"
+                >
                   {{ filename }}
                 </li>
               </ul>
-            </div>            
+            </div>
           </div>
           <div class="middle">
             <UploadButton
@@ -31,13 +51,18 @@
               :handle-upload="handleLogFilesUpload"
             />
             <Status v-else :status="progressData.status" :reset="reset" />
-            <Statistics :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }" />
+            <Statistics
+              :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }"
+            />
           </div>
           <div class="output-side">
             <div class="filelist">
               <h3>Parsed</h3>
               <ul>
-                <li v-for="(filename, i) in progressData.parsedList" :key="`${filename}-${i}`">
+                <li
+                  v-for="(filename, i) in progressData.parsedList"
+                  :key="`${filename}-${i}`"
+                >
                   {{ filename }}
                 </li>
               </ul>
@@ -45,10 +70,18 @@
             <div class="filelist">
               <h3>Skipped/Error</h3>
               <ul>
-                <li v-for="(filename, i) in progressData.skippedList" :key="`${filename}-${i}`" class="listitem-skipped">
+                <li
+                  v-for="(filename, i) in progressData.skippedList"
+                  :key="`${filename}-${i}`"
+                  class="listitem-skipped"
+                >
                   {{ filename }}
                 </li>
-                <li v-for="(filename, i) in progressData.errorList" :key="`${filename}-${i}`" class="listitem-error">
+                <li
+                  v-for="(filename, i) in progressData.errorList"
+                  :key="`${filename}-${i}`"
+                  class="listitem-error"
+                >
                   {{ filename }}
                 </li>
               </ul>
@@ -68,7 +101,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from "axios";
 import { LogParserResult, ParseLogsState, ParserStatus } from "@/types";
 import logParser from "../helpers/logParser";
 import TheSubheader from "../components/TheSubheader.vue";
@@ -85,7 +118,7 @@ export default defineComponent({
     Status,
     Statistics,
     ProgressBar,
-    Loading
+    Loading,
   },
   setup() {
     const route = useRoute();
@@ -95,27 +128,29 @@ export default defineComponent({
     const error = ref(false);
 
     const state = reactive<ParseLogsState>({
-      channelID: '',
+      channelID: "",
       emoteCodes: [],
       progressData: {
         uploadedList: [],
         parsedList: [],
         skippedList: [],
         errorList: [],
-        status: ParserStatus.IDLE
+        status: ParserStatus.IDLE,
       },
       logParserResults: {
         emoteCounts: {},
-        usernameLastSeen: {}
+        usernameLastSeen: {},
       },
-      logParserFilenames: []
-    })
+      logParserFilenames: [],
+    });
 
     async function fetchData() {
       try {
         const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
         const token = localStorage.getItem("user");
-        const response = await axios.get(URL, { headers: { authorization: token }});
+        const response = await axios.get(URL, {
+          headers: { authorization: token },
+        });
         return response.data;
       } catch (err) {
         throw new Error(err);
@@ -131,7 +166,7 @@ export default defineComponent({
       } catch (err) {
         error.value = true;
       }
-    })
+    });
 
     const channelID = computed(() => state.channelID);
     const emoteCodes = computed(() => state.emoteCodes);
@@ -146,9 +181,11 @@ export default defineComponent({
       return total;
     });
     const emotesTotal = computed(() => state.emoteCodes.length);
-    const uniqueUsers = computed(() => Object.keys(state.logParserResults.usernameLastSeen).length);
+    const uniqueUsers = computed(
+      () => Object.keys(state.logParserResults.usernameLastSeen).length
+    );
     const totalUsageCount = computed(calcTotalUsageCount);
-    
+
     const uploadButtonDisabled = computed(() =>
       Boolean(state.progressData.uploadedList.length)
     );
@@ -157,9 +194,11 @@ export default defineComponent({
       if (state.progressData.status === ParserStatus.DONE) {
         return 100;
       } else {
-        const { uploadedList, parsedList, skippedList, errorList } = state.progressData;
+        const { uploadedList, parsedList, skippedList, errorList } =
+          state.progressData;
         const result = Math.floor(
-          ((parsedList.length + skippedList.length + errorList.length) / uploadedList.length) *
+          ((parsedList.length + skippedList.length + errorList.length) /
+            uploadedList.length) *
             100
         );
         return isNaN(result) ? 0 : result;
@@ -170,8 +209,7 @@ export default defineComponent({
       const emoteCodes = Object.keys(state.logParserResults.emoteCounts);
       let total = 0;
       emoteCodes.forEach((code) => {
-        total +=
-          state.logParserResults.emoteCounts[code].count;
+        total += state.logParserResults.emoteCounts[code].count;
       });
       return total;
     }
@@ -180,10 +218,12 @@ export default defineComponent({
       try {
         const URL = `http://localhost:8081/channel/${channelName}/listOfParsedLogs`;
         const token = localStorage.getItem("user");
-        const response = await axios.get(URL, { headers: { authorization: token }});
+        const response = await axios.get(URL, {
+          headers: { authorization: token },
+        });
         return response.data;
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
 
@@ -240,14 +280,14 @@ export default defineComponent({
               }
               if (
                 state.progressData.parsedList.length +
-                  state.progressData.skippedList.length + 
+                  state.progressData.skippedList.length +
                   state.progressData.errorList.length ===
                 state.progressData.uploadedList.length
               ) {
                 if (state.progressData.parsedList.length) {
                   saveLogParserResultsToDb().then(() => {
                     state.progressData.status = ParserStatus.DONE;
-                  })
+                  });
                 } else {
                   state.progressData.status = ParserStatus.IDLE;
                 }
@@ -268,10 +308,14 @@ export default defineComponent({
       const token = localStorage.getItem("user");
       const headers = {
         authorization: token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       };
-      const response = await axios.post(URL, { headers, logFilenames, logParserResults }) as AxiosResponse;
+      const response = (await axios.post(URL, {
+        headers,
+        logFilenames,
+        logParserResults,
+      })) as AxiosResponse;
       return response;
       // return fetch(
       //   URL,
@@ -289,7 +333,10 @@ export default defineComponent({
       // ).then(response => response.json())
     }
 
-    function updateLogParserResults (logFilename: string, logParserResult: LogParserResult) {
+    function updateLogParserResults(
+      logFilename: string,
+      logParserResult: LogParserResult
+    ) {
       if (!Object.keys(state.logParserResults).length) {
         state.logParserResults = logParserResult;
       } else {
@@ -299,36 +346,48 @@ export default defineComponent({
           if (value.count && value.usedBy) {
             if (state.logParserResults.emoteCounts[key]) {
               state.logParserResults.emoteCounts[key].count += value.count;
-              if (logDate && state.logParserResults.emoteCounts[key].usedOn[logDate]) {
-                state.logParserResults.emoteCounts[key].usedOn[logDate] += value.count;
+              if (
+                logDate &&
+                state.logParserResults.emoteCounts[key].usedOn[logDate]
+              ) {
+                state.logParserResults.emoteCounts[key].usedOn[logDate] +=
+                  value.count;
               } else if (logDate) {
-                state.logParserResults.emoteCounts[key].usedOn[logDate] = value.count;
+                state.logParserResults.emoteCounts[key].usedOn[logDate] =
+                  value.count;
               }
-              Object.keys(value.usedBy).forEach(username => {
+              Object.keys(value.usedBy).forEach((username) => {
                 if (value.usedBy) {
-                  if (state.logParserResults.emoteCounts[key].usedBy[username]) {
-                    state.logParserResults.emoteCounts[key].usedBy[username] += value.usedBy[username];
+                  if (
+                    state.logParserResults.emoteCounts[key].usedBy[username]
+                  ) {
+                    state.logParserResults.emoteCounts[key].usedBy[username] +=
+                      value.usedBy[username];
                   } else {
-                    state.logParserResults.emoteCounts[key].usedBy[username] = value.usedBy[username];
+                    state.logParserResults.emoteCounts[key].usedBy[username] =
+                      value.usedBy[username];
                   }
                 }
-              })
+              });
             } else if (logDate) {
               value.usedOn[logDate] = value.count;
               state.logParserResults.emoteCounts[key] = value;
             }
           }
-        })
+        });
         Object.keys(usernameLastSeen).forEach((username) => {
           const timestamp = usernameLastSeen[username];
           if (timestamp) {
             if (state.logParserResults.usernameLastSeen[username]) {
-              state.logParserResults.usernameLastSeen[username] = Math.max(state.logParserResults.usernameLastSeen[username], timestamp)
+              state.logParserResults.usernameLastSeen[username] = Math.max(
+                state.logParserResults.usernameLastSeen[username],
+                timestamp
+              );
             } else {
               state.logParserResults.usernameLastSeen[username] = timestamp;
             }
           }
-        })
+        });
       }
       state.logParserFilenames = [logFilename, ...state.logParserFilenames];
     }
@@ -358,7 +417,7 @@ export default defineComponent({
       progressData: computed(() => state.progressData),
       reset,
       loading,
-      error
+      error,
       // saveAll,
       // saveResultsToDB,
     };
@@ -381,7 +440,6 @@ export default defineComponent({
       text-align: left;
     }
   }
-
 }
 .main {
   min-height: 600px;

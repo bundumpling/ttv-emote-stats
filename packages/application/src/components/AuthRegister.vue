@@ -30,9 +30,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import axios, { AxiosResponse } from 'axios';
+import { defineComponent, reactive } from "vue";
+import { useRouter } from "vue-router";
+import axios, { AxiosResponse } from "axios";
 
 export default defineComponent({
   name: "AuthRegister",
@@ -41,15 +41,18 @@ export default defineComponent({
 
     const register = reactive({
       username: "",
-      password: ""
-    })
+      password: "",
+    });
 
     async function registerUser() {
       try {
-        let response = await axios.post("http://localhost:8081/auth/register", { username: register.username, password: register.password }) as AxiosResponse;
-        
+        let response = (await axios.post(
+          "http://localhost:8081/auth/register",
+          { username: register.username, password: register.password }
+        )) as AxiosResponse;
+
         if (response) {
-          console.log("User registration successful")
+          console.log("User registration successful");
           router.push("/login");
         }
       } catch (error) {
@@ -59,10 +62,10 @@ export default defineComponent({
 
     return {
       register,
-      registerUser
-    }
-  }
-})
+      registerUser,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

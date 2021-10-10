@@ -6,7 +6,9 @@
         Save Updated Emotes
       </button>
       <span @click="toggleDetailedView">
-        {{ `[ Switch to ${showDetailedView ? "condensed" : "detailed"} view ]` }}
+        {{
+          `[ Switch to ${showDetailedView ? "condensed" : "detailed"} view ]`
+        }}
       </span>
     </div>
     <DetailedView v-if="showDetailedView" :updated-emotes="updatedEmotes" />
@@ -19,7 +21,12 @@
 <script lang="ts">
 import { defineComponent, onBeforeMount, reactive, computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import { UpdateEmotesState, Emote, EmoteForUpdate, EmoteFromProvider } from "@/types";
+import {
+  UpdateEmotesState,
+  Emote,
+  EmoteForUpdate,
+  EmoteFromProvider,
+} from "@/types";
 import TheSubheader from "../components/TheSubheader.vue";
 import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
 import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
@@ -32,12 +39,14 @@ export default defineComponent({
     TheSubheader,
     DetailedView,
     CondensedView,
-    Loading
+    Loading,
   },
   setup() {
     const route = useRoute();
-    
-    const channelName = Array.isArray(route.params.channelName) ? route.params.channelName.join() : route.params.channelName;
+
+    const channelName = Array.isArray(route.params.channelName)
+      ? route.params.channelName.join()
+      : route.params.channelName;
 
     const loading = ref(true);
     const error = ref(false);
@@ -46,22 +55,24 @@ export default defineComponent({
       channelID: null,
       emotesFromDatabase: [],
       emotesFromProviders: [],
-      emoteCodes: []
+      emoteCodes: [],
     });
 
     interface ChannelEmoteDataResponse {
-      channelName: string,
-      channelID: string,
-      emotesFromDatabase: Emote[],
-      emotesFromProviders: EmoteFromProvider[],
-      emoteCodes: string[]
+      channelName: string;
+      channelID: string;
+      emotesFromDatabase: Emote[];
+      emotesFromProviders: EmoteFromProvider[];
+      emoteCodes: string[];
     }
 
     async function fetchData(): Promise<ChannelEmoteDataResponse> {
       try {
-        const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`
+        const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`;
         const token = localStorage.getItem("user");
-        const response = await axios.get(URL, { headers: { authorization: token }});
+        const response = await axios.get(URL, {
+          headers: { authorization: token },
+        });
         return response.data;
       } catch (err) {
         throw new Error(err);
@@ -70,7 +81,12 @@ export default defineComponent({
 
     onBeforeMount(async () => {
       try {
-        const { channelID, emotesFromDatabase, emotesFromProviders, emoteCodes } = await fetchData();
+        const {
+          channelID,
+          emotesFromDatabase,
+          emotesFromProviders,
+          emoteCodes,
+        } = await fetchData();
         state.channelID = channelID;
         state.emotesFromDatabase = emotesFromDatabase;
         state.emotesFromProviders = emotesFromProviders;
@@ -172,22 +188,28 @@ export default defineComponent({
     }
 
     async function saveUpdatedEmotes() {
-      const emotes = updatedEmotes.value.filter((emote: EmoteForUpdate) => {
-        return emote.isNew || emote.isUnavailable || emote.isUpdated;
-      }).map((emote: EmoteForUpdate) => {
-        if (emote.isUnavailable) {
-          return { ...emote, obsolete: true }
-        } else {
-          return emote;
-        }
-      });
+      const emotes = updatedEmotes.value
+        .filter((emote: EmoteForUpdate) => {
+          return emote.isNew || emote.isUnavailable || emote.isUpdated;
+        })
+        .map((emote: EmoteForUpdate) => {
+          if (emote.isUnavailable) {
+            return { ...emote, obsolete: true };
+          } else {
+            return emote;
+          }
+        });
 
       try {
         const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
         const token = localStorage.getItem("user");
-        await axios.post(URL, { headers: { authorization: token }, channelID: state.channelID, emotes });
+        await axios.post(URL, {
+          headers: { authorization: token },
+          channelID: state.channelID,
+          emotes,
+        });
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     }
 
@@ -199,7 +221,7 @@ export default defineComponent({
       showDetailedView,
       toggleDetailedView,
       loading,
-      error
+      error,
     };
   },
 });

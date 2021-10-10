@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
+    "module": "es2020",
     "strict": true,
     "jsx": "preserve",
     "allowJs": false,
@@ -17,17 +17,10 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ],
-    "types": ["vite/client", "@types/jest"],
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "types": ["vite/client", "@types/jest"]
   },
   "include": [
     "src/**/*.ts",
@@ -36,7 +29,5 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

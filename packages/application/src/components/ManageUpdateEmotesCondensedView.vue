@@ -98,8 +98,8 @@ export default defineComponent({
     };
 
     type CategoryExpandedState = {
-      [key: string]: boolean
-    }
+      [key: string]: boolean;
+    };
 
     const categoryExpandedState = reactive<CategoryExpandedState>({
       New: false,
@@ -108,13 +108,12 @@ export default defineComponent({
     });
 
     const summary = computed(() => {
-
       type Result = {
         [key: string]: {
           displayText: string;
           emotes: EmoteForUpdate[];
         };
-      }
+      };
       const result: Result = {
         isNew: {
           displayText: "New",

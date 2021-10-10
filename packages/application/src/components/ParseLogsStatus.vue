@@ -37,7 +37,10 @@ export default defineComponent({
       }
     });
 
-    const isDone = computed(() => props.status === ParserStatus.DONE || props.status === ParserStatus.IDLE);
+    const isDone = computed(
+      () =>
+        props.status === ParserStatus.DONE || props.status === ParserStatus.IDLE
+    );
 
     return {
       message,

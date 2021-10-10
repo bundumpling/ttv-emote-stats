@@ -6,7 +6,7 @@
 import Login from "../components/AuthLogin.vue";
 export default {
   components: {
-    Login
-  }
-}
+    Login,
+  },
+};
 </script>

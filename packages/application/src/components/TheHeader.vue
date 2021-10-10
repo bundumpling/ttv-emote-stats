@@ -16,7 +16,7 @@ export default defineComponent({
   name: "TheHeader",
 });
 </script>
-  
+
 <style scoped>
 .ascii-art-banner {
   padding-top: 0.75em;

@@ -23,7 +23,7 @@ import { defineComponent, inject } from "vue";
 export default defineComponent({
   name: "ChannelControlsPerPageSelect",
   setup() {
-    const state = inject('state') as ChannelState;
+    const state = inject("state") as ChannelState;
 
     function isSelected(value: number) {
       return state.emotesPerPage === value;

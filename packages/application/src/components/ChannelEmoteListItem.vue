@@ -23,27 +23,27 @@ export default defineComponent({
   props: {
     code: {
       type: String,
-      required: true
+      required: true,
     },
     count: {
       type: Number,
-      required: true
+      required: true,
     },
     image: {
       type: String,
-      required: true
+      required: true,
     },
     rank: {
       type: Number,
-      required: true
+      required: true,
     },
     stateIndex: {
       type: Number,
-      required: true
+      required: true,
     },
     usedBy: {
       type: Object,
-      default: {} as { [key: string]: number }
+      default: {} as { [key: string]: number },
     },
     getEmoteDetails: {
       type: Function,

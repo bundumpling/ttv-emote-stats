@@ -1,7 +1,9 @@
 <template>
   <div v-if="ready">
     <div class="header">
-      Usage of <img :src="emoteImage" :alt="emoteCode" /> in <b>{{ channelName }}</b>'s Channel
+      Usage of <img :src="emoteImage" :alt="emoteCode" /> in
+      <b>{{ channelName }}</b
+      >'s Channel
     </div>
     <UsedOnChart :emote-code="emoteCode" :used-on="usedOn" />
     <UsedByChart :emote-code="emoteCode" :used-by="usedBy" />
@@ -11,39 +13,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onBeforeMount, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
+import { defineComponent, ref, reactive, onBeforeMount, computed } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
 import UsedByChart from "../components/EmoteUsedByChart.vue";
 import UsedOnChart from "../components/EmoteUsedOnChart.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
 
 export default defineComponent({
-  name: 'EmotePage',
+  name: "EmotePage",
   components: {
     UsedByChart,
     UsedOnChart,
-    Loading
+    Loading,
   },
   setup() {
     const route = useRoute();
 
-    const emoteID = Array.isArray(route.params.emoteID) ? route.params.emoteID.join() : route.params.emoteID;
-    const emoteCode = emoteID.split('-')[1];
+    const emoteID = Array.isArray(route.params.emoteID)
+      ? route.params.emoteID.join()
+      : route.params.emoteID;
+    const emoteCode = emoteID.split("-")[1];
 
     const ready = ref(false);
     const error = ref(false);
 
     interface State {
-      channelName: string | null,
-      count: number,
-      image: string | null,
+      channelName: string | null;
+      count: number;
+      image: string | null;
       usedOn: {
-        [key: string] : number
-      },
+        [key: string]: number;
+      };
       usedBy: {
-        [key: string] : number
-      }
+        [key: string]: number;
+      };
     }
 
     const state = reactive<State>({
@@ -51,26 +55,26 @@ export default defineComponent({
       count: 0,
       image: null,
       usedOn: {},
-      usedBy: {}
-    })
+      usedBy: {},
+    });
 
     interface Response {
-      _id: string,
-      channelID: string,
-      channelName: string,
-      code: string,
-      count: number,
-      image: string,
-      obsolete: boolean,
-      provider: string,
-      providerID: string,
+      _id: string;
+      channelID: string;
+      channelName: string;
+      code: string;
+      count: number;
+      image: string;
+      obsolete: boolean;
+      provider: string;
+      providerID: string;
       usedBy: {
-        [key: string]: number
-      },
+        [key: string]: number;
+      };
       usedOn: {
-        [key: string]: number
-      },
-      error?: string
+        [key: string]: number;
+      };
+      error?: string;
     }
 
     async function fetchData(): Promise<Response> {
@@ -86,7 +90,7 @@ export default defineComponent({
     onBeforeMount(async () => {
       try {
         const emoteData = await fetchData();
-        if (emoteData.error) throw new Error(emoteData.error)
+        if (emoteData.error) throw new Error(emoteData.error);
         state.channelName = emoteData.channelName;
         state.count = emoteData.count;
         state.image = emoteData.image;
@@ -96,12 +100,12 @@ export default defineComponent({
       } catch (err) {
         error.value = true;
       }
-    })
+    });
 
-    const channelName = computed(() => state.channelName)
-    const emoteImage = computed(() => state.image)
-    const usedOn = computed(() => state.usedOn)
-    const usedBy = computed(() => state.usedBy)
+    const channelName = computed(() => state.channelName);
+    const emoteImage = computed(() => state.image);
+    const usedOn = computed(() => state.usedOn);
+    const usedBy = computed(() => state.usedBy);
 
     return {
       ready,
@@ -110,10 +114,10 @@ export default defineComponent({
       emoteCode,
       usedOn,
       usedBy,
-      channelName
-    }
-  }
-})
+      channelName,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

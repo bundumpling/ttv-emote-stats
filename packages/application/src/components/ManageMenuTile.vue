@@ -23,15 +23,15 @@ export default defineComponent({
   props: {
     text: {
       type: String,
-      required: true
+      required: true,
     },
     backgroundPath: {
       type: String,
-      required: true
+      required: true,
     },
     linkPath: {
       type: String,
-      required: true
+      required: true,
     },
   },
   setup() {

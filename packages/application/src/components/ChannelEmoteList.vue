@@ -48,50 +48,50 @@ export default defineComponent({
   props: {
     emoteListProvider: {
       type: String,
-      default: ''
+      default: "",
     },
     emoteList: {
       type: Array,
-      default: null
+      default: null,
     },
     pageNumber: {
       type: Number,
-      default: 0
+      default: 0,
     },
     emotesPerPage: {
       type: Number,
-      default: 10
+      default: 10,
     },
     rangeStart: {
       type: Number,
-      default: 0
+      default: 0,
     },
-    rangeEnd: { 
-      type: Number, 
-      default: 10 
+    rangeEnd: {
+      type: Number,
+      default: 10,
     },
-    searchInputValue: { 
-      type: String, 
-      default: '' 
-    }
+    searchInputValue: {
+      type: String,
+      default: "",
+    },
   },
   setup(props) {
-
-    const state = inject('state') as ChannelState;
-    const getEmoteDetails = inject('getEmoteDetails') as (emote: EmoteFromList, emoteListProvider: string) => void;
+    const state = inject("state") as ChannelState;
+    const getEmoteDetails = inject("getEmoteDetails") as (
+      emote: EmoteFromList,
+      emoteListProvider: string
+    ) => void;
 
     const page = ref(0);
 
     const hasPrevPage = computed(() => page.value > 0);
-    const hasNextPage = computed(
-      () => {
-        if (props && props.emoteList && props.emoteList.length) {
-          return props.emoteList.length > state.emotesPerPage * (page.value + 1)
-        } else {
-          return false;
-        }
+    const hasNextPage = computed(() => {
+      if (props && props.emoteList && props.emoteList.length) {
+        return props.emoteList.length > state.emotesPerPage * (page.value + 1);
+      } else {
+        return false;
       }
-    );
+    });
     const filteredByRank = computed(() => {
       if (props && props.emoteList) {
         return props.emoteList.filter(
@@ -102,7 +102,7 @@ export default defineComponent({
       } else {
         return [];
       }
-    }) as  ComputedRef<EmoteFromList[]>;
+    }) as ComputedRef<EmoteFromList[]>;
     const prevPage = () => {
       page.value--;
     };
@@ -117,7 +117,7 @@ export default defineComponent({
       hasNextPage,
       prevPage,
       nextPage,
-      getEmoteDetails
+      getEmoteDetails,
     };
   },
 });

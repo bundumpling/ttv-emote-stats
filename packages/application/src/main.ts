@@ -19,7 +19,7 @@ import {
   faWindowClose,
   faLock,
   faLockOpen,
-  faSpinner
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -40,11 +40,8 @@ library.add(
   faSpinner
 );
 
-const app = createApp(App)
-  .component("font-awesome-icon", FontAwesomeIcon);
-  
+const app = createApp(App).component("font-awesome-icon", FontAwesomeIcon);
+
 app.config.performance = true;
 
-app
-.use(router)
-.mount('#app')
+app.use(router).mount("#app");

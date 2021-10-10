@@ -3,14 +3,13 @@
 </template>
 
 <script>
-import ChannelList from "../components/ChannelList.vue"
+import ChannelList from "../components/ChannelList.vue";
 export default {
   name: "HomePage",
   components: {
-    ChannelList
-  }
+    ChannelList,
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>
