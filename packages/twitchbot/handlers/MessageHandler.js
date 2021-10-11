@@ -157,6 +157,109 @@ async function getEmoteTopDate(emoteID) {
   }
 }
 
+async function getUpdatedChannelEmotes(channelName, token) {
+  try {
+    const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`;
+    let response = await axios.get(URL, { headers: { authorization: token } });
+    const { emotesFromDatabase, emotesFromProviders } = response.data;
+
+    let result = {};
+
+    emotesFromDatabase.forEach((emote) => {
+      const { code, image, provider, providerID, obsolete } = emote;
+      result[code] = {
+        code,
+        image,
+        provider,
+        providerID,
+        obsolete,
+        isUnavailable: true,
+        isNew: false,
+        isUpdated: false,
+      }; // flag obsolete until matching provider emote found
+    });
+
+    emotesFromProviders.forEach((emote) => {
+      const { code, image, provider, providerID } = emote;
+
+      if (!result[code]) {
+        // NEW EMOTE
+        result[code] = {
+          code,
+          image,
+          provider,
+          providerID,
+          obsolete: false,
+          isNew: true,
+          isUnavailable: false,
+          isUpdated: false,
+        };
+      } else {
+        // Compare...
+        if (
+          result[code].image !== image ||
+          result[code].provider !== provider ||
+          result[code].providerID !== providerID
+        ) {
+          result[code] = {
+            code,
+            image,
+            provider,
+            providerID,
+            obsolete: false,
+            isUpdated: true,
+            isNew: false,
+            isUnavailable: false,
+          };
+        } else {
+          result[code] = {
+            ...result[code],
+            obsolete: false,
+            isUpdated: false,
+            isUnavailable: false,
+            isNew: false,
+          };
+        }
+      }
+    });
+
+    return Object.keys(result).map((code) => ({ ...result[code] }));
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+async function saveUpdatedChannelEmotes(
+  channelName,
+  channelID,
+  updatedEmotes,
+  token
+) {
+  const emotes = updatedEmotes
+    .filter((emote) => {
+      return emote.isNew || emote.isUnavailable || emote.isUpdated;
+    })
+    .map((emote) => {
+      if (emote.isUnavailable) {
+        return { ...emote, obsolete: true };
+      } else {
+        return emote;
+      }
+    });
+
+  try {
+    const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
+    const response = await axios.post(URL, {
+      token,
+      channelID,
+      emotes,
+    });
+    return response.status === 200;
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
 class MessageHandler {
   constructor() {
     this._commands = {
@@ -168,9 +271,63 @@ class MessageHandler {
       "%etopdate": this._etopdate,
       "%commands": this._commands,
       "%restricted": this._restricted,
+      "%update": this._update,
     };
 
     this._config = {};
+    this._token = null;
+  }
+
+  async _update({ channelName, username, channelID }) {
+    let message;
+
+    if (this.userIsChannelOwner(channelName, username)) {
+      try {
+        const updatedEmotes = await getUpdatedChannelEmotes(
+          channelName,
+          this._token
+        );
+        const success = await saveUpdatedChannelEmotes(
+          channelName,
+          channelID,
+          updatedEmotes,
+          this._token
+        );
+
+        if (!success) {
+          message = "Error updating emotes :(";
+          client.say(`#${channelName}`, message);
+          console.log(`ERROR: Failed to update emotes for #${channelName}`);
+        } else {
+          const updateSummary = {
+            New: 0,
+            Obsolete: 0,
+            Changed: 0,
+          };
+          updatedEmotes.forEach((emote) => {
+            if (emote.isNew) updateSummary.New++;
+            else if (emote.isObsolete) updateSummary.Obsolete++;
+            else if (emote.isUpdated) updateSummary.Changed++;
+          });
+
+          const summaryText = Object.keys(updateSummary)
+            .filter((key) => updateSummary[key] > 0)
+            .map((key) => `${key}: ${updateSummary[key]}`)
+            .join(" ");
+
+          message = summaryText.length
+            ? `Emotes Updated (${summaryText})`
+            : "Emotes are already up-to-date (no changes detected).";
+
+          client.say(`#${channelName}`, message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      message = `Command %update may only be used by the channel owner.`;
+      client.say(`#${channelName}`, message);
+    }
   }
 
   _commands({ channelName, username, words }) {
@@ -491,6 +648,10 @@ class MessageHandler {
       token = await login();
     } catch (error) {
       console.log(error);
+    }
+    if (token) this._token = token;
+    else {
+      console.log("Error setting auth token");
     }
 
     let config = await readConfigJSON();
