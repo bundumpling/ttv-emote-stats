@@ -100,6 +100,7 @@ export default defineComponent({
   label {
     padding-right: 0.5em;
     white-space: nowrap;
+    user-select: none;
   }
   input {
     height: 2em;
@@ -109,6 +110,7 @@ export default defineComponent({
     text-align: center;
     min-width: 24px;
     cursor: pointer;
+    user-select: none;
   }
 
   .search-input-reset {
@@ -116,6 +118,7 @@ export default defineComponent({
     font-weight: bold;
     color: maroon;
     cursor: pointer;
+    user-select: none;
   }
 }
 </style>

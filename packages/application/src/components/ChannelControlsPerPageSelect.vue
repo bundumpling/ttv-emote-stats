@@ -51,6 +51,7 @@ export default defineComponent({
 
   label {
     padding-right: 0.5em;
+    user-select: none;
   }
 }
 </style>
