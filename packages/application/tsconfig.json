@@ -3,11 +3,12 @@
     "target": "esnext",
     "module": "es2020",
     "strict": true,
+    "composite": true,
     "jsx": "preserve",
     "allowJs": false,
     "importHelpers": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "experimentalDecorators": true,
@@ -29,5 +30,10 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [
+    {
+      "path": "../common"
+    }
+  ]
 }
