@@ -319,7 +319,11 @@ class MessageHandler {
             ? `Emotes Updated (${summaryText})`
             : "Emotes are already up-to-date (no changes detected).";
 
-          client.say(`#${channelName}`, message);
+          try {
+            client.say(`#${channelName}`, message);
+          } catch (err) {
+            console.log(err);
+          }
         }
       } catch (error) {
         console.log(error);
