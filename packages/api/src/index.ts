@@ -1,18 +1,9 @@
-(async () => {
-  require("dotenv").config();
-  const express = require("express");
-  const cors = require("cors");
-  const fetch = require("node-fetch");
-  const port = 8081;
-  const app = express();
-
-  // const morgan = require("morgan");
-  // app.use(morgan("combined"));
-
-  const { connectToDb } = require("./db");
-  await connectToDb();
-
-  const {
+  import { config } from "dotenv";
+  import express from "express";
+  import cors from "cors";
+  import fetch, { HeadersInit, RequestInit } from "node-fetch";
+  import { decodeJWT } from "./auth";
+  import {
     saveUpdatedEmotes,
     updateCountsFromLog,
     updateCountsFromBot,
@@ -26,9 +17,17 @@
     getEmotesFromDbAndProviders,
     getChannelList,
     loginUser,
-  } = require("./controller");
+  } from "./controller";
 
-  const { decodeJWT } = require("./auth");
+  // import morgan from "morgan";
+
+  // init dotenv 
+  config();
+  
+  const port = 8081;
+  const app = express();
+
+  // app.use(morgan("combined"));
 
   app.use(
     cors({
@@ -37,12 +36,12 @@
     })
   );
 
-  const TWITCH_OPTIONS = {
+  const TWITCH_OPTIONS: RequestInit = {
     method: "GET",
     headers: {
       "Client-ID": process.env.TWITCH_CLIENT_ID,
       Authorization: process.env.TWITCH_AUTH_TOKEN,
-    },
+    } as HeadersInit,
   };
 
   app.use(function (req, res, next) {
@@ -59,7 +58,7 @@
 
   app.get("/twitch/users", (req, res) => {
     if (!req.query || (!req.query.login && !req.query.id)) {
-      res.status = 400;
+      res.status(400);
       res.send(
         "Bad Request: Twitch requires either a name or an id for user lookup."
       );
@@ -235,4 +234,4 @@
   app.listen(port, "0.0.0.0", () =>
     console.log(`API Relay Server listening on port ${port}`)
   );
-})();
+

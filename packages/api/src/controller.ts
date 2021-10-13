@@ -1,27 +1,47 @@
-require("dotenv").config();
-const fetch = require("node-fetch");
-const moment = require("moment");
+// @ts-nocheck
+import { config } from "dotenv";
+import fetch, { HeadersInit, RequestInit } from "node-fetch";
+import moment from "moment";
+import { getDb } from "./db";
+import  { hashPassword, comparePassword, generateJWT } from "./auth";
+import { Request, Response } from "express";
 
-const { getDb } = require("./db");
-const db = getDb();
+// init dotenv
+config();
 
-const { hashPassword, comparePassword, generateJWT } = require("./auth");
+const db = await getDb();
 
-const TWITCH_OPTIONS = {
+type Emote = {
+  _id?: string;
+  code: string;
+  image: string;
+  provider: string;
+  providerID: string;
+  obsolete: boolean;
+  count?: number;
+  usedBy?: {
+    [key: string]: number;
+  };
+  usedOn?: {
+    [key: string]: number;
+  };
+};
+
+const TWITCH_OPTIONS: RequestInit = {
   method: "GET",
   headers: {
     "Client-ID": process.env.TWITCH_CLIENT_ID,
     Authorization: process.env.TWITCH_AUTH_TOKEN,
-  },
+  } as HeadersInit,
 };
 
-const saveUpdatedEmotes = async (req, res) => {
+export const saveUpdatedEmotes = async (req: Request, res: Response) => {
   const channelName = req.params.channelName;
   const channelID = req.body.channelID;
   const emotes = req.body.emotes;
 
   return Promise.all(
-    emotes.map(({ code, provider, providerID, image, obsolete }) => {
+    emotes.map(({ code, provider, providerID, image, obsolete }: Emote) => {
       const _id = `${channelID}-${code}`;
 
       return db.collection("Emote").findOneAndUpdate(
@@ -92,7 +112,7 @@ const saveUpdatedEmotes = async (req, res) => {
     });
 };
 
-const getChannelEmoteCounts = (req, res) => {
+export const getChannelEmoteCounts = (req, res) => {
   db.collection("TwitchLogin").findOne(
     { _id: req.params.channelName },
     (err, { _id, twitchID }) => {
@@ -133,7 +153,7 @@ const getChannelEmoteCounts = (req, res) => {
   );
 };
 
-const getEmoteUsageDetails = async (req, res) => {
+export const getEmoteUsageDetails = async (req, res) => {
   const emoteID = req.params.emoteID;
   const channelID = emoteID.split("-")[0];
   const channelOwner = await db
@@ -202,7 +222,7 @@ const getEmoteUsageDetails = async (req, res) => {
   });
 };
 
-const getChannelEmoteCodes = async (req, res) => {
+export const getChannelEmoteCodes = async (req, res) => {
   const ignoreObsolete = Boolean(req.query.ignoreObsolete);
   db.collection("TwitchLogin")
     .findOne({ _id: req.params.channelName })
@@ -264,7 +284,7 @@ const getChannelEmoteCodes = async (req, res) => {
     );
 };
 
-const getListOfParsedLogs = async (req, res) => {
+export const getListOfParsedLogs = async (req, res) => {
   const channelName = req.params.channelName;
   db.collection("TwitchLogin").findOne(
     { _id: channelName },
@@ -279,7 +299,7 @@ const getListOfParsedLogs = async (req, res) => {
   );
 };
 
-const updateCountsFromLog = async (req, res) => {
+export const updateCountsFromLog = async (req, res) => {
   const channelName = req.params.channelName;
   const { usernameLastSeen, emoteCounts } = req.body.logParserResults;
   const logFilenames = req.body.logFilenames;
@@ -534,7 +554,7 @@ const updateCountsFromLog = async (req, res) => {
   );
 };
 
-const getEmotesFromDbAndProviders = async (req, res) => {
+export const getEmotesFromDbAndProviders = async (req, res) => {
   const channelName = req.params.channelName;
   let results = {
     emotesFromDatabase: [],
@@ -722,7 +742,7 @@ const getEmotesFromDbAndProviders = async (req, res) => {
   );
 };
 
-const getChannelList = async (req, res) => {
+export const getChannelList = async (req, res) => {
   db.collection("Channel")
     .aggregate([
       {
@@ -752,25 +772,25 @@ const getChannelList = async (req, res) => {
     .then((channelList) => res.json({ channelList }));
 };
 
-const getEmoteCount = async (req, res) => {
+export const getEmoteCount = async (req, res) => {
   const emoteID = req.params.emoteID;
   const { count } = await db.collection("Emote").findOne({ _id: emoteID });
   return res.status(200).send({ count });
 };
 
-const getEmoteUsedBy = async (req, res) => {
+export const getEmoteUsedBy = async (req, res) => {
   const emoteID = req.params.emoteID;
   const { usedBy } = await db.collection("Emote").findOne({ _id: emoteID });
   return res.status(200).send({ usedBy });
 };
 
-const getEmoteUsedOn = async (req, res) => {
+export const getEmoteUsedOn = async (req, res) => {
   const emoteID = req.params.emoteID;
   const { usedOn } = await db.collection("Emote").findOne({ _id: emoteID });
   return res.status(200).send({ usedOn });
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).send({ message: "Username or password missing" });
@@ -812,7 +832,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-const updateCountsFromBot = async (req, res) => {
+export const updateCountsFromBot = async (req, res) => {
   const start = Date.now();
   const { channelName, username, userID, timestamp, counts } = req.body;
 
@@ -863,7 +883,7 @@ const updateCountsFromBot = async (req, res) => {
 
 /** Disabled */
 /*
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   const { username, password } = req.body;
 
   const createdOn = moment(new Date());
@@ -891,20 +911,3 @@ const registerUser = async (req, res) => {
   );
 };
 */
-
-module.exports = {
-  saveUpdatedEmotes,
-  updateCountsFromLog,
-  updateCountsFromBot,
-  getListOfParsedLogs,
-  getChannelEmoteCodes,
-  getChannelEmoteCounts,
-  getEmoteCount,
-  getEmoteUsedBy,
-  getEmoteUsedOn,
-  getEmoteUsageDetails,
-  getEmotesFromDbAndProviders,
-  getChannelList,
-  loginUser,
-  /*  registerUser, */
-};

@@ -1,9 +1,21 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const fs = require("fs");
+import bcrypt from "bcryptjs";
+import jwt, { SignOptions } from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
+import process from "process";
+import { NextFunction, Request, Response } from "express";
 
-const privateKEY = fs.readFileSync("./private.pem", "utf8");
-const publicKEY = fs.readFileSync("./public.pem", "utf8");
+
+declare namespace Express {
+  interface CustomResponse extends Response {
+    token?: string,
+    user?: any
+  }
+}
+
+
+const privateKEY = fs.readFileSync(path.join(process.cwd(), "./private.pem"), "utf8");
+const publicKEY = fs.readFileSync(path.join(process.cwd(), "./public.pem"), "utf8");
 
 const i = "jwt-node";
 const s = "jwt-node";
@@ -20,8 +32,8 @@ const verifyOptions = {
 const saltRounds = 10;
 const salt = bcrypt.genSaltSync(saltRounds);
 
-const generateJWT = (payload) => {
-  const signOptions = {
+export const generateJWT = (payload: any) => {
+  const signOptions: SignOptions = {
     issuer: i,
     subject: s,
     audience: a,
@@ -36,19 +48,19 @@ const generateJWT = (payload) => {
   return jwt.sign(payload, privateKEY, options);
 };
 
-const verifyJWT = (payload) => {
+const verifyJWT = (payload: string) => {
   return jwt.verify(payload, publicKEY, verifyOptions);
 };
 
-const hashPassword = (password) => {
+export const hashPassword = (password: string) => {
   const hash = bcrypt.hashSync(password, salt);
   return hash;
 };
 
-const comparePassword = (hashedPassword, password) =>
+export const comparePassword = (hashedPassword: string, password: string) =>
   bcrypt.compareSync(password, hashedPassword);
 
-const decodeJWT = (req, res, next) => {
+export const decodeJWT = (req: Request, res: Express.CustomResponse, next: NextFunction) => {
   let token =
     req.headers["x-access-token"] ||
     req.headers.authorization ||
@@ -68,12 +80,4 @@ const decodeJWT = (req, res, next) => {
 
   res.token = token;
   return next();
-};
-
-module.exports = {
-  hashPassword,
-  verifyJWT,
-  generateJWT,
-  decodeJWT,
-  comparePassword,
 };
