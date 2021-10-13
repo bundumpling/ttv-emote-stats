@@ -1,6 +1,7 @@
 .DS_Store
 **/node_modules
-application/dist
+**/application/dist
+**/api/dist
 
 # bot channel config
 twitchbot/config.json
@@ -30,3 +31,6 @@ workspace.code-workspace
 *.sln
 *.sw?
 vetur.config.js
+
+# TypeScript cache
+*.tsbuildinfo
