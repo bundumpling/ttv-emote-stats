@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "declaration": true,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
   "exclude": ["packages/**/tests/**", "packages/**/dist/**"],
   "references": [
     {
