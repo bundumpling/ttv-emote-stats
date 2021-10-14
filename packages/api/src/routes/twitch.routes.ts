@@ -47,16 +47,17 @@ router.get('/emotes', async (req, res) => {
       const URL = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${id}`;
       const response = await axios.get(URL, TWITCH_OPTIONS);
       if (response && response.status === 200) {
-        const data = response.data;
-        if (data.length) {
-          res.status(200).json(data);
+        console.log(response);
+        const emoteSet = response.data.data;
+        if (emoteSet.length) {
+          res.status(200).json(emoteSet);
         } else {
           res.sendStatus(204);
         }
       } else if (response) {
         res.status(response.status).send(response.statusText);
       } else {
-        res.status(500).send("Error retrieving emoteset from Twitch API");
+        res.status(500).send("Error retrieving emoteset from Twitch API.");
       }
     } catch (err) {
       console.log(err);
