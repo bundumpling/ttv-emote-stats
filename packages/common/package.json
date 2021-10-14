@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "Shared modules for TTV-Emote-Stats",
   "private": true,
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js"
+    "dev": "tsc -w",
+    "build": "tsc"
   },
-  "author": "bundumpling",
-  "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "env-var": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0"
+  }
 }
