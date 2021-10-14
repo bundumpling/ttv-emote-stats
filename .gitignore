@@ -32,4 +32,4 @@ workspace.code-workspace
 vetur.config.js
 
 # TypeScript cache
-*.tsbuildinfo
+tsconfig.tsbuildinfo
