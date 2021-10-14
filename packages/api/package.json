@@ -5,8 +5,10 @@
   "private": true,
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "tsc && node --es-module-specifier-resolution=node dist/index.js"
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "dev": "tsc-watch --onSuccess \"node --es-module-specifier-resolution=node ./dist/index.js\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -17,7 +19,8 @@
     "moment": "^2.29.1",
     "mongodb": "^4.1.1",
     "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "@ttv-emote-stats/common": "1.0.0"
   },
   "devDependencies": {
     "typescript": "^4.4.3",

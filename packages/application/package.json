@@ -6,7 +6,10 @@
     "serve": "vite",
     "lint": "eslint --ext .js,.vue --ignore-path .eslintignore --fix src",
     "format": "prettier .  --write",
-    "test": "jest"
+    "test": "jest",
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",

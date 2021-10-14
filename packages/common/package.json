@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "description": "Shared modules for TTV-Emote-Stats",
   "private": true,
+  "typings": "types/common.d.ts",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "dev": "tsc -w",
-    "build": "tsc"
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "env-var": "^7.0.1"
+    "env-var": "^7.0.1",
+    "find-yarn-workspace-root": "^2.0.0"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0"
