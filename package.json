@@ -4,6 +4,11 @@
     "packages/*"
   ],
   "private": true,
+  "scripts": {
+    "dev": "lerna run dev --stream --no-bail",
+    "build": "lerna run build --stream --no-bail",
+    "start": "lerna run start --stream --no-bail"
+  },
   "resolutions": {
     "glob-parent": "^6.0.1",
     "electron": "^11.5.0",
@@ -11,5 +16,8 @@
     "set-value": "^4.0.1",
     "nth-check": "^2.0.1",
     "ansi-regex": "^5.0.1"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
   }
 }
