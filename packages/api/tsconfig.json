@@ -1,21 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "composite": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "strict": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "rootDir": "src",
     "types": ["@types/jest", "node"]
   },
-  "include": ["src/*.ts", "tests/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {

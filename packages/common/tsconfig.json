@@ -1,11 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
     "composite": true,
+    "noEmit": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "rootDir": "./src",
     "outDir": "./dist",
     "lib": ["esnext"],
+    "typeRoots": ["./types"],
     "types": ["@types/jest"]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
