@@ -1,8 +1,8 @@
   import { config } from "dotenv";
   import express from "express";
-  import cors from "cors";
-  import fetch, { HeadersInit, RequestInit } from "node-fetch";
+  import fetch from "node-fetch";
   import { decodeJWT } from "./auth";
+  import Routes from "./routes";
   import {
     saveUpdatedEmotes,
     updateCountsFromLog,
@@ -19,7 +19,10 @@
     loginUser,
   } from "./controller";
 
+  import { corsMiddleware, accessControlMiddleware } from "./middleware";
+
   // import morgan from "morgan";
+  // app.use(morgan("combined"));
 
   // init dotenv 
   config();
@@ -27,82 +30,12 @@
   const port = 8081;
   const app = express();
 
-  // app.use(morgan("combined"));
+  app.use(corsMiddleware);
+  app.use(accessControlMiddleware);
 
-  app.use(
-    cors({
-      origin: ["http://localhost:8080", "172.17.144.1"],
-      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-    })
-  );
+  app.get("/", (_req, res) => res.send("Hello from the API Relay Server!"));
 
-  const TWITCH_OPTIONS: RequestInit = {
-    method: "GET",
-    headers: {
-      "Client-ID": process.env.TWITCH_CLIENT_ID,
-      Authorization: process.env.TWITCH_AUTH_TOKEN,
-    } as HeadersInit,
-  };
-
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    next();
-  });
-
-  app.get("/", (req, res) => res.send("Hello from the API Relay Server!"));
-
-  app.get("/twitch/users", (req, res) => {
-    if (!req.query || (!req.query.login && !req.query.id)) {
-      res.status(400);
-      res.send(
-        "Bad Request: Twitch requires either a name or an id for user lookup."
-      );
-    } else {
-      const { login, id } = req.query;
-      const paramsString = login ? "login=" + login : "id=" + id;
-      const URL = `https://api.twitch.tv/helix/users?${paramsString}`;
-      fetch(URL, TWITCH_OPTIONS)
-        .then((res) => {
-          console.log(`${res.status} ${URL}`);
-          return res.json();
-        })
-        .then((json) => {
-          console.log(JSON.stringify(json));
-          return res.json(json.data[0]);
-        });
-    }
-  });
-
-  app.get("/twitch/emotes", (req, res) => {
-    const { id } = req.query;
-    const URL = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${id}`;
-    fetch(URL, TWITCH_OPTIONS)
-      .then((response) => {
-        console.log(`${response.status} ${URL}`);
-        if (!response.ok) {
-          throw new Error(
-            `Got status code ${response.status} from provider Twitch`
-          );
-        }
-        return response.json();
-      })
-      .then((json) => {
-        console.log(JSON.stringify(json));
-        if (!json.data.length) {
-          throw new Error(`Twitch does not have any emotes for this channel`);
-        }
-        return res.json(json.data);
-      })
-      .catch((error) => {
-        console.error(error);
-        return res.send({ error: error.message });
-      });
-  });
+  app.use('/twitch', Routes.TWITCH);
 
   app.get("/ffz/emotes", (req, res) => {
     const { id } = req.query;
