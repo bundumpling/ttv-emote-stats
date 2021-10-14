@@ -1,7 +1,6 @@
 .DS_Store
-**/node_modules
-**/application/dist
-**/api/dist
+node_modules
+dist
 
 # bot channel config
 twitchbot/config.json
