@@ -1,15 +1,20 @@
-import * as env from 'env-var';
+import workspacesRoot from "find-yarn-workspace-root";
+import env from 'env-var';
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { EnvConfig } from '../types/common';
 
-config({ path: resolve(__dirname, '../../../.env') });
+const getEnv = env.get;
 
-export interface EnvConfig {
-  clientPort: number;
-  serverPort: number;
-}
+const rootDirectory = workspacesRoot();
+
+config({ path: `${rootDirectory}/.env` });
 
 export const envConfig: EnvConfig = {
-  clientPort: env.get('CLIENT_PORT').asPortNumber(),
-  serverPort: env.get('SERVER_PORT').asPortNumber(),
+  clientPort: getEnv('CLIENT_PORT').asPortNumber() || 8080,
+  serverPort: getEnv('SERVER_PORT').asPortNumber() || 8081,
+  twitch: {
+    clientId: getEnv('TWITCH_CLIENT_ID').asString() || "",
+    secret: getEnv('TWITCH_SECRET').asString() || "",
+    authToken: getEnv('TWITCH_AUTH_TOKEN').asString() || ""
+  }
 };
