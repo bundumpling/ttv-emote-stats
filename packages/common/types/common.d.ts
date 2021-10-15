@@ -5,6 +5,10 @@ export interface EnvConfig {
     clientId: string;
     secret: string;
     authToken: string;
+  },
+  mongoDB: {
+    uri: string;
+    dbName: string;
   }
 }
 

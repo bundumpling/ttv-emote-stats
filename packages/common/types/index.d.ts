@@ -16,3 +16,11 @@ export {
   ResponseFromTwitchForUsers,
   combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse
 } from './emoteProviders'
+
+export {
+  Emote
+} from './emote';
+
+export {
+  ChannelDocument
+} from './channel';
