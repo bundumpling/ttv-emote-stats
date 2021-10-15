@@ -7,7 +7,7 @@
 
   // import morgan from "morgan";
   // app.use(morgan("combined"));
-  
+
   const port = envConfig.serverPort;
   const app = express();
 
@@ -16,15 +16,14 @@
 
   app.get("/", (_req, res) => res.send("Hello from the API Relay Server!"));
 
-  app.use('/twitch', Routes.TWITCH);
+  app.use('/twitch', Routes.Twitch);
   app.use('/ffz', Routes.FFZ); 
   app.use('/bttv', Routes.BTTV);
-  app.use('/7tv', Routes.SEVENTV);
+  app.use('/7tv', Routes.SevenTV);
 
-  app.get("/channels", Controller.getChannelList);
+  app.use('/channelList', Routes.ChannelList);
+  app.use('/channel', Routes.Channel);
 
-  app.get("/channel/:channelName/emoteCounts", Controller.getChannelEmoteCounts);
-  app.get("/channel/:channelName/emoteCodes", Controller.getChannelEmoteCodes);
 
   app.get("/emote/:emoteID/usageDetails", Controller.getEmoteUsageDetails);
   app.get("/emote/:emoteID/count", Controller.getEmoteCount);
@@ -32,32 +31,6 @@
   app.get("/emote/:emoteID/usedOn", Controller.getEmoteUsedOn);
 
   // Protected Endpoints
-
-  app.get(
-    "/channel/:channelName/emotesFromDbAndProviders",
-    Auth.decodeJWT,
-    Controller.getEmotesFromDbAndProviders
-  );
-
-  app.get(
-    "/channel/:channelName/listOfParsedLogs",
-    Auth.decodeJWT,
-    Controller.getListOfParsedLogs
-  );
-
-  app.post(
-    "/channel/:channelName/saveUpdatedEmotes",
-    express.json({ limit: "10MB" }),
-    Auth.decodeJWT,
-    Controller.saveUpdatedEmotes
-  );
-
-  app.post(
-    "/channel/:channelName/updateCountsFromLog",
-    express.json({ limit: "10MB" }),
-    Auth.decodeJWT,
-    Controller.updateCountsFromLog
-  );
 
   app.post(
     "/admin/updateCountsFromBot",
@@ -72,7 +45,4 @@
 
   app.post("/auth/login", express.json(), Controller.loginUser);
 
-  app.listen(port, "0.0.0.0", () =>
-    console.log(`API Relay Server listening on port ${port}`)
-  );
-
+app.listen(port, "0.0.0.0", () => { console.log(`API Relay Server listening on port ${port}`) });
