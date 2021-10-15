@@ -62,7 +62,7 @@ export default defineComponent({
 
     async function fetchData(): Promise<ChannelListResponse> {
       try {
-        const URL = `http://localhost:8081/channels`;
+        const URL = `http://localhost:8081/channelList`;
         const response = (await axios.get(URL)) as AxiosResponse;
         return response.data;
       } catch (err) {
