@@ -1,34 +1,22 @@
-import { AnyError, Db, MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
+import { envConfig } from "@ttv-emote-stats/common";
 
-const url = "mongodb://localhost:27017";
-const dbName = "TTVEmoteStats";
+const { uri, dbName } = envConfig.mongoDB;
 
-let _db: Db;
+const client = new MongoClient(uri);
 
-export async function connectToDb(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (_db) resolve(undefined);
+client.on("connectionPoolCreated", () => { 
+  console.log("DB connection pool created.") 
+});
 
-    MongoClient.connect(url, (err?: AnyError, client?: MongoClient) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else if (client) {
-        _db = client.db(dbName);
-        console.log("Successfully connected to MongoDB");
-        resolve(undefined);
-      } else {
-        reject("Error connecting to MongoDb")
-      }
-    });
-  });
-}
+client.on("connectionPoolClosed", () => { 
+  console.log("DB connection pool closed.")
+});
 
-export async function getDb(): Promise<Db> {
-  if (!_db) {
-    await connectToDb();
-    return _db;
-  }
-  else return _db;
-}
+client.on("topology closed", () => { 
+  console.log("DB topology closed") 
+});
 
+await client.connect();
+
+export const db: Db = new Db(client, dbName);

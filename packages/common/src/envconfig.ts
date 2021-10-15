@@ -16,5 +16,9 @@ export const envConfig: EnvConfig = {
     clientId: getEnv('TWITCH_CLIENT_ID').asString() || "",
     secret: getEnv('TWITCH_SECRET').asString() || "",
     authToken: getEnv('TWITCH_AUTH_TOKEN').asString() || ""
+  },
+  mongoDB: {
+    uri: "mongodb://localhost:27017",
+    dbName: "TTVEmoteStats"
   }
 };
