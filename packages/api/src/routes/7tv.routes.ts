@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { EmoteFrom7TV, ResponseFrom7TV } from '@ttv-emote-stats/common';
 
 const router = Router();
 
@@ -10,9 +11,9 @@ router.get('/emotes', async (req, res) => {
     try {
       const { name } = req.query;
       const URL = `https://api.7tv.app/v2/users/${name}/emotes`;
-      const response = await axios.get(URL);
+      const response = await axios.get(URL) as AxiosResponse<ResponseFrom7TV>;
       if (response && response.status === 200) {
-        const emoteSet = response.data;
+        const emoteSet: EmoteFrom7TV[] = response.data;
         if (emoteSet.length) {
           res.status(200).json(emoteSet);
         } else {

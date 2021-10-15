@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { ResponseFromBTTV, combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse } from '@ttv-emote-stats/common';
 
 const router = Router();
 
@@ -10,10 +11,9 @@ router.get('/emotes', async (req, res) => {
     try {
       const { id } = req.query;
       const URL = `https://api.betterttv.net/3/cached/users/twitch/${id}`;
-      const response = await axios.get(URL);
+      const response = await axios.get(URL) as AxiosResponse<ResponseFromBTTV>;
       if (response && response.status === 200) {
-        const { channelEmotes, sharedEmotes } = response.data;
-        const emoteSet = channelEmotes.concat(sharedEmotes);
+        const emoteSet = combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse(response.data);
         if (emoteSet.length) {
           res.status(200).json(emoteSet);
         } else {

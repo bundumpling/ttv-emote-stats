@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Shared modules for TTV-Emote-Stats",
   "private": true,
-  "typings": "types/common.d.ts",
+  "typings": "types/index.d.ts",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {

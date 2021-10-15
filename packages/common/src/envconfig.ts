@@ -1,7 +1,7 @@
 import workspacesRoot from "find-yarn-workspace-root";
 import env from 'env-var';
 import { config } from 'dotenv';
-import { EnvConfig } from '../types/common';
+import { EnvConfig } from "../types";
 
 const getEnv = env.get;
 

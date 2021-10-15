@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import axios, { AxiosRequestConfig } from 'axios';
-import { envConfig } from '@ttv-emote-stats/common';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { envConfig, ResponseFromTwitchForEmotes, ResponseFromTwitchForUsers } from '@ttv-emote-stats/common';
 
 const router = Router();
 
@@ -20,11 +20,11 @@ router.get('/users', async (req, res) => {
       const { login, id } = req.query;
       const paramsString = login ? "login=" + login : "id=" + id;
       const URL = `https://api.twitch.tv/helix/users?${paramsString}`;
-      const response = await axios.get(URL, TWITCH_OPTIONS);
-      if (response && response.status === 200 && response.data) {
-        const data = response.data.data;
-        if (data && data.length) {
-          res.status(200).json(data[0]);
+      const response = await axios.get(URL, TWITCH_OPTIONS) as AxiosResponse<ResponseFromTwitchForUsers>;
+      if (response && response.status === 200) {
+        const users = response.data.data;
+        if (users && users.length) {
+          res.status(200).json(users[0]);
         } else {
           res.sendStatus(204);
         }        
@@ -45,9 +45,8 @@ router.get('/emotes', async (req, res) => {
     try {
       const { id } = req.query;
       const URL = `https://api.twitch.tv/helix/chat/emotes?broadcaster_id=${id}`;
-      const response = await axios.get(URL, TWITCH_OPTIONS);
+      const response = await axios.get(URL, TWITCH_OPTIONS) as AxiosResponse<ResponseFromTwitchForEmotes>;
       if (response && response.status === 200) {
-        console.log(response);
         const emoteSet = response.data.data;
         if (emoteSet.length) {
           res.status(200).json(emoteSet);
