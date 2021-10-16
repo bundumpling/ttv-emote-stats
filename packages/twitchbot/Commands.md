@@ -5,6 +5,8 @@ Supported third-party providers include FFZ, BTTV, and 7TV.
 
 ## Emote Total Usage Count
 
+___Usage___
+
 `%ecount emote`
 
 ___Parameters___
@@ -12,6 +14,8 @@ ___Parameters___
 `emote` **Required** Emote name (case-sensitive).
 
 ## Emote Usage Count by User
+
+___Usage___
 
 `%ecountuser emote user` 
 
@@ -23,6 +27,8 @@ ___Parameters___
 
 ## Emote Usage Count By Date
 
+___Usage___
+
 `%ecountdate emote date`
 
 ___Parameters___
@@ -33,6 +39,8 @@ ___Parameters___
 
 ## Emote Top User
 
+___Usage___
+
 `%etopuser emote`
 
 ___Parameters___
@@ -40,6 +48,8 @@ ___Parameters___
 `emote` **Required** Emote name (case-sensitive).
 
 ## Emote Top 3 Users
+
+___Usage___
 
 `%etopusers emote`
 
@@ -49,6 +59,8 @@ ___Parameters___
 
 ## Emote Top Usage Date
 
+___Usage___
+
 `%etopdate emote`
 
 ___Parameters___
@@ -57,9 +69,13 @@ ___Parameters___
 
 ## Update Channel's Emote Set -- **Channel Owner Only**
 
+___Usage___
+
 `%update`
 
 ## View/Change Bot Mode -- **Channel Owner Only**
+
+___Usage___
 
 `%mode mode`
 
@@ -72,5 +88,7 @@ ___Parameters___
   - `SILENT` Same as `DISABLED` except bot no longer sends chat messages about failed command usage attempts.
 
 ## Get Link to Commands (*this file*)
+
+___Usage___
 
 `%commands`
