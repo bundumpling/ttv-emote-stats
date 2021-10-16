@@ -297,7 +297,6 @@ export const saveUpdatedEmotes = async (req: Request, res: Response) => {
                   },
                   {
                     upsert: true,
-                    returnDocument: "after",
                   }
                 )
     })
