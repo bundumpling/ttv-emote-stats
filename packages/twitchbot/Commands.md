@@ -67,13 +67,13 @@ ___Parameters___
 
 `emote` **Required** Emote name (case-sensitive).
 
-## Update Channel's Emote Set -- **Channel Owner Only**
+## Update Channel's Emote Set -- ***Channel Owner Only***
 
 ___Usage___
 
 `%update`
 
-## View/Change Bot Mode -- **Channel Owner Only**
+## View/Change Bot Mode -- ***Channel Owner Only***
 
 ___Usage___
 
