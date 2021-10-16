@@ -8,7 +8,7 @@ const { readConfigJSON, writeConfigJSON } = require("../helpers/config");
 class MessageHandler {
   constructor() {
     this._commands = {
-      "%commands": { method: this._commands, ownerOnly: false },
+      "%commands": { method: this._listCommands, ownerOnly: false },
       "%ecount": { method: this._ecount, ownerOnly: false },
       "%ecountuser": { method: this._ecountuser, ownerOnly: false },
       "%ecountdate": { method: this._ecountdate, ownerOnly: false },
@@ -155,8 +155,11 @@ class MessageHandler {
     }
   }
 
-  _commands({ channelName, username }) {
-    // Add channel msg with link to command list
+  _listCommands({ channelName, username }) {
+    client.say(
+      `#${channelName}`,
+      `@${username}, Command List: https://github.com/bundumpling/ttv-emote-stats#bot-commands`
+    );
   }
 
   async _ecount({ channelName, channelID, username, words }) {
