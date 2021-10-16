@@ -203,11 +203,20 @@ export default defineComponent({
       try {
         const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
         const token = localStorage.getItem("user");
-        await axios.post(URL, {
-          headers: { authorization: token },
+        const requestBody = {
           channelID: state.channelID,
           emotes,
-        });
+        };
+        const requestHeaders = { 
+          headers: { 
+            authorization: token 
+          }
+        }
+        await axios.post(
+          URL, 
+          requestBody,
+          requestHeaders
+        );
       } catch (err) {
         console.log(err);
       }

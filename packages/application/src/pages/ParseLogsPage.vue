@@ -306,31 +306,17 @@ export default defineComponent({
       const logParserResults = state.logParserResults;
       const URL = `http://localhost:8081/channel/${channelName}/updateCountsFromLog`;
       const token = localStorage.getItem("user");
-      const headers = {
-        authorization: token,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      };
-      const response = (await axios.post(URL, {
-        headers,
+      const requestbody = {
         logFilenames,
         logParserResults,
-      })) as AxiosResponse;
+      };
+      const requestHeaders = {
+        headers: {
+          authorization: token
+        }
+      };
+      const response = (await axios.post(URL, requestbody, requestHeaders)) as AxiosResponse;
       return response;
-      // return fetch(
-      //   URL,
-      //   {
-      //     method: 'POST',
-      //     headers: {
-      //       'Accept': 'application/json',
-      //       'Content-Type': 'application/json'
-      //     },
-      //     body: JSON.stringify({
-      //       logFilenames,
-      //       logParserResults
-      //     })
-      //   }
-      // ).then(response => response.json())
     }
 
     function updateLogParserResults(
