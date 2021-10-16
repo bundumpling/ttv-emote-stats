@@ -31,7 +31,7 @@ ___Parameters___
 
 `emote` **Required** Emote name (case-sensitive).
 
-(user) *Optional* User name (default: command user).
+`user` *Optional* User name (default: command user).
 
 ## Emote Usage Count By Date
 
