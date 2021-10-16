@@ -140,7 +140,23 @@ class MessageHandler {
           .map((key) => `${key}: ${updateSummary[key]}`)
           .join(" ");
 
-        message = summaryText.length
+        const wasUpdated = Boolean(summaryText.length);
+
+        if (wasUpdated) {
+          try {
+            const { emoteCodes } = await Services.getChannelEmoteCodes(
+              channelName
+            );
+            this._emoteCodes[channelName] = emoteCodes;
+            console.log(
+              `Emote codes for ${channelName} updated! Total: ${emoteCodes.length}`
+            );
+          } catch (err) {
+            console.log(err);
+          }
+        }
+
+        message = wasUpdated
           ? `Emotes Updated (${summaryText})`
           : "Emotes are already up-to-date (no changes detected).";
 
