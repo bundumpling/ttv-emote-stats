@@ -1,4 +1,4 @@
-# TTV-Emote-Stats Bot Commands
+# Bot Commands
 This bot tracks channel-specific emotes. This means neither global emotes (including those from third-party providers) nor other channel's Twitch emotes are tracked.
 
 Supported third-party providers include FFZ, BTTV, and 7TV.
