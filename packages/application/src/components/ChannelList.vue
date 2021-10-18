@@ -1,12 +1,15 @@
 <template>
   <div class="container">
     <TheSubheader msg="Channel List" />
+    <router-link v-if="isAdminPage" to="/admin/add-channel">
+      <button class="button is-medium is-link">Add Channel</button>
+    </router-link>
     <ul class="channel-list">
       <li
         v-for="(
-          { channelName, emoteCount, profileImageURL }, index
+          { channelName, emoteCount, profileImageURL }
         ) in channelList"
-        :key="channelName + index"
+        :key="channelName"
         class="channel-listitem"
         @click="goToChannel(channelName)"
       >
@@ -41,6 +44,7 @@ export default defineComponent({
     interface ChannelListItem {
       channelName: string;
       emoteCount: number;
+      profileImageURL: string;
     }
     interface State {
       channelList: Array<ChannelListItem>;
@@ -53,20 +57,22 @@ export default defineComponent({
     const router = useRouter();
 
     const path = computed(() => route.path);
+    const isAdminPage = path.value.startsWith("/admin");
 
     const loading = ref(true);
     const error = ref(false);
     const state = reactive<State>({
       channelList: [],
     });
+    const channelList = computed(() => state.channelList);
 
     async function fetchData(): Promise<ChannelListResponse> {
       try {
         const URL = `http://localhost:8081/channelList`;
-        const response = (await axios.get(URL)) as AxiosResponse;
+        const response = (await axios.get(URL)) as AxiosResponse<ChannelListResponse>;
         return response.data;
       } catch (err) {
-        throw new Error(err);
+        throw new Error("Error retrieving channel list.");
       }
     }
 
@@ -80,10 +86,8 @@ export default defineComponent({
       }
     });
 
-    const channelList = computed(() => state.channelList);
-
     function goToChannel(channelName: string) {
-      if (path.value === "/admin/") {
+      if (isAdminPage) {
         router.push(`/admin/${channelName}`);
       } else {
         router.push(`/channel/${channelName}`);
@@ -93,6 +97,7 @@ export default defineComponent({
     return {
       channelList,
       goToChannel,
+      isAdminPage,
       loading,
       error,
     };
@@ -103,6 +108,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .container {
   margin: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .header {
   text-align: center;
