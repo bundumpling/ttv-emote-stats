@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Request, Response } from "express";
 import { db } from "../../db";
 import { Document } from 'mongodb';
-import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch } from "@ttv-emote-stats/common";
+import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch, NormalizeProviderEmote } from "@ttv-emote-stats/common";
 
 interface TwitchLoginDocument extends Document {
   twitchID: string;
@@ -169,15 +169,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const twitchEmotes = twitchEmotesResponse.data;
     results.emotesFromProviders["Twitch"] = 
       (twitchEmotes.length) 
-      ? twitchEmotes.map((emote) => {
-          return {
-            code: emote.name,
-            image: emote.images.url_1x,
-            provider: "Twitch",
-            providerID: emote.id,
-            obsolete: false
-          };
-        })
+      ? twitchEmotes.map(NormalizeProviderEmote.fromTwitch)
       : [];  
   } catch (error) {
     console.log("Error retrieving Twitch emotes.");
@@ -189,15 +181,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const ffzEmotes = ffzEmotesResponse.data;
     results.emotesFromProviders["FFZ"] = 
       (ffzEmotes.length)
-      ? ffzEmotes.map((emote) => {
-          return {
-            code: emote.name,
-            image: emote.urls["1"],
-            provider: "FFZ",
-            providerID: `${emote.id}`,
-            obsolete: false
-          };
-        })
+      ? ffzEmotes.map(NormalizeProviderEmote.fromFFZ)
       : [];    
   } catch (error) {
     console.log("Error retrieving FFZ emotes.");
@@ -210,15 +194,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const bttvEmotes = bttvEmotesResponse.data;
     results.emotesFromProviders["BTTV"] = 
       (bttvEmotes.length)
-      ? bttvEmotes.map((emote) => {
-          return {
-            code: emote.code,
-            image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
-            provider: "BTTV",
-            providerID: emote.id,
-            obsolete: false
-          };
-        })
+      ? bttvEmotes.map(NormalizeProviderEmote.fromBTTV)
       : [];
   } catch (error) {
     console.log("Error retrieving BTTV emotes.");
@@ -231,15 +207,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const sevenTVEmotes = sevenTVEmotesResponse.data;
     results.emotesFromProviders["7TV"] = 
       (sevenTVEmotes.length)
-      ? sevenTVEmotes.map((emote) => {
-          return {
-            code: emote.name,
-            image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
-            provider: "7TV",
-            providerID: emote.id,
-            obsolete: false
-          };
-        })
+      ? sevenTVEmotes.map(NormalizeProviderEmote.from7TV)
       : [];
   } catch (error) {
     console.log("Error retrieving 7TV emotes.");
