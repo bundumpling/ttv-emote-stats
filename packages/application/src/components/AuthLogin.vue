@@ -58,7 +58,7 @@ export default defineComponent({
 
         router.push("/admin");
       } catch (error) {
-        console.log(error.response);
+        console.log(error);
       }
     }
 
