@@ -14,8 +14,10 @@ export {
   ResponseFromTwitchForEmotes,
   UserFromTwitch,
   ResponseFromTwitchForUsers,
-  combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse
+  combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse,
 } from './emoteProviders'
+
+export * as NormalizeProviderEmote from './normalizeProviderEmote'
 
 export {
   Emote
