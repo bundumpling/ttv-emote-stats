@@ -67,16 +67,12 @@ export default defineComponent({
     }
 
     async function fetchData(): Promise<ChannelEmoteDataResponse> {
-      try {
-        const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`;
-        const token = localStorage.getItem("user");
-        const response = await axios.get(URL, {
-          headers: { authorization: token },
-        });
-        return response.data;
-      } catch (err) {
-        throw new Error(err);
-      }
+      const URL = `http://localhost:8081/channel/${channelName}/emotesFromDbAndProviders`;
+      const token = localStorage.getItem("user");
+      const response = await axios.get(URL, {
+        headers: { authorization: token },
+      });
+      return response.data;
     }
 
     onBeforeMount(async () => {
