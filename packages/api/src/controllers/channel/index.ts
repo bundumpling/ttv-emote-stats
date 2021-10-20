@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Request, Response } from "express";
 import { db } from "../../db";
 import { Document } from 'mongodb';
-import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch, NormalizeProviderEmote } from "@ttv-emote-stats/common";
+import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch, normalizeEmoteFromTwitch, normalizeEmoteFromFFZ, normalizeEmoteFromBTTV, normalizeEmoteFrom7TV } from "@ttv-emote-stats/common";
 
 interface TwitchLoginDocument extends Document {
   twitchID: string;
@@ -169,7 +169,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const twitchEmotes = twitchEmotesResponse.data;
     results.emotesFromProviders["Twitch"] = 
       (twitchEmotes.length) 
-      ? twitchEmotes.map(NormalizeProviderEmote.fromTwitch)
+      ? twitchEmotes.map(normalizeEmoteFromTwitch)
       : [];  
   } catch (error) {
     console.log("Error retrieving Twitch emotes.");
@@ -181,7 +181,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const ffzEmotes = ffzEmotesResponse.data;
     results.emotesFromProviders["FFZ"] = 
       (ffzEmotes.length)
-      ? ffzEmotes.map(NormalizeProviderEmote.fromFFZ)
+      ? ffzEmotes.map(normalizeEmoteFromFFZ)
       : [];    
   } catch (error) {
     console.log("Error retrieving FFZ emotes.");
@@ -194,7 +194,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const bttvEmotes = bttvEmotesResponse.data;
     results.emotesFromProviders["BTTV"] = 
       (bttvEmotes.length)
-      ? bttvEmotes.map(NormalizeProviderEmote.fromBTTV)
+      ? bttvEmotes.map(normalizeEmoteFromBTTV)
       : [];
   } catch (error) {
     console.log("Error retrieving BTTV emotes.");
@@ -207,7 +207,7 @@ export const getEmotesFromDbAndProviders = async (req: Request, res: Response) =
     const sevenTVEmotes = sevenTVEmotesResponse.data;
     results.emotesFromProviders["7TV"] = 
       (sevenTVEmotes.length)
-      ? sevenTVEmotes.map(NormalizeProviderEmote.from7TV)
+      ? sevenTVEmotes.map(normalizeEmoteFrom7TV)
       : [];
   } catch (error) {
     console.log("Error retrieving 7TV emotes.");
@@ -300,6 +300,105 @@ export const saveUpdatedEmotes = async (req: Request, res: Response) => {
     res.send({ ok: false, error})
   });
 };
+
+export const create = async (req: Request, res: Response) => {
+  const channelName = req.params.channelName;
+  const { profileImageURL, channelID, emotes } = req.body as { profileImageURL: string; channelID: string; emotes: Emote[]; };
+
+  console.log(channelName, profileImageURL, channelID, emotes)
+
+  console.log("Handling POST to channel/create");
+
+  function generateEmoteID(emoteCode: string) {
+    return `${channelID}-${emoteCode}`;
+  }
+
+  async function buildArrayOfEmoteIds(): Promise<string[]> {
+    return emotes.map(({ code }) => generateEmoteID(code));
+  }
+
+  async function createChannelDocument(): Promise<ChannelDocument> {
+    const arrayOfEmoteIds = await buildArrayOfEmoteIds();
+
+    return {
+      _id: channelID,
+      emotes: arrayOfEmoteIds,
+      parsedLogfiles: [],
+      profileImageURL
+    }
+  }
+
+  async function createTwitchLoginDocument() {
+    return {
+      _id: channelName,
+      twitchID: channelID,
+      lastSeen: 0
+    }
+  }
+
+  async function createEmoteDocuments() {
+    return emotes.map(({ code, provider, providerID, image, obsolete }) => ({
+      _id: generateEmoteID(code),
+      channelID,
+      code,
+      count: 0,
+      image,
+      obsolete,
+      provider,
+      providerID,
+      usedBy: {},
+      usedOn: {}
+    }))
+  }
+
+  const channelDocument = await createChannelDocument();
+  const twitchLoginDocument = await createTwitchLoginDocument();
+  const emoteDocuments = await createEmoteDocuments();
+
+  console.log(channelDocument, twitchLoginDocument, emoteDocuments[0]);
+
+  async function insertChannelDocument() {
+    await db
+    .collection("Channel")
+    .insertOne(channelDocument as any);
+  }
+
+  async function insertTwitchLoginDocument() {
+    await db
+    .collection("TwitchLogin")
+    .updateOne(
+      { _id: twitchLoginDocument._id },
+      { 
+        $set: { 
+          twitchID: twitchLoginDocument.twitchID
+        },
+        $setOnInsert: {
+          lastSeen: twitchLoginDocument.lastSeen 
+        }
+      },
+      { upsert: true }
+    );
+  }
+
+  async function insertEmoteDocuments() {
+    await db
+    .collection("Emote")
+    .insertMany(emoteDocuments as any[]);
+  }
+
+  Promise.all(
+    [
+      insertChannelDocument(), 
+      insertTwitchLoginDocument(), 
+      insertEmoteDocuments()
+    ]
+  ).then(() => {
+    res.status(200).send("Successfully created channel!");
+  }).catch((error) => {
+    console.error(error);
+    res.status(500).send("Error creating channel!");
+  })
+}
 
 export const updateCountsFromLog = async (req: Request, res: Response) => {
   const channelName = req.params.channelName;

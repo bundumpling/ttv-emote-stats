@@ -1,6 +1,6 @@
 import { EmoteFromTwitch, EmoteFromFFZ, EmoteFromBTTV, EmoteFrom7TV, Emote } from "@ttv-emote-stats/common";
 
-export const fromTwitch = (emote: EmoteFromTwitch): Emote => ({
+export const normalizeEmoteFromTwitch = (emote: EmoteFromTwitch): Emote => ({
   code: emote.name,
   image: emote.images.url_1x,
   provider: "Twitch",
@@ -8,7 +8,7 @@ export const fromTwitch = (emote: EmoteFromTwitch): Emote => ({
   obsolete: false
 })
 
-export const fromFFZ = (emote: EmoteFromFFZ): Emote => ({
+export const normalizeEmoteFromFFZ = (emote: EmoteFromFFZ): Emote => ({
   code: emote.name,
   image: emote.urls["1"],
   provider: "FFZ",
@@ -16,7 +16,7 @@ export const fromFFZ = (emote: EmoteFromFFZ): Emote => ({
   obsolete: false
 })
 
-export const fromBTTV = (emote: EmoteFromBTTV): Emote => ({
+export const normalizeEmoteFromBTTV = (emote: EmoteFromBTTV): Emote => ({
   code: emote.code,
   image: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
   provider: "BTTV",
@@ -24,7 +24,7 @@ export const fromBTTV = (emote: EmoteFromBTTV): Emote => ({
   obsolete: false
 })
 
-export const from7TV = (emote: EmoteFrom7TV): Emote => ({
+export const normalizeEmoteFrom7TV = (emote: EmoteFrom7TV): Emote => ({
   code: emote.name,
   image: `https://cdn.7tv.app/emote/${emote.id}/1x`,
   provider: "7TV",
