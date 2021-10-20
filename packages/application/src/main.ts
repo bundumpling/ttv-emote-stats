@@ -22,6 +22,8 @@ import {
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
+import 'virtual:windi.css';
+
 library.add(
   faUpload,
   faDownload,
