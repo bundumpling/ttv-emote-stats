@@ -12,7 +12,10 @@ async function buildResultsObjectFromEmoteArray(
   });
   return emoteCounts;
 }
-export default async function logParser(log: string, emotes: string[]): Promise<LogParserResult | null> {
+export default async function logParser(
+  log: string,
+  emotes: string[]
+): Promise<LogParserResult | null> {
   const emoteCounts: LogParserEmoteCounts =
     await buildResultsObjectFromEmoteArray(emotes);
   const emoteSet = new Set(emotes);
