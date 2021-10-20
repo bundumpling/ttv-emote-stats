@@ -95,13 +95,9 @@ export default defineComponent({
     }
 
     async function fetchData(): Promise<ChannelEmoteCountsResponse> {
-      try {
-        const URL = `http://localhost:8081/channel/${channelName}/emoteCounts`;
-        const response = await axios.get(URL);
-        return response.data;
-      } catch (err) {
-        throw new Error(err);
-      }
+      const URL = `http://localhost:8081/channel/${channelName}/emoteCounts`;
+      const response = await axios.get(URL);
+      return response.data;
     }
 
     onBeforeMount(async () => {
@@ -123,6 +119,7 @@ export default defineComponent({
         state.emotes = emotes;
         loading.value = false;
       } catch (err) {
+        console.log(err);
         error.value = true;
       }
     });
@@ -159,14 +156,14 @@ export default defineComponent({
 
     provide("userSearch", {
       name: "userSearch",
-      getInput: () => state.userSearchInput,
-      setInput: (value) => state.setUserSearchInput(value),
+      getInput: (): string => state.userSearchInput,
+      setInput: (value: string): void => state.setUserSearchInput(value),
       validationRegExp: new RegExp(/[^a-z0-9_]/, "gi"),
-      reset: () => state.setUserSearchInput(""),
+      reset: (): void => state.setUserSearchInput(""),
       lockable: true,
-      isLocked: () => state.userSearchLocked,
-      toggleLock: () => state.toggleUserSearchLock(),
-    } as ISearchInput);
+      isLocked: (): boolean => state.userSearchLocked,
+      toggleLock: (): void => state.toggleUserSearchLock(),
+    } as unknown as ISearchInput);
 
     return {
       channelName,

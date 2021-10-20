@@ -7,17 +7,9 @@ export interface ISearchInput {
   setInput: (value: string) => void;
   validationRegExp: RegExp;
   reset: () => void;
-  lockable?: {
-    type: boolean;
-    default: false;
-  };
-  isLocked?: {
-    type: boolean;
-    default: false;
-  };
-  toggleLock?: {
-    type: () => void;
-  };
+  lockable: Boolean;
+  isLocked?: () => boolean;
+  toggleLock?: () => void | undefined;
 }
 
 type EmoteDetails = Emote & {
