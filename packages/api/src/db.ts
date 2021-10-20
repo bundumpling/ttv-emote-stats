@@ -1,8 +1,9 @@
 import { Db, MongoClient } from "mongodb";
-import { envConfig } from "@ttv-emote-stats/common";
+import { config } from 'dotenv';
+config({path: '../../.env'})
 
-const { uri, dbName } = envConfig.mongoDB;
-
+const uri = process.env.MONGODB_URI as string;
+const dbName = process.env.MONGODB_DBNAME as string;
 const client = new MongoClient(uri);
 
 client.on("connectionPoolCreated", () => { 

@@ -17,7 +17,12 @@ export {
   combineBTTVChannelEmotesAndSharedEmotesFromAPIResponse,
 } from './emoteProviders'
 
-export * as NormalizeProviderEmote from './normalizeProviderEmote'
+export {
+  normalizeEmoteFromTwitch,
+  normalizeEmoteFromFFZ,
+  normalizeEmoteFromBTTV,
+  normalizeEmoteFrom7TV
+} from './normalizeProviderEmote'
 
 export {
   Emote
