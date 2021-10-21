@@ -1,4 +1,15 @@
 import { defineConfig } from 'windicss/helpers';
+import { PluginFunction } from 'windicss/types/interfaces';
+
+const smallCapsPlugin: PluginFunction = function ({ addComponents }) {
+  const caps = {
+    '.small-caps': {
+      fontVariant: 'small-caps',
+    }
+  }
+
+  addComponents(caps);
+}
 
 export default defineConfig({  
   extract: {
@@ -12,5 +23,7 @@ export default defineConfig({
       }
     }
   },
-  plugins: [],
+  plugins: [
+    smallCapsPlugin
+  ],
 });
