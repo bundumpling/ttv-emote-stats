@@ -203,16 +203,12 @@ export default defineComponent({
           channelID: state.channelID,
           emotes,
         };
-        const requestHeaders = { 
-          headers: { 
-            authorization: token 
-          }
-        }
-        await axios.post(
-          URL, 
-          requestBody,
-          requestHeaders
-        );
+        const requestHeaders = {
+          headers: {
+            authorization: token,
+          },
+        };
+        await axios.post(URL, requestBody, requestHeaders);
       } catch (err) {
         console.log(err);
       }
