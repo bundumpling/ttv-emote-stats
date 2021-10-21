@@ -2,7 +2,7 @@
   <ChannelList />
 </template>
 
-<script>
+<script lang="ts">
 import ChannelList from "../components/ChannelList.vue";
 export default {
   name: "HomePage",
