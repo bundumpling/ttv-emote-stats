@@ -1,6 +1,6 @@
 <template>
   <TopBar />
-  <ChannelList />
+  <ChannelList :on-admin-page="true" />
 </template>
 
 <script lang="ts">
