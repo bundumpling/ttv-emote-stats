@@ -1,5 +1,5 @@
 <template>
-  <div class="list-controls-wrapper">
+  <div class="my-2 flex justify-evenly items-baseline">
     <SearchInput inject="emoteSearch" />
     <PerPageSelect />
   </div>
@@ -17,16 +17,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.list-controls-wrapper {
-  margin-bottom: 1em;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-
-  & > div {
-    margin: 0 0.5em;
-  }
-}
-</style>

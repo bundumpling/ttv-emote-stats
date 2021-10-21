@@ -1,22 +1,63 @@
 <template>
-  <div class="search-input-wrapper">
-    <font-awesome-icon
-      v-if="lockable"
-      class="search-input-lock"
-      :icon="isLocked() ? 'lock' : 'lock-open'"
-      @click="toggleLock"
-    />
-    <label>{{ label }}:</label>
-    <input
-      v-model="searchInput"
-      :name="label"
-      class="input is-small"
-      type="text"
-      :aria-label="ariaLabel"
-      autocomplete="off"
-      @input="validateInput"
-    />
-    <span class="search-input-reset" @click="reset">Ｘ</span>
+  <div class="flex justify-center items-stretch">
+    <label
+      class="
+        px-2
+        text-lg
+        font-semibold
+        text-dark-100
+        whitespace-nowrap
+        select-none
+      "
+      >{{ label }}</label
+    >
+    <div class="flex justify-center items-stretch shadow-indigo-400 shadow-md">
+      <div
+        v-if="lockable"
+        class="
+          flex
+          justify-center
+          items-stretch
+          border-1 border-cool-gray-300
+          rounded-l-md
+          bg-cool-gray-100
+          cursor-pointer
+        "
+        @click="toggleLock"
+      >
+        <font-awesome-icon
+          class="px-1 h-full min-w-6 text-center text-lg font-bold select-none"
+          :icon="isLocked && isLocked() ? 'lock' : 'lock-open'"
+        />
+      </div>
+      <input
+        v-model="searchInput"
+        :name="label"
+        class="
+          focus:outline-none
+          border-t-1 border-b-1 border-cool-gray-300
+          pl-1
+        "
+        :class="lockable ?? 'border-l-1 rounded-l-md'"
+        type="text"
+        :aria-label="ariaLabel"
+        autocomplete="off"
+        @input="validateInput"
+      />
+      <button
+        class="
+          border-1 border-cool-gray-300
+          rounded-r-md
+          min-w-7
+          bg-rose-400
+          font-bold
+          text-dark-100
+        "
+        @click="reset"
+      >
+        Ｘ
+      </button>
+    </div>
   </div>
 </template>
 
@@ -65,12 +106,14 @@ export default defineComponent({
         .toLowerCase()
     );
 
-    function validateInput(event: InputEvent) {
-      if (validationRegExp.test(event.target.value)) {
+    function validateInput(event: Event) {
+      const { target } = event;
+      let { value } = target as EventTarget & { value: string };
+      if (target && validationRegExp.test(value)) {
         let resetEvent = document.createEvent("Event");
         resetEvent.initEvent(name, true, true);
-        event.target.value = getInput();
-        event.target.dispatchEvent(resetEvent);
+        value = getInput();
+        target.dispatchEvent(resetEvent);
       }
     }
 
@@ -87,38 +130,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.search-input-wrapper {
-  margin: 0 auto;
-  padding-bottom: 1em;
-  width: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-
-  label {
-    padding-right: 0.5em;
-    white-space: nowrap;
-    user-select: none;
-  }
-  input {
-    height: 2em;
-  }
-
-  .search-input-lock {
-    text-align: center;
-    min-width: 24px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .search-input-reset {
-    padding-left: 4px;
-    font-weight: bold;
-    color: maroon;
-    cursor: pointer;
-    user-select: none;
-  }
-}
-</style>

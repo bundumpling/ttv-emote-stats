@@ -1,8 +1,23 @@
 <template>
   <div class="w-full">
     <TheSubheader msg="Channel List" />
-    <div v-if="onAdminPage">
-      <button class="button is-medium is-link" @click="goToChannelCreation">
+    <div v-if="onAdminPage" class="mx-auto text-center">
+      <button
+        class="
+          py-2
+          px-4
+          font-bold
+          text-lg text-dark-50
+          tracking-wider
+          bg-indigo-100
+          border-2 border-indigo-500
+          shadow-lg shadow-indigo-900
+          rounded-md
+          cursor-pointer
+          hover:text-cool-gray-200 hover:bg-indigo-400 hover:border-indigo-700
+        "
+        @click="goToChannelCreation"
+      >
         Add Channel
       </button>
     </div>

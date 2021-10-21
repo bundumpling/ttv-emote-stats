@@ -1,11 +1,35 @@
 <template>
-  <div class="topbar">
-    <div v-if="username" class="status">
-      Logged in as <span class="username">{{ username }}</span>
+  <div
+    class="
+      my-2
+      flex
+      justify-between
+      items-baseline
+      border-t-2 border-b-2 border-cool-gray-500
+      bg-cool-gray-100
+      text-lg
+      font-mono
+      small-caps
+      tracking-wide
+    "
+  >
+    <div v-if="username" class="px-2">
+      Logged in as
+      <span class="font-bold">{{ username }}</span>
     </div>
-    <div class="logout">
-      <button class="button is-small" @click="logout">Logout</button>
-    </div>
+    <button
+      class="
+        px-2
+        font-bold
+        tracking-wider
+        border-l-2 border-cool-gray-500
+        bg-cool-gray-300
+        hover:bg-cool-gray-500 hover:text-cool-gray-200
+      "
+      @click="logout"
+    >
+      Logout
+    </button>
   </div>
 </template>
 
@@ -43,43 +67,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss">
-.topbar {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-width: 4px 0px;
-  border-style: solid;
-  border-color: #666;
-  background-color: #ccc;
-}
-.status {
-  padding-left: 4px;
-  font-size: 1.2em;
-  font-family: monospace;
-  font-variant: small-caps;
-  color: #222;
-}
-
-.username {
-  font-weight: bold;
-  color: black;
-}
-
-.logout {
-  button {
-    background-color: #666;
-    color: #eee;
-    font-weight: bold;
-    font-family: monospace;
-    border-color: black;
-  }
-  button:hover {
-    background-color: #333;
-    color: rgb(223, 62, 62);
-    border-color: black;
-  }
-}
-</style>

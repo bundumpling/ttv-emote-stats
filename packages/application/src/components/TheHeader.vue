@@ -3,7 +3,7 @@
     <router-link to="/"
       ><img
         src="/img/logo.png"
-        class="pt-1 mb-8 w-full"
+        class="p-2 w-full"
         alt="ASCII block art logo for TTV Emote Stats"
       />
     </router-link>

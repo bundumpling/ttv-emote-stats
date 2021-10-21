@@ -1,6 +1,6 @@
 <template>
   <h2
-    class="py-4 font-inconsolata text-4xl font-medium tracking-wide text-center"
+    class="py-5 font-inconsolata text-4xl font-medium tracking-wide text-center"
   >
     {{ msg }}
   </h2>

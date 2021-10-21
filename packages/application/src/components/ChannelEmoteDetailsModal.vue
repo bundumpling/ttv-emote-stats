@@ -1,51 +1,135 @@
 <template>
-  <div class="modal is-active">
-    <div class="modal-background" @click="close()"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <div class="image is-32x32">
-          <img :src="image" :alt="code" />
+  <div
+    class="
+      fixed
+      absolute
+      inset-0
+      z-40
+      flex flex-col
+      items-center
+      justify-center
+      overflow-hidden
+    "
+  >
+    <div
+      class="absolute inset-0 bg-cool-gray-500 bg-opacity-50"
+      @click="close()"
+    ></div>
+    <div
+      class="
+        overflow-auto
+        relative
+        w-screen-sm
+        mx-auto
+        shadow-2xl
+        border-2 border-cool-gray-300
+        rounded-lg
+      "
+    >
+      <header
+        class="
+          relative
+          flex
+          items-center
+          justify-between
+          bg-cool-gray-50
+          flex-shrink-0
+          p-3
+          border-b-2 border-cool-gray-300
+        "
+      >
+        <img class="w-10 h-10" :src="image" :alt="code" />
+
+        <div
+          class="
+            flex-grow-1 flex-shrink-0
+            text-2xl
+            tracking-wide
+            text-shadow-sm
+            overflow-x-hidden
+          "
+        >
+          {{ code }}
         </div>
-        <p class="modal-card-title ml-3">Details for {{ code }}</p>
-        <span class="close" aria-label="close" @click="close()"
-          ><font-awesome-icon icon="window-close"
+        <span aria-label="close" @click="close()"
+          ><font-awesome-icon
+            class="cursor-pointer text-rose-800 text-4xl shadow-sm"
+            icon="window-close"
         /></span>
       </header>
-      <section class="modal-card-body">
-        <div class="subheader">
-          <span class="rank">#{{ rank }}</span> in {{ fromList }} Emotes
+      <section
+        class="
+          flex-grow-1 flex-shrink-1
+          overflow-auto
+          p-4
+          bg-light-300
+          border-b-2 border-cool-gray-300
+          text-xl text-center
+          tracking-wide
+          text-dark-100
+        "
+      >
+        <div>
+          <span class="font-bold text-dark-300 text-shadow-sm"
+            >#{{ rank }}</span
+          >
+          in {{ fromList }} Emotes
         </div>
         <div>
-          <p class="subheader-usedinchannel">
-            Used <span class="count">{{ count }}</span> times in
-            <span class="channel">{{ channelName }}</span
-            >'s channel.
-          </p>
-          <p class="subheader-mostusedby">
-            Most used by
-            <span class="username">{{ mostUsedBy[0].username }}</span> a total
-            of <span class="count">{{ mostUsedBy[0].count }}</span> times!
-          </p>
-          <p class="subheader-mostusedon">
-            Most used on <span class="date">{{ mostUsedOn.date }}</span> a total
-            of <span class="count">{{ mostUsedOn.count }}</span> times!
-          </p>
+          Used
+          <span class="font-bold text-dark-300 text-shadow-sm">{{
+            count
+          }}</span>
+          times in
+          <span class="font-semibold text-shadow-sm">{{ channelName }}</span
+          >'s channel.
+        </div>
+        <div>
+          Most used by
+          <span class="font-semibold text-shadow-sm">{{
+            mostUsedBy[0].username
+          }}</span>
+          a total of
+          <span class="font-bold text-dark-300 text-shadow-sm">{{
+            mostUsedBy[0].count
+          }}</span>
+          times!
+        </div>
+        <div>
+          Most used on
+          <span class="font-bold text-dark-300 text-shadow-sm">{{
+            mostUsedOn.date
+          }}</span>
+          a total of
+          <span class="font-bold text-dark-300 text-shadow-sm">{{
+            mostUsedOn.count
+          }}</span>
+          times!
         </div>
       </section>
-      <section class="modal-card-body mostusedby-wrapper">
+      <section
+        class="
+          flex-grow-1 flex-shrink-1
+          overflow-auto
+          p-4
+          bg-light-300
+          border-b-2 border-cool-gray-300
+          flex flex-col
+        "
+      >
         <UsedByList
           :most-used-by="mostUsedBy"
           :user-search-input="userSearchInput"
         />
       </section>
-      <footer class="modal-card-foot" />
+      <footer class="h-8 flex items-center flex-shrink-0 p-3 bg-cool-gray-50" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { ChannelState } from "../types";
-import { defineComponent, inject, computed } from "vue";
+import { defineComponent, inject, computed, ComputedRef } from "vue";
 import UsedByList from "./EmoteUsedByList.vue";
 
 export default defineComponent({
@@ -53,7 +137,6 @@ export default defineComponent({
   components: {
     UsedByList,
   },
-  props: {},
   setup() {
     const state = inject("state") as ChannelState;
 
@@ -74,7 +157,13 @@ export default defineComponent({
       return result;
     });
 
-    const mostUsedBy = computed(() => {
+    const mostUsedBy: ComputedRef<
+      {
+        username: string;
+        count: number;
+        rank: number;
+      }[]
+    > = computed(() => {
       let result = [];
       for (const user in state.emoteDetails.usedBy) {
         const username = user.split("-")[0];
@@ -104,72 +193,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.close {
-  font-size: 2em;
-  color: maroon;
-  cursor: pointer;
-}
-
-.subheader {
-  text-align: center;
-  font-size: 1.3em;
-  .rank {
-    font-size: 1.5em;
-    font-weight: bold;
-    font-family: monospace;
-    color: black;
-  }
-}
-
-.subheader-usedinchannel {
-  text-align: center;
-  font-size: 1.2em;
-
-  .count {
-    font-size: 1.3em;
-    font-weight: bold;
-    font-family: monospace;
-    color: black;
-  }
-  .channel {
-    font-size: 1.3em;
-    font-variant: small-caps;
-    color: #111;
-  }
-}
-
-.subheader-mostusedon,
-.subheader-mostusedby {
-  text-align: center;
-  font-size: 1.1em;
-
-  .username,
-  .count {
-    font-size: 1.2em;
-    font-family: monospace;
-    color: black;
-    font-weight: bold;
-  }
-
-  .date {
-    font-size: 1em;
-    font-weight: bold;
-    color: black;
-  }
-}
-
-.gold {
-  background-color: #af9500;
-}
-.silver {
-  background-color: #d7d7d7;
-}
-.bronze {
-  background-color: #ad8a56;
-}
-.lightgray {
-  background-color: #eee;
-}
-</style>

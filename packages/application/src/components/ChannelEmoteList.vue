@@ -1,41 +1,81 @@
 <template>
-  <ul class="emote-list box">
-    <div class="header">
+  <div
+    class="
+      m-4
+      min-w-80
+      bg-light-50
+      border-4 border-gray-200
+      rounded-lg
+      list-none
+      shadow-indigo-400 shadow-lg
+    "
+  >
+    <div
+      class="
+        py-2
+        px-2
+        flex
+        items-center
+        justify-between
+        flex-shrink-0
+        border-b-2 border-gray-200
+      "
+    >
       <span
-        class="pagePrevious"
-        :class="hasPrevPage ? 'is-clickable' : 'hidden'"
+        class="min-w-6 text-center"
+        :class="hasPrevPage ? 'cursor-pointer' : 'invisible'"
         @click="hasPrevPage ? prevPage() : null"
         ><font-awesome-icon icon="chevron-left"
       /></span>
-      <h2 class="emote-list-type">
+      <h2
+        class="
+          flex-grow-1 flex-shrink-0
+          text-2xl
+          tracking-wide
+          font-bold
+          text-dark-100 text-shadow-sm
+        "
+      >
         {{ emoteListProvider }}
       </h2>
       <span
-        class="pageNext"
-        :class="hasNextPage ? 'is-clickable' : 'hidden'"
+        class="min-w-6 text-center"
+        :class="hasNextPage ? 'cursor-pointer' : 'invisible'"
         @click="hasNextPage ? nextPage() : null"
         ><font-awesome-icon icon="chevron-right"
       /></span>
     </div>
-    <EmoteListItem
-      v-for="emote in filteredByRank"
-      :key="emote.code"
-      :code="emote.code"
-      :state-index="emote.stateIndex"
-      :rank="emote.rank"
-      :image="emote.image"
-      :count="emote.count"
-      :used-by="emote.usedBy"
-      :get-emote-details="() => getEmoteDetails(emote, emoteListProvider)"
-    />
-    <div v-if="!filteredByRank.length" class="placeholder">
-      <span>No Results</span>
-    </div>
-  </ul>
+    <ul class="p-2">
+      <EmoteListItem
+        v-for="emote in filteredByRank"
+        :key="emote.code"
+        :code="emote.code"
+        :state-index="emote.stateIndex"
+        :rank="emote.rank"
+        :image="emote.image"
+        :count="emote.count"
+        :used-by="emote.usedBy"
+        :get-emote-details="() => getEmoteDetails(emote, emoteListProvider)"
+      />
+      <div
+        v-if="!filteredByRank.length"
+        class="min-w-20 text-center font-bold text-rose-400 text-2xl"
+      >
+        <span>No Results</span>
+      </div>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, inject, ComputedRef } from "vue";
+import {
+  defineComponent,
+  watch,
+  computed,
+  ref,
+  inject,
+  ComputedRef,
+} from "vue";
 import { ChannelState, EmoteFromList } from "@/types";
 
 import EmoteListItem from "./ChannelEmoteListItem.vue";
@@ -84,6 +124,11 @@ export default defineComponent({
 
     const page = ref(0);
 
+    watch(
+      () => props.emoteList,
+      () => (page.value = 0)
+    );
+
     const hasPrevPage = computed(() => page.value > 0);
     const hasNextPage = computed(() => {
       if (props && props.emoteList && props.emoteList.length) {
@@ -122,48 +167,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.placeholder {
-  width: 20em;
-  text-align: center;
-
-  span {
-    font-size: 1.5em;
-    color: red;
-    font-variant: small-caps;
-  }
-}
-.emote-list {
-  align-self: stretch;
-  h2 {
-    font-weight: bold;
-  }
-}
-
-ul {
-  display: block;
-  list-style: none;
-}
-
-.emote-list-type {
-  font-size: 1.2em;
-  user-select: none; /* prevent text selection highlighting when clicking the adjacent pagination buttons */
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding-bottom: 1em;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
-.box:last-child {
-  margin-bottom: 1.5rem; /* bulma applies this bottom margin to not(:last-child) so this evens out box sizing */
-}
-</style>

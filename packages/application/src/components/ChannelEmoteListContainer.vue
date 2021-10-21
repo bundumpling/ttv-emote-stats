@@ -1,5 +1,5 @@
 <template>
-  <div class="emote-list-container">
+  <div class="flex flex-wrap justify-evenly items-stretch">
     <EmoteList
       v-for="emoteListProvider in filterEmoteLists"
       :key="emoteListProvider"
@@ -123,13 +123,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-.emote-list-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-content: flex-start;
-  align-items: stretch;
-}
-</style>
