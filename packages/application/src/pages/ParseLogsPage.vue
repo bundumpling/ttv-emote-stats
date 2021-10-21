@@ -145,16 +145,12 @@ export default defineComponent({
     });
 
     async function fetchData() {
-      try {
-        const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
-        const token = localStorage.getItem("user");
-        const response = await axios.get(URL, {
-          headers: { authorization: token },
-        });
-        return response.data;
-      } catch (err) {
-        throw new Error(err);
-      }
+      const URL = `http://localhost:8081/channel/${channelName}/emoteCodes`;
+      const token = localStorage.getItem("user");
+      const response = await axios.get(URL, {
+        headers: { authorization: token },
+      });
+      return response.data;
     }
 
     onBeforeMount(async () => {
@@ -164,6 +160,7 @@ export default defineComponent({
         state.emoteCodes = emoteCodes;
         loading.value = false;
       } catch (err) {
+        console.log(err);
         error.value = true;
       }
     });
@@ -312,10 +309,14 @@ export default defineComponent({
       };
       const requestHeaders = {
         headers: {
-          authorization: token
-        }
+          authorization: token,
+        },
       };
-      const response = (await axios.post(URL, requestbody, requestHeaders)) as AxiosResponse;
+      const response = (await axios.post(
+        URL,
+        requestbody,
+        requestHeaders
+      )) as AxiosResponse;
       return response;
     }
 
