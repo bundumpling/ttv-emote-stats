@@ -160,15 +160,15 @@
       >
       <div class="flex flex-col">
         <div class="p-1 font-bold">
-          {{ duplicateEmotesByCode.size }} emote codes have entries from
-          multiple providers.
+          {{ duplicateEmotesByCode.size }} emote codes have duplicate entries
+          from providers.
         </div>
         <div class="p-1 font-bold">
           Since usage is tracked by emote code,
           <u>only one provider's instance will be stored</u>.
         </div>
         <div class="p-1 font-bold">
-          Provider precendence is:
+          Provider precedence is:
           <span class="pl-1 font-inconsolata font-bold tracking-wider">{{
             providerList.join(" -> ")
           }}</span>
