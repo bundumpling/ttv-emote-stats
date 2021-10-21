@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { JSONPostSizeLimiter } from '../middleware';
 import * as Auth from '../auth';
 import * as ChannelController from "../controllers/channel";
-
 const router = Router();
 
 // Routes
@@ -36,6 +35,13 @@ router.post(
   JSONPostSizeLimiter,
   Auth.decodeJWT,
   ChannelController.updateCountsFromLog
+);
+
+router.post(
+  "/:channelName/create",
+  JSONPostSizeLimiter,
+  Auth.decodeJWT,
+  ChannelController.create
 );
 
 export default router;

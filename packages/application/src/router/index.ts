@@ -115,6 +115,15 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/admin/add-channel",
+    name: "Add Channel",
+    component: () => import("../pages/AddChannelPage.vue"),
+    meta: {
+      requiresAuth: true,
+      setTitle: true,
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "NotFound",
     component: () => import("../pages/NotFoundPage.vue"),
