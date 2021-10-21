@@ -1,28 +1,84 @@
 <template>
-  <div class="container">
+  <div class="w-full">
     <TheSubheader msg="Channel List" />
-    <router-link v-if="isAdminPage" to="/admin/add-channel">
-      <button class="button is-medium is-link">Add Channel</button>
-    </router-link>
-    <ul class="channel-list">
+    <div v-if="onAdminPage">
+      <button class="button is-medium is-link" @click="goToChannelCreation">
+        Add Channel
+      </button>
+    </div>
+    <ul class="m-2 flex content-center items-baseline flex-wrap justify-evenly">
       <li
-        v-for="(
-          { channelName, emoteCount, profileImageURL }
-        ) in channelList"
+        v-for="{ channelName, emoteCount, profileImageURL } in channelList"
         :key="channelName"
-        class="channel-listitem"
+        class="
+          group
+          relative
+          m-2
+          bg-gray-50
+          border-4 border-gray-300
+          rounded-md
+          w-36
+          cursor-pointer
+          hover:border-gray-800
+        "
         @click="goToChannel(channelName)"
       >
-        <div class="channel-listitem-pfp">
+        <div
+          class="
+            flex
+            relative
+            flex-wrap
+            content-center
+            group-hover:bg-yellow-100
+          "
+        >
+          <div
+            class="
+              absolute
+              z-10
+              inset-0
+              text-center
+              flex flex-col
+              items-center
+              justify-start
+              opacity-0
+              group-hover:opacity-100
+            "
+          >
+            <h3
+              class="
+                z-20
+                w-full
+                text-xl
+                font-bold
+                text-yellow-600
+                tracking-wider
+                group-hover:bg-gray-800
+              "
+            >
+              {{ emoteCount }} Emotes
+            </h3>
+          </div>
           <img
+            class="mx auto"
             :src="profileImageURL"
             :alt="`profile image for ${channelName}`"
           />
         </div>
-        <div class="channel-listitem-name">{{ channelName }}</div>
-        <div>
-          <span class="channel-listitem-emotecount">{{ emoteCount }}</span>
-          Emotes
+        <div
+          class="
+            py-1
+            text-center
+            tracking-wide
+            font-bold
+            text-xl
+            border-t-4
+            group-hover:text-dark-300
+            group-hover:border-gray-800
+            group-hover:bg-yellow-100
+          "
+        >
+          {{ channelName }}
         </div>
       </li>
     </ul>
@@ -32,7 +88,7 @@
 <script lang="ts">
 import { defineComponent, ref, reactive, onBeforeMount, computed } from "vue";
 import axios, { AxiosResponse } from "axios";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import TheSubheader from "./TheSubheader.vue";
 
 export default defineComponent({
@@ -40,7 +96,13 @@ export default defineComponent({
   components: {
     TheSubheader,
   },
-  setup() {
+  props: {
+    onAdminPage: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup(props) {
     interface ChannelListItem {
       channelName: string;
       emoteCount: number;
@@ -53,12 +115,7 @@ export default defineComponent({
       channelList: Array<ChannelListItem>;
     }
 
-    const route = useRoute();
     const router = useRouter();
-
-    const path = computed(() => route.path);
-    const isAdminPage = path.value.startsWith("/admin");
-
     const loading = ref(true);
     const error = ref(false);
     const state = reactive<State>({
@@ -69,7 +126,9 @@ export default defineComponent({
     async function fetchData(): Promise<ChannelListResponse> {
       try {
         const URL = `http://localhost:8081/channelList`;
-        const response = (await axios.get(URL)) as AxiosResponse<ChannelListResponse>;
+        const response = (await axios.get(
+          URL
+        )) as AxiosResponse<ChannelListResponse>;
         return response.data;
       } catch (err) {
         throw new Error("Error retrieving channel list.");
@@ -87,69 +146,28 @@ export default defineComponent({
     });
 
     function goToChannel(channelName: string) {
-      if (isAdminPage) {
-        router.push(`/admin/${channelName}`);
+      if (props.onAdminPage) {
+        router.push(`/admin/channel/${channelName}`);
       } else {
         router.push(`/channel/${channelName}`);
+      }
+    }
+
+    function goToChannelCreation() {
+      if (props.onAdminPage) {
+        router.push("/admin/add-channel");
+      } else {
+        router.push("/login");
       }
     }
 
     return {
       channelList,
       goToChannel,
-      isAdminPage,
+      goToChannelCreation,
       loading,
       error,
     };
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.container {
-  margin: 1em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.header {
-  text-align: center;
-  font-size: 2em;
-  font-weight: bold;
-}
-
-.channel-list {
-  list-style: none;
-  margin: 2em;
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.channel-listitem {
-  margin: 8px;
-  background-color: #eee;
-  border: 4px solid #999;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 1.2em;
-  font-variant: small-caps;
-  font-weight: bold;
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgb(241, 206, 117);
-    border-color: #333;
-    color: #111;
-  }
-}
-
-.channel-listitem-name {
-  font-size: 1.5em;
-  text-decoration: underline;
-  font-variant: normal;
-}
-.channel-listitem-emotecount {
-  font-size: 1.2em;
-  font-variant: normal;
-}
-</style>
