@@ -92,20 +92,24 @@
           {{ channelName }}
         </div>
       </div>
-      <div class="provider-results-wrapper">
-        <div class="provider-results-header">Emote Providers</div>
-        <div class="provider-box-wrapper">
+      <div class="mx-4 flex flex-col justify-evenly self-stretch">
+        <div class="text-3xl font-bold text-center underline small-caps">
+          Emote Providers
+        </div>
+        <div class="flex justify-evenly">
           <div
             v-for="providerName in providerList"
             :key="providerName"
-            class="provider-box"
+            class="flex flex-col items-stretch"
           >
-            <div class="provider-box-name">{{ providerName }}</div>
-            <div class="provider-box-emote-count">
+            <div class="text-2xl font-bold underline small-caps">
+              {{ providerName }}
+            </div>
+            <div class="font-bold text-2xl text-center">
               <font-awesome-icon
                 v-if="providerLoading(providerName)"
                 icon="spinner"
-                class="is-loading"
+                class="animate-spin"
               />
               <span
                 v-else
@@ -622,114 +626,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped lang="scss">
-.find-channel-form,
-.save-or-reset-channel {
-  margin: 1em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.results {
-  display: flex;
-  flex-direction: row;
-  margin: 1em auto;
-  width: 60%;
-}
-
-.channel-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.channel-box-name {
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.channel-box-pfp > img {
-  max-width: 200px;
-  border-style: solid;
-  border-width: 4px;
-  border-color: #333;
-  border-radius: 4px;
-}
-.provider-results-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.provider-results-header {
-  font-size: 2em;
-  font-variant: small-caps;
-  font-weight: bold;
-  text-decoration: underline;
-  text-align: center;
-}
-.provider-box-wrapper {
-  padding: 1em;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.provider-box {
-  margin: 0 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-}
-
-.provider-box-name {
-  font-weight: bold;
-  font-size: 1.5em;
-  text-align: center;
-  font-variant: small-caps;
-  text-decoration: underline;
-}
-
-.provider-box-emote-count,
-.provider-results-total-emote-count {
-  text-align: center;
-  font-size: 1.7em;
-  font-weight: bold;
-}
-
-.is-success {
-  color: #319a2d;
-}
-
-.is-error {
-  color: #c91010;
-}
-
-.is-loading {
-  color: #666;
-  animation-name: spin;
-  animation-duration: 1000ms;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-}
-
-.button-save,
-.button-reset {
-  margin: 0 1em;
-  color: #111;
-  font-weight: bold;
-}
-</style>
