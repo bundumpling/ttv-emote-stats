@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { envConfig, ResponseFromTwitchForEmotes, ResponseFromTwitchForUsers, UserFromTwitch } from '@ttv-emote-stats/common';
+import { ResponseFromTwitchForEmotes, ResponseFromTwitchForUsers, UserFromTwitch } from '@ttv-emote-stats/common';
+import { config } from 'dotenv';
+config({ path: '../../.env'});
 
 const router = Router();
 
 const TWITCH_OPTIONS: AxiosRequestConfig = {
   method: "GET",
   headers: {
-    "Client-ID": envConfig.twitch.clientId,
-    Authorization: envConfig.twitch.authToken,
+    "Client-ID": process.env.TWITCH_CLIENT_ID,
+    Authorization: process.env.TWITCH_AUTH_TOKEN
   }
 };
 
