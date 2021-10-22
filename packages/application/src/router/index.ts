@@ -71,7 +71,7 @@ const routes: Array<RouteRecordRaw> = [
     beforeEnter: beforeEnterRouteWithEmoteID,
   },
   {
-    path: "/admin/:channelName/update-emotes",
+    path: "/admin/channel/:channelName/update-emotes",
     name: "Update Emotes",
     component: () => import("../pages/UpdateEmotesPage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName,
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/admin/:channelName/parse-logs",
+    path: "/admin/channel/:channelName/parse-logs",
     name: "Parse Logs",
     component: () => import("../pages/ParseLogsPage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName,
@@ -89,7 +89,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: "/admin/:channelName",
+    path: "/admin/channel/:channelName",
     name: "Manage",
     component: () => import("../pages/ManagePage.vue"),
     beforeEnter: beforeEnterRouteWithChannelName,
