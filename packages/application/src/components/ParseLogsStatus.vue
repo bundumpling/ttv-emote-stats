@@ -1,7 +1,17 @@
 <template>
-  <div class="status">
-    <span>{{ message }}</span>
-    <p v-if="isDone" @click="reset">[ Reset Form ]</p>
+  <div class="text-center">
+    <span
+      class="text-xl font-bold small-caps break-words"
+      :class="isError ? 'text-red-600' : 'text-green-600'"
+      >{{ message }}</span
+    >
+    <p
+      v-if="isDone"
+      class="mt-4 text-lg text-blue-700 small-caps cursor-pointer"
+      @click="reset"
+    >
+      [ Reset Form ]
+    </p>
   </div>
 </template>
 
@@ -16,8 +26,12 @@ export default defineComponent({
       type: String as PropType<ParserStatus>,
       required: true,
     },
+    statusMsg: {
+      type: String,
+      default: null,
+    },
     reset: {
-      type: Function,
+      type: Function as PropType<{ (payload: MouseEvent): void }>,
       required: true,
     },
   },
@@ -30,6 +44,8 @@ export default defineComponent({
           return "Parsing Logs";
         case ParserStatus.SAVING:
           return "Saving Results";
+        case ParserStatus.ERROR:
+          return `Error: ${props.statusMsg ?? "Unknown Error"}`;
         case ParserStatus.DONE:
           return "Results Saved";
         default:
@@ -39,32 +55,18 @@ export default defineComponent({
 
     const isDone = computed(
       () =>
-        props.status === ParserStatus.DONE || props.status === ParserStatus.IDLE
+        props.status === ParserStatus.DONE ||
+        props.status === ParserStatus.IDLE ||
+        props.status === ParserStatus.ERROR
     );
+
+    const isError = computed(() => props.status === ParserStatus.ERROR);
 
     return {
       message,
       isDone,
+      isError,
     };
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.status {
-  text-align: center;
-}
-span {
-  font-size: 2em;
-  font-variant: small-caps;
-  font-weight: bold;
-  color: green;
-}
-p {
-  margin-top: 1em;
-  color: blue;
-  font-size: 1.2em;
-  font-variant: small-caps;
-  cursor: pointer;
-}
-</style>
