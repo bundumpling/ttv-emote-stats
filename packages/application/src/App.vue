@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-full bg-cool-gray-50">
+  <div class="max-w-full">
     <TheHeader />
     <router-view />
   </div>
