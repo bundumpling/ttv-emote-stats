@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { db } from "../../db";
 import { Document } from 'mongodb';
 import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch, normalizeEmoteFromTwitch, normalizeEmoteFromFFZ, normalizeEmoteFromBTTV, normalizeEmoteFrom7TV } from "@ttv-emote-stats/common";
+import { rejects } from 'assert';
 
 interface TwitchLoginDocument extends Document {
   twitchID: string;
@@ -451,23 +452,28 @@ export const updateCountsFromLog = async (req: Request, res: Response) => {
   }
 
   async function requestTwitchIDsFromUsernameArray(usernames: string[]): Promise<TwitchLoginDocument[]> {
-    return new Promise(async (resolve) =>
+    return new Promise(async (resolve, reject) =>
       setTimeout(async () => {
         const paramsString = usernames
           .map((username) => `login=${username}`)
           .join("&");
 
-        const URL = `http://localhost:8081/twitch/userbatch`;
-        const userdataResponse = await axios.post(URL, { paramsString });
-        const userdata = userdataResponse.data.map((user: TwitchLoginDocument) => {
-          const { login } = user;
-          const twitchID = user.id;
-          return {
-            _id: login,
-            twitchID,
-          };
-        })
-        resolve(userdata);
+        try {
+          const URL = `http://localhost:8081/twitch/userbatch`;
+          const userdataResponse = await axios.post(URL, { paramsString });
+          const userdata = userdataResponse.data.map((user: TwitchLoginDocument) => {
+            const { login } = user;
+            const twitchID = user.id;
+            return {
+              _id: login,
+              twitchID,
+            };
+          })
+          resolve(userdata);
+        } catch (err) {
+          console.log(err);
+          reject(undefined);
+        }
       }, 1000)
     );
   }
