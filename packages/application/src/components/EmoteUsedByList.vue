@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, PropType } from "vue";
+import { defineComponent, ref, computed, PropType, watch } from "vue";
 import SearchInput from "./SearchInput.vue";
 
 export default defineComponent({
@@ -90,6 +90,11 @@ export default defineComponent({
   },
   setup(props) {
     const page = ref(0);
+
+    watch(
+      () => props.userSearchInput,
+      () => (page.value = 0)
+    );
 
     const mostUsedByFiltered = computed(() => {
       if (props.mostUsedBy && props.mostUsedBy.length) {
