@@ -2,6 +2,7 @@
 import moment from "moment";
 import  { hashPassword, comparePassword, generateJWT } from "./auth";
 import { db } from "./db";
+import { DateHelpers } from '@ttv-emote-stats/common';
 
 
 export const getEmoteUsageDetails = async (req, res) => {
@@ -176,12 +177,13 @@ export const updateCountsFromBot = async (req, res) => {
       { upsert: true }
     );
 
-  const duration = Date.now() - start;
-  console.log(`Updated ${Object.keys(counts).length} emotes in ${duration}ms`);
-
+  const now = Date.now();
+  const duration = now - start;
+  const loggerTimestamp = DateHelpers.formatTimestampForLogging(now);
+  const loggerSummary = Object.keys(counts).map(emoteCode => `${emoteCode}: ${counts[emoteCode]}`).join(', ');
+  console.log(`${loggerTimestamp} #${channelName} ${duration}ms [${loggerSummary}]`);
   res.status(200).send({ duration });
 };
-
 /** Disabled */
 /*
 export const registerUser = async (req, res) => {
