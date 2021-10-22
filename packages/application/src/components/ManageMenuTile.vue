@@ -1,21 +1,39 @@
 <template>
   <router-link :to="$props.linkPath">
     <div
-      class="menu-tile"
-      :class="isHoveredOver ? 'menu-tile-hovered' : ''"
+      class="
+        w-64
+        h-56
+        m-4
+        border-8 border-dark-300
+        rounded-lg
+        filter
+        grayscale-[0.6]
+        text-gray-50
+        bg-clip-content bg-origin-border
+        hover:filter-none hover:text-orange-500 hover:cursor-pointer
+      "
       :style="`background-image: url('/img/ManageMenuTile/${$props.backgroundPath}')`"
-      @mouseover="mouseOver"
-      @mouseout="mouseOut"
     >
-      <div class="menu-tile-text">
-        <span>{{ $props.text }}</span>
+      <div class="h-full relative flex justify-center items-center text-center">
+        <span
+          class="
+            py-1
+            flex-grow
+            bg-dark-500 bg-opacity-80
+            text-3xl
+            font-bold
+            small-caps
+          "
+          >{{ $props.text }}</span
+        >
       </div>
     </div>
   </router-link>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "ManageMenuTile",
@@ -34,60 +52,5 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    const isHoveredOver = ref(false);
-
-    const mouseOver = () => {
-      isHoveredOver.value = true;
-    };
-
-    const mouseOut = () => {
-      isHoveredOver.value = false;
-    };
-    return {
-      isHoveredOver,
-      mouseOver,
-      mouseOut,
-    };
-  },
 });
 </script>
-
-<style lang="scss">
-.menu-tile {
-  width: 284px;
-  height: 224px;
-
-  margin: 1em;
-
-  border: 8px solid #333;
-  border-radius: 8px;
-
-  filter: grayscale(60%);
-  color: #eee;
-}
-
-.menu-tile-hovered {
-  filter: none;
-  color: #f56512;
-  cursor: pointer;
-}
-
-.menu-tile-text {
-  position: relative;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
-  span {
-    align-self: center;
-    flex-grow: 1;
-    font-size: 2.2em;
-    font-weight: bold;
-    font-variant: small-caps;
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-}
-</style>
