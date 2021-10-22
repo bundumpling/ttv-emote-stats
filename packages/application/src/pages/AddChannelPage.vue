@@ -1,213 +1,37 @@
 <template>
   <AdminTopBar />
   <TheSubheader msg="Add Channel" />
-  <div>
-    <form
-      v-if="!isDone"
-      class="m-2 flex justify-center items-stretch"
-      @submit.prevent="submitFindChannelForm"
-    >
-      <input
-        id="channelName"
-        v-model="channelNameInput"
-        type="text"
-        class="
-          p-2
-          min-w-60
-          border-1 border-r-0 border-blue-200
-          rounded-l-md
-          outline-none
-          active:outline-none
-        "
-        aria-label="channel name"
-        placeholder="Enter channel name..."
-        spellcheck="false"
-      />
-      <button
-        class="
-          px-4
-          py-2
-          bg-blue-500
-          font-bold
-          text-warm-gray-200
-          rounded-r-md
-          disabled:bg-blue-200 disabled:cursor-not-allowed
-          focus-within:outline-none
-          focus:outline-none
-        "
-        :disabled="isLoading || !channelNameInput.trim().length"
-        @click="submitFindChannelForm"
-      >
-        Search
-      </button>
-    </form>
-    <div v-else class="flex justify-center text-center">
-      <button
-        class="
-          m-2
-          bg-gray-500
-          text-light-500
-          tracking-wider
-          px-4
-          py-1
-          border-2
-          font-bold
-          text-lg
-          rounded-md
-        "
-        :class="`${!isFailed ? 'bg-green-600 border-green-900' : ''}`"
-        :disabled="isFailed || isSaving || isSaved || saveFailed"
-        @click="save"
-      >
-        Save
-      </button>
-      <button
-        class="
-          m-2
-          bg-rose-600
-          border-rose-900
-          text-light-500
-          tracking-wider
-          px-4
-          py-1
-          border-2
-          font-bold
-          text-lg
-          rounded-md
-        "
-        :disabled="isSaving"
-        @click="resetState"
-      >
-        Reset
-      </button>
-    </div>
-    <div v-if="hasChannelData" class="m-4 flex justify-center items-center">
-      <div class="flex flex-col justify-start items-center">
-        <img
-          class="max-w-48 border-light-700 border-4 rounded-md"
-          :src="profileImageURL ?? ''"
-          :alt="`profile image for ${channelName}`"
-        />
-        <div class="p-2 text-center tracking-wide text-2xl font-bold">
-          {{ channelName }}
-        </div>
-      </div>
-      <div class="mx-4 flex flex-col justify-evenly self-stretch">
-        <div class="text-3xl font-bold text-center underline small-caps">
-          Emote Providers
-        </div>
-        <div class="flex justify-evenly">
-          <div
-            v-for="providerName in providerList"
-            :key="providerName"
-            class="flex flex-col items-stretch"
-          >
-            <div class="text-2xl font-bold underline small-caps">
-              {{ providerName }}
-            </div>
-            <div class="font-bold text-2xl text-center">
-              <font-awesome-icon
-                v-if="providerLoading(providerName)"
-                icon="spinner"
-                class="animate-spin"
-              />
-              <span
-                v-else
-                class="text-shadow-sm font-bold tracking-wider"
-                :class="
-                  providerSuccess(providerName)
-                    ? 'text-emerald-600'
-                    : 'text-rose-700'
-                "
-              >
-                {{
-                  providerSuccess(providerName) || !providerError(providerName)
-                    ? providerEmoteCount(providerName)
-                    : "X"
-                }}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="flex my-1 mx-2 justify-center items-center tracking-wide">
-          <div class="text-2xl font-bold">
-            <span>Total: </span>
-            <span
-              class="text-shadow-sm"
-              :class="totalEmoteCount ? 'text-emerald-600' : 'text-rose-700'"
-              >{{ totalEmoteCount }}</span
-            >
-          </div>
-          <div class="text-gray-400 font-light text-2xl px-2">
-            (<span class="font-normal">{{
-              totalEmoteCount - duplicateEmotesByCode.size
-            }}</span>
-            unique codes)
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-if="hasDuplicateEmoteCodes" class="flex justify-center items-center">
-      <span
-        class="
-          py-1
-          px-2
-          mx-4
-          font-inconsolata font-extrabold
-          tracking-wide
-          text-red-700
-          bg-red-50
-          border-2 border-red-700
-          rounded-md
-        "
-        >Warning</span
-      >
-      <div class="flex flex-col">
-        <div class="p-1 font-bold">
-          {{ duplicateEmotesByCode.size }} emote codes have duplicate entries
-          from providers.
-        </div>
-        <div class="p-1 font-bold">
-          Since usage is tracked by emote code,
-          <u>only one provider's instance will be stored</u>.
-        </div>
-        <div class="p-1 font-bold">
-          Provider precedence is:
-          <span class="pl-1 font-inconsolata font-bold tracking-wider">{{
-            providerList.join(" -> ")
-          }}</span>
-        </div>
-      </div>
-    </div>
-    <ul class="my-4 flex justify-evenly flex-wrap items-stretch">
-      <li
-        v-for="[duplicateCode, emotes] in duplicateEmotesByCode"
-        :key="duplicateCode"
-        class="m-2 flex justify-evenly border-2 border-light-600 rounded-md p-2"
-      >
-        <div class="p-2 flex flex-col items-center">
-          <img
-            class="w-8 flex"
-            :src="emotes[0].image"
-            :alt="`${duplicateCode} from ${emotes[0].provider}`"
-          />
-          <div class="font-inconsolata font-semibold tracking-wider">
-            {{ duplicateCode }}
-          </div>
-        </div>
-        <ul class="flex flex-col justify-evenly">
-          <li
-            v-for="(emote, index) in emotes"
-            :key="`${emote.code}-${emote.provider}`"
-            class="p-1 font-bold tracking-wide text-center"
-            :class="index === 0 ? 'border-2 border-green-500 rounded-md' : ''"
-          >
-            {{ emote.provider }}
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
+  <FindChannelForm
+    v-if="!isDone"
+    :value="channelNameInput"
+    :update-value="updateChannelNameInput"
+    :submit-handler="submitFindChannelForm"
+    :submit-disabled="isLoading || !channelNameInput.trim().length"
+  />
+  <SaveResetControls
+    v-else
+    :save-disabled="isFailed || isSaving || isSaved || saveFailed"
+    :reset-disabled="isSaving"
+    :save-handler="save"
+    :reset-handler="resetState"
+  />
+  <EmotesFromProvidersSummary
+    v-if="hasChannelData"
+    :channel-name="channelName"
+    :profile-image-u-r-l="profileImageURL"
+    :provider-list="providerList"
+    :provider-loading="providerLoading"
+    :provider-success="providerSuccess"
+    :provider-error="providerError"
+    :provider-emote-count="providerEmoteCount"
+    :total-emote-count="totalEmoteCount"
+    :total-unique-emote-codes="totalEmoteCount - duplicateEmotesByCode.size"
+  />
+  <DuplicateEmoteCodesSummary
+    v-if="hasDuplicateEmoteCodes"
+    :duplicate-emotes-by-code="duplicateEmotesByCode"
+    :provider-list="providerList"
+  />
 </template>
 
 <script lang="ts">
@@ -225,17 +49,29 @@ import {
   normalizeEmoteFrom7TV,
 } from "@ttv-emote-stats/common";
 import { defineComponent, ref, reactive, computed, ComputedRef } from "vue";
-import AdminTopBar from "../components/AdminTopBar.vue";
-import TheSubheader from "../components/TheSubheader.vue";
+import AdminTopBar from "@/components/AdminTopBar.vue";
+import TheSubheader from "@/components/TheSubheader.vue";
+import FindChannelForm from "@/components/FindChannelForm.vue";
+import SaveResetControls from "@/components/SaveResetControls.vue";
+import EmotesFromProvidersSummary from "@/components/EmotesFromProvidersSummary.vue";
+import DuplicateEmoteCodesSummary from "@/components/DuplicateEmoteCodesSummary.vue";
 
 export default defineComponent({
   name: "AddChannelPage",
   components: {
     AdminTopBar,
     TheSubheader,
+    FindChannelForm,
+    SaveResetControls,
+    EmotesFromProvidersSummary,
+    DuplicateEmoteCodesSummary,
   },
   setup() {
     const channelNameInput = ref("");
+
+    function updateChannelNameInput(value: string): void {
+      channelNameInput.value = value;
+    }
 
     const providerList = ["Twitch", "FFZ", "BTTV", "7TV"];
 
@@ -406,7 +242,7 @@ export default defineComponent({
     });
 
     const profileImageURL = computed(() =>
-      state.channel.data ? state.channel.data.profile_image_url : null
+      state.channel.data ? state.channel.data.profile_image_url : undefined
     );
 
     const totalEmoteCount = computed(() => {
@@ -602,6 +438,7 @@ export default defineComponent({
 
     return {
       channelNameInput,
+      updateChannelNameInput,
       channelName,
       profileImageURL,
       providerList,
