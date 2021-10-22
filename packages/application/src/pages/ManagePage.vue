@@ -1,6 +1,6 @@
 <template>
   <TheSubheader :msg="`Manage ${channelName}'s Channel`" />
-  <div class="container tile-wrapper">
+  <div class="flex justify-center">
     <ManageMenuTile
       v-for="(tile, index) in tiles"
       :key="`${index}-${tile.text}`"
@@ -31,12 +31,12 @@ export default defineComponent({
       {
         text: "Update Emotes",
         background: "UpdateEmotes-background-284x224.png",
-        link: `/admin/${channelName}/update-emotes`,
+        link: `/admin/channel/${channelName}/update-emotes`,
       },
       {
         text: "Parse Logs",
         background: "ParseLogs-background-284x224.png",
-        link: `/admin/${channelName}/parse-logs`,
+        link: `/admin/channel/${channelName}/parse-logs`,
       },
     ];
 
@@ -47,10 +47,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss">
-.tile-wrapper {
-  display: flex;
-  justify-content: center;
-}
-</style>
