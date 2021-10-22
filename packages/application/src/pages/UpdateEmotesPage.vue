@@ -1,4 +1,5 @@
 <template>
+  <AdminTopBar />
   <TheSubheader :msg="`Update ${channelName}'s Channel Emotes`" />
   <div v-if="!loading">
     <div class="control-wrapper">
@@ -32,10 +33,12 @@ import DetailedView from "../components/ManageUpdateEmotesDetailedView.vue";
 import CondensedView from "../components/ManageUpdateEmotesCondensedView.vue";
 import Loading from "../components/TheLoadingSpinner.vue";
 import axios from "axios";
+import AdminTopBar from "@/components/AdminTopBar.vue";
 
 export default defineComponent({
   name: "UpdateEmotesPage",
   components: {
+    AdminTopBar,
     TheSubheader,
     DetailedView,
     CondensedView,

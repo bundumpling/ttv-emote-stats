@@ -1,5 +1,5 @@
 <template>
-  <TopBar />
+  <AdminTopBar />
   <TheSubheader msg="Add Channel" />
   <div>
     <form
@@ -225,13 +225,13 @@ import {
   normalizeEmoteFrom7TV,
 } from "@ttv-emote-stats/common";
 import { defineComponent, ref, reactive, computed, ComputedRef } from "vue";
-import TopBar from "../components/AdminTopBar.vue";
+import AdminTopBar from "../components/AdminTopBar.vue";
 import TheSubheader from "../components/TheSubheader.vue";
 
 export default defineComponent({
   name: "AddChannelPage",
   components: {
-    TopBar,
+    AdminTopBar,
     TheSubheader,
   },
   setup() {

@@ -1,4 +1,5 @@
 <template>
+  <AdminTopBar />
   <TheSubheader :msg="`Manage ${channelName}'s Channel`" />
   <div class="flex justify-center">
     <ManageMenuTile
@@ -16,10 +17,12 @@ import { defineComponent } from "vue";
 import { useRoute } from "vue-router";
 import TheSubheader from "../components/TheSubheader.vue";
 import ManageMenuTile from "../components/ManageMenuTile.vue";
+import AdminTopBar from "@/components/AdminTopBar.vue";
 
 export default defineComponent({
   name: "ManagePage",
   components: {
+    AdminTopBar,
     TheSubheader,
     ManageMenuTile,
   },
