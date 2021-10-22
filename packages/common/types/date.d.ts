@@ -1,0 +1,1 @@
+export declare function formatTimestampForLogging(timestamp: number): string;

@@ -31,3 +31,7 @@ export {
 export {
   ChannelDocument
 } from './channel';
+
+export {
+  formatTimestampForLogging
+} from './date';
