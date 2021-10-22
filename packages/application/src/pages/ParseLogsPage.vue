@@ -1,101 +1,159 @@
 <template>
-  <div>
-    <TheSubheader
-      :msg="`Parse Emote Usage from Chat Logs for ${channelName}'s Channel`"
-    />
-    <div v-if="!loading">
-      <section class="info">
-        <p>
-          This is a tool for parsing log files from <strong>Chatterino</strong>.
-          In order to work properly, a log file <strong>must</strong> follow a
-          particular format:
-        </p>
-        <ul>
-          <li>
-            The first line is a 'start logging' status message providing the
-            date, e.g.
+  <AdminTopBar />
+  <TheSubheader
+    :msg="`Parse Emote Usage from Chat Logs for ${channelName}'s Channel`"
+  />
+  <div v-if="!loading">
+    <section class="w-7/10 my-4 mx-auto">
+      <p>
+        This is a tool for parsing log files from <strong>Chatterino</strong>.
+        In order to work properly, a log file <strong>must</strong> follow a
+        particular format:
+      </p>
+      <ul class="px-4 list-circle list-inside text-left">
+        <li class="text-left">
+          The first line is a 'start logging' status message providing the date:
+          <p class="text-center">
             <code
               ># Start logging at 2021-09-13 00:21:25 Eastern Daylight
               Time</code
             >
-          </li>
-          <li>
-            Each chat line must begin with a timestamp, e.g.
-            <code>[00:24:44]</code>
-          </li>
-          <li>
-            Each chat line must have a colon following the username, e.g.
+          </p>
+        </li>
+        <li class="text-left">
+          Each chat line must begin with a timestamp:
+          <p class="text-center"><code>[00:24:44]</code></p>
+        </li>
+        <li class="text-left">
+          Each chat line must have a colon following the username:
+          <p class="text-center">
             <code>[01:41:29] twitchuser: hi streamer and chat FrankerZ</code>
-          </li>
-        </ul>
+          </p>
+        </li>
+      </ul>
+    </section>
+    <div
+      class="
+        w-9/10
+        my-8
+        mx-auto
+        p-8
+        z-20
+        bg-light-600
+        border-4 border-light-900
+        rounded-md
+        shadow-lg shadow-dark-700
+      "
+    >
+      <section class="min-h-xl flex justify-evenly items-stretch">
+        <div class="h-xl flex min-w-1/3 flex-col border-2 border-dark-500">
+          <h3 class="border-b-2 border-dark-500 text-center text-xl font-bold">
+            Uploaded
+          </h3>
+          <ul
+            class="
+              flex-grow
+              text-sm text-center
+              px-2
+              overflow-y-auto
+              text-md
+              font-mono
+              bg-light-200
+            "
+          >
+            <li
+              v-for="(filename, i) in progressData.uploadedList"
+              :key="`${filename}-${i}`"
+            >
+              {{ filename }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex min-w-1/3 flex-col items-center">
+          <UploadButton
+            v-if="!uploadButtonDisabled"
+            :disabled="uploadButtonDisabled"
+            :handle-upload="handleLogFilesUpload"
+          />
+          <Status
+            v-else
+            :status="progressData.status"
+            :status-msg="progressData.statusMsg"
+            :reset="reset"
+          />
+          <Statistics
+            :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }"
+          />
+        </div>
+        <div class="flex min-w-1/3 flex-col justify-center items-stretch">
+          <div class="h-72 mb-8 flex flex-col border-2 border-dark-500">
+            <h3
+              class="border-b-2 border-dark-500 text-center text-xl font-bold"
+            >
+              Parsed
+            </h3>
+            <ul
+              class="
+                flex-grow
+                text-sm text-center
+                px-2
+                overflow-y-auto
+                text-md
+                font-mono
+                bg-light-200
+              "
+            >
+              <li
+                v-for="(filename, i) in progressData.parsedList"
+                :key="`${filename}-${i}`"
+              >
+                {{ filename }}
+              </li>
+            </ul>
+          </div>
+          <div class="h-64 flex flex-col border-2 border-dark-500">
+            <h3
+              class="border-b-2 border-dark-500 text-center text-xl font-bold"
+            >
+              Skipped/Error
+            </h3>
+            <ul
+              class="
+                flex-grow
+                text-sm text-center
+                px-2
+                overflow-y-auto
+                text-md
+                font-mono
+                bg-light-200
+              "
+            >
+              <li
+                v-for="(filename, i) in progressData.skippedList"
+                :key="`${filename}-${i}`"
+                class="line-through"
+              >
+                {{ filename }}
+              </li>
+              <li
+                v-for="(filename, i) in progressData.errorList"
+                :key="`${filename}-${i}`"
+                class="text-red-600"
+              >
+                {{ filename }}
+              </li>
+            </ul>
+          </div>
+        </div>
       </section>
-      <div class="container box">
-        <section class="main">
-          <div class="input-side">
-            <div class="filelist">
-              <h3>Uploaded</h3>
-              <ul>
-                <li
-                  v-for="(filename, i) in progressData.uploadedList"
-                  :key="`${filename}-${i}`"
-                >
-                  {{ filename }}
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="middle">
-            <UploadButton
-              v-if="!uploadButtonDisabled"
-              :disabled="uploadButtonDisabled"
-              :handle-upload="handleLogFilesUpload"
-            />
-            <Status v-else :status="progressData.status" :reset="reset" />
-            <Statistics
-              :stats="{ emotesUsed, emotesTotal, uniqueUsers, totalUsageCount }"
-            />
-          </div>
-          <div class="output-side">
-            <div class="filelist">
-              <h3>Parsed</h3>
-              <ul>
-                <li
-                  v-for="(filename, i) in progressData.parsedList"
-                  :key="`${filename}-${i}`"
-                >
-                  {{ filename }}
-                </li>
-              </ul>
-            </div>
-            <div class="filelist">
-              <h3>Skipped/Error</h3>
-              <ul>
-                <li
-                  v-for="(filename, i) in progressData.skippedList"
-                  :key="`${filename}-${i}`"
-                  class="listitem-skipped"
-                >
-                  {{ filename }}
-                </li>
-                <li
-                  v-for="(filename, i) in progressData.errorList"
-                  :key="`${filename}-${i}`"
-                  class="listitem-error"
-                >
-                  {{ filename }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-        <footer>
-          <ProgressBar :progress="progress" />
-        </footer>
-      </div>
+      <footer class="mt-4">
+        <ProgressBar :progress="progress" />
+      </footer>
     </div>
-    <Loading v-else-if="!error" />
-    <div v-else class="error">Error</div>
   </div>
+  <Loading v-else-if="!error" />
+  <div v-else class="text-red-600 font-bold text-center text-3xl">Error</div>
 </template>
 
 <script lang="ts">
@@ -110,9 +168,11 @@ import UploadButton from "../components/ParseLogsUploadButton.vue";
 import Status from "../components/ParseLogsStatus.vue";
 import Statistics from "../components/ParseLogsStatistics.vue";
 import ProgressBar from "../components/ParseLogsProgressBar.vue";
+import AdminTopBar from "@/components/AdminTopBar.vue";
 export default defineComponent({
   name: "ParseLogsPage",
   components: {
+    AdminTopBar,
     TheSubheader,
     UploadButton,
     Status,
@@ -136,6 +196,7 @@ export default defineComponent({
         skippedList: [],
         errorList: [],
         status: ParserStatus.IDLE,
+        statusMsg: "",
       },
       logParserResults: {
         emoteCounts: {},
@@ -253,7 +314,8 @@ export default defineComponent({
         }
 
         if (!unparsedFiles.length) {
-          state.progressData.status = ParserStatus.DONE;
+          state.progressData.statusMsg = "Nothing to parse.";
+          state.progressData.status = ParserStatus.ERROR;
         }
 
         for (let i = 0; i < unparsedFiles.length; i++) {
@@ -282,9 +344,15 @@ export default defineComponent({
                 state.progressData.uploadedList.length
               ) {
                 if (state.progressData.parsedList.length) {
-                  saveLogParserResultsToDb().then(() => {
-                    state.progressData.status = ParserStatus.DONE;
-                  });
+                  saveLogParserResultsToDb()
+                    .then(() => {
+                      state.progressData.status = ParserStatus.DONE;
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      state.progressData.statusMsg = "Failed saving to DB";
+                      state.progressData.status = ParserStatus.ERROR;
+                    });
                 } else {
                   state.progressData.status = ParserStatus.IDLE;
                 }
@@ -411,95 +479,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.info {
-  width: 70%;
-  margin: 1em auto;
-
-  ul {
-    padding: 0 1em;
-    list-style-type: circle;
-    list-style-position: inside;
-    text-align: left;
-
-    li {
-      text-align: left;
-    }
-  }
-}
-.main {
-  min-height: 600px;
-  display: flex;
-  align-items: stretch;
-  justify-content: space-evenly;
-
-  & > div {
-    width: 100%;
-    max-height: 600px;
-  }
-}
-
-.input-side {
-  position: relative;
-
-  & > div {
-    height: 600px;
-  }
-}
-
-.middle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.output-side {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: stretch;
-
-  & > :not(:last-child) {
-    margin-bottom: 20px;
-  }
-
-  & > div {
-    height: 290px;
-  }
-}
-
-footer {
-  margin-top: 1em;
-}
-
-.filelist {
-  border: 2px solid black;
-  display: flex;
-  flex-direction: column;
-  & > h3 {
-    border-bottom: 1px solid black;
-    text-align: center;
-    font-size: 1.3em;
-    font-weight: bold;
-  }
-  & > ul {
-    flex: 1;
-    overflow-y: auto;
-    background-color: #eee;
-    font-size: 0.9em;
-    font-family: monospace;
-  }
-}
-
-li {
-  text-align: center;
-  padding: 2px;
-}
-.listitem-skipped {
-  text-decoration: line-through;
-}
-.listitem-error {
-  color: maroon;
-}
-</style>
