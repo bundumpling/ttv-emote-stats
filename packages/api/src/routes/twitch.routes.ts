@@ -2,6 +2,7 @@ import { Router } from 'express';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ResponseFromTwitchForEmotes, ResponseFromTwitchForUsers, UserFromTwitch } from '@ttv-emote-stats/common';
 import { config } from 'dotenv';
+import { JSONPostSizeLimiter } from '../middleware';
 config({ path: '../../.env'});
 
 const router = Router();
@@ -40,19 +41,21 @@ router.get('/users', async (req, res) => {
   }
 });
 
-router.post('/userbatch', async (req, res) => {
+router.post('/userbatch', JSONPostSizeLimiter, async (req, res) => {
   if (!req.body || !req.body.paramsString) {
     res.status(400).send("Bad Request: Twitch requires logins (usernames) or IDs for batch user lookup.");
   } else {
     try {
       const { paramsString } = req.body;
       const URL = `https://api.twitch.tv/helix/users?${paramsString}`;
-      const response = await axios.get(URL, TWITCH_OPTIONS) as AxiosResponse<UserFromTwitch[]>
-      const userdata = response.data;
-      if (userdata.length) {
-        res.status(200).json(userdata);
-      } else {
-        res.sendStatus(204);
+      const response = await axios.get(URL, TWITCH_OPTIONS) as AxiosResponse<ResponseFromTwitchForUsers>
+      if (response && response.status === 200) {
+        const users = response.data.data;
+        if (users && users.length) {
+          res.status(200).json(users);
+        } else {
+          res.sendStatus(204);
+        }
       }
     } catch (err) {
       console.log(err);
