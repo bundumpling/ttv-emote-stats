@@ -195,11 +195,12 @@ export interface IEmoteFrom7TVAPI {
   };
 }
 
-export enum ParserStatus {
+export const enum ParserStatus {
   IDLE = "IDLE",
   LOADING = "LOADING",
   PARSING = "PARSING",
   SAVING = "SAVING",
+  ERROR = "ERROR",
   DONE = "DONE",
 }
 
@@ -209,6 +210,7 @@ export type LogParserProgressData = {
   skippedList: string[];
   errorList: string[];
   status: ParserStatus;
+  statusMsg: string;
 };
 
 export type EmoteFromProvider = {
