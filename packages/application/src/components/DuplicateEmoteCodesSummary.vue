@@ -62,19 +62,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-
+import { Emote } from "@ttv-emote-stats/common";
+import { defineComponent, PropType } from "vue";
+import { providerList } from "@/composables/useEmotesFromProviders";
 export default defineComponent({
   name: "DuplicateEmoteCodesSummary",
   props: {
     duplicateEmotesByCode: {
-      type: Map,
+      type: Object as PropType<Map<string, Emote[]>>,
       required: true,
     },
-    providerList: {
-      type: Array,
-      required: true,
-    },
+  },
+  setup() {
+    return {
+      providerList,
+    };
   },
 });
 </script>
