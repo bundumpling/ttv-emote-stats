@@ -35,3 +35,7 @@ export {
 export {
   formatTimestampForLogging
 } from './date';
+
+export {
+  handleAxiosError
+} from './axios';

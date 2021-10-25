@@ -1,0 +1,1 @@
+export declare function handleAxiosError(error: unknown, errorMessage: string): void;
