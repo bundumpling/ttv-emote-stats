@@ -12,6 +12,12 @@ router.get("/:channelName/emoteCodes", ChannelController.getChannelEmoteCodes);
 // Protected Routes
 
 router.get(
+  "/:channelName/emotes",
+  Auth.decodeJWT,
+  ChannelController.getEmotes
+);
+
+router.get(
   "/:channelName/emotesFromDbAndProviders",
   Auth.decodeJWT,
   ChannelController.getEmotesFromDbAndProviders

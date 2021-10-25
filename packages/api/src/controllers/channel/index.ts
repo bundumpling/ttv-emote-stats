@@ -3,10 +3,50 @@ import { Request, Response } from "express";
 import { db } from "../../db";
 import { Document } from 'mongodb';
 import { ChannelDocument, Emote, EmoteFrom7TV, EmoteFromBTTV, EmoteFromFFZ, EmoteFromTwitch, normalizeEmoteFromTwitch, normalizeEmoteFromFFZ, normalizeEmoteFromBTTV, normalizeEmoteFrom7TV } from "@ttv-emote-stats/common";
-import { rejects } from 'assert';
 
 interface TwitchLoginDocument extends Document {
   twitchID: string;
+}
+
+export const getEmotes = async (req: Request, res: Response) => {
+  const { twitchID } = 
+    await db.collection("TwitchLogin")
+            .findOne({ _id: req.params.channelName }) as TwitchLoginDocument;
+  const data = 
+    await db.collection("Channel")
+            .aggregate([
+              { $match: { _id: twitchID } },
+              {
+                $lookup: {
+                  from: "Emote",
+                  localField: "emotes",
+                  foreignField: "_id",
+                  as: "emotes",
+                }
+              },
+              {
+                $addFields: {
+                  emotes: {
+                    $map: {
+                      input: "$emotes",
+                      as: "emote",
+                      in: {
+                        code: "$$emote.code",
+                        image: "$$emote.image",
+                        provider: "$$emote.provider",
+                        providerID: "$$emote.providerID"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                $project: {
+                  emotes: "$emotes"
+                }
+              }
+            ]).toArray();
+    res.status(200).json(data[0].emotes);
 }
 
 export const getChannelEmoteCounts = async (req: Request, res: Response) => {
