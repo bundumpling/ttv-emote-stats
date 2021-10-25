@@ -219,3 +219,7 @@ export type EmoteFromProvider = {
   provider: string;
   providerID: string;
 };
+
+export * from "@/composables/useTwitchUser.d";
+export * from "@/composables/useEmotesFromProviders.d";
+export * from "@/composables/useEmotesFromDatabase.d";
