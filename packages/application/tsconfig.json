@@ -10,6 +10,7 @@
       "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "typeRoots": ["./types"],
     "types": ["vite/client", "@types/jest"]
   },
   "include": [
