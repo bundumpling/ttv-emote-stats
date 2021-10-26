@@ -2,7 +2,7 @@
   <AdminTopBar />
   <TheSubheader msg="Add Channel" />
   <FindChannelForm
-    v-if="!isDone"
+    v-if="!isLoaded"
     :value="channelNameInput"
     :update-value="updateChannelNameInput"
     :submit-handler="submitFindChannelForm"
@@ -54,7 +54,7 @@ export default defineComponent({
     }
 
     const isLoading = ref(false);
-    const isDone = ref(false);
+    const isLoaded = ref(false);
     const isFailed = ref(false);
     const isSaving = ref(false);
     const isSaved = ref(false);
@@ -64,7 +64,7 @@ export default defineComponent({
       TwitchUser.resetState();
       EmotesFromProviders.resetState();
       isLoading.value = false;
-      isDone.value = false;
+      isLoaded.value = false;
       isFailed.value = false;
       isSaving.value = false;
       isSaved.value = false;
@@ -76,7 +76,7 @@ export default defineComponent({
       isLoading.value = true;
       try {
         await TwitchUser.requestTwitchUser(channelNameInput.value);
-        if (TwitchUser.hasChannelData) {
+        if (TwitchUser.hasChannelData.value) {
           const channelName = TwitchUser.channelName.value;
           const channelID = TwitchUser.channelID.value;
           if (channelName && channelID) {
@@ -92,7 +92,7 @@ export default defineComponent({
         console.error(error);
       } finally {
         isLoading.value = false;
-        isDone.value = true;
+        isLoaded.value = true;
       }
     }
 
@@ -141,7 +141,7 @@ export default defineComponent({
       TwitchUser,
       EmotesFromProviders,
       isLoading,
-      isDone,
+      isLoaded,
       isFailed,
       isSaving,
       isSaved,
