@@ -105,11 +105,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import {
-  providerList,
-  UseEmotesFromProviders,
-} from "@/composables/useEmotesFromProviders";
-import { UseTwitchUser } from "@/composables/useTwitchUser";
+import { providerList } from "@/composables/useEmotesFromProviders";
+import { UseTwitchUser, UseEmotesFromProviders } from "@/types";
 import DuplicateEmoteCodesSummary from "./DuplicateEmoteCodesSummary.vue";
 
 export default defineComponent({
