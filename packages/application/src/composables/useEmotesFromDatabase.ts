@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { computed, ComputedRef, reactive } from 'vue';
 import { Emote, handleAxiosError } from '@ttv-emote-stats/common';
 import { UseEmotesFromDatabase, DatabaseEmoteState } from '@/types';
 import axios, { AxiosResponse } from 'axios';
@@ -38,9 +38,18 @@ export const useEmotesFromDatabase = (): UseEmotesFromDatabase => {
     }
   }
 
+  const emotesByCode: ComputedRef<Map<string, Emote>> = computed(() => {
+    const emoteCodeMap: Map<string, Emote> = new Map();
+    state.data.forEach((emote: Emote) => {
+      emoteCodeMap.set(emote.code, emote);
+    })
+    return emoteCodeMap;
+  })
+
   return {
     state,
     resetState,
-    requestDatabaseEmotes
+    requestDatabaseEmotes,
+    emotesByCode
   }
 }
