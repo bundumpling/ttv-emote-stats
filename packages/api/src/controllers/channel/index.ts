@@ -33,6 +33,7 @@ export const getEmotes = async (req: Request, res: Response) => {
                       in: {
                         code: "$$emote.code",
                         image: "$$emote.image",
+                        obsolete: "$$emote.obsolete",
                         provider: "$$emote.provider",
                         providerID: "$$emote.providerID"
                       }
