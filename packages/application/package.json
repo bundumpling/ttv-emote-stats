@@ -7,7 +7,8 @@
     "lint": "eslint --ext .js,.vue --ignore-path .eslintignore --fix src",
     "format": "prettier .  --write",
     "test": "jest",
-    "build": "npm run clean && npm run compile",
+    "build": "vite build",
+    "preview": "vite preview --port 8080",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json"
   },
