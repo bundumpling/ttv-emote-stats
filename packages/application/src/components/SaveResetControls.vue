@@ -14,7 +14,9 @@
         rounded-md
         shadow-md shadow-green-800
       "
-      :class="!saveDisabled ? 'bg-green-600 border-green-900' : ''"
+      :class="
+        !saveDisabled ? 'bg-green-600 border-green-900' : 'cursor-not-allowed'
+      "
       :disabled="saveDisabled"
       @click="saveHandler"
     >
