@@ -337,9 +337,13 @@ export const saveUpdatedEmotes = async (req: Request, res: Response) => {
       { upsert: true }
     )
   )
-  .then(result => res.send({ ok: true, result }))
+  .then(result => {
+    res.send({ ok: true, result })
+    console.log(`Successfully updated channel emotes for ${channelName} (changed ${emotes.length})`);
+  })
   .catch(error => {
     res.send({ ok: false, error})
+    console.log(`Error updating channel emotes for ${channelName}: ${error}`)
   });
 };
 
