@@ -130,15 +130,84 @@
       </li>
     </ul>
   </div>
+  <div class="p-2 flex flex-col justify-center items-center">
+    <div
+      v-if="!emotesToSave.length || isSaved"
+      class="
+        p-2
+        font-bold
+        tracking-wide
+        text-center
+        border-2 border-green-300
+        rounded-md
+      "
+    >
+      Channel Emotes are up to date.
+    </div>
+    <button
+      v-else
+      class="
+        m-2
+        bg-gray-500
+        text-light-200
+        tracking-wider
+        px-4
+        py-1
+        border-2
+        font-bold
+        text-lg
+        rounded-md
+        shadow-md shadow-green-800
+      "
+      :class="
+        !isSaving ? 'bg-green-600 border-green-900' : 'cursor-not-allowed'
+      "
+      :disabled="isSaving"
+      @click="save(emotesToSave)"
+    >
+      Save
+    </button>
+    <div
+      v-if="isError"
+      class="
+        p-2
+        font-bold
+        tracking-wide
+        text-center
+        border-2 border-rose-300
+        rounded-md
+      "
+    >
+      Error saving updated emotes!
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, ComputedRef } from "vue";
-import { UseEmotesFromProviders, UseEmotesFromDatabase, Emote } from "@/types";
+import {
+  defineComponent,
+  PropType,
+  computed,
+  ComputedRef,
+  ref,
+  Ref,
+} from "vue";
+import {
+  UseEmotesFromProviders,
+  UseEmotesFromDatabase,
+  Emote,
+  UseTwitchUser,
+} from "@/types";
+import axios, { AxiosResponse } from "axios";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: "UpdatedEmotesSummary",
   props: {
+    twitchUser: {
+      type: Object as PropType<UseTwitchUser>,
+      required: true,
+    },
     emotesFromProviders: {
       type: Object as PropType<UseEmotesFromProviders>,
       required: true,
@@ -149,6 +218,16 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const route = useRoute();
+
+    const channelName = Array.isArray(route.params.channelName)
+      ? route.params.channelName.join()
+      : route.params.channelName;
+
+    const isSaving: Ref<boolean> = ref(false);
+    const isSaved: Ref<boolean> = ref(false);
+    const isError: Ref<boolean> = ref(false);
+
     const newEmotes: ComputedRef<Map<string, Emote[]>> = computed(() => {
       const newEmotesMap: Map<string, Emote[]> = new Map();
       props.emotesFromProviders.emotesByCode.value.forEach(
@@ -165,8 +244,11 @@ export default defineComponent({
       const obsoleteEmotesMap: Map<string, Emote> = new Map();
       props.emotesFromDatabase.emotesByCode.value.forEach(
         (v: Emote, k: string) => {
-          if (!props.emotesFromProviders.emotesByCode.value.has(k)) {
-            obsoleteEmotesMap.set(k, v);
+          if (
+            !props.emotesFromProviders.emotesByCode.value.has(k) &&
+            !v.obsolete
+          ) {
+            obsoleteEmotesMap.set(k, { ...v, obsolete: true });
           }
         }
       );
@@ -214,10 +296,57 @@ export default defineComponent({
       return updatedEmotesMap;
     });
 
+    const emotesToSave: ComputedRef<Emote[]> = computed(() => {
+      const result: Emote[] = [];
+      newEmotes.value.forEach((v: Emote[]) => {
+        result.push(v[0]);
+      });
+      obsoleteEmotes.value.forEach((v: Emote) => {
+        result.push(v);
+      });
+      updatedEmotes.value.forEach((v) => {
+        result.push(v.newEmote);
+      });
+      return result;
+    });
+
+    async function save(emotes: Emote[]): void {
+      console.log(emotes);
+      const URL = `http://localhost:8081/channel/${channelName}/saveUpdatedEmotes`;
+      const token = localStorage.getItem("user");
+      console.log(props.twitchUser.channelID.value);
+      const requestbody = {
+        channelID: props.twitchUser.channelID.value,
+        emotes,
+      };
+      const requestHeaders = {
+        headers: {
+          authorization: token,
+        },
+      };
+      const response = (await axios.post(
+        URL,
+        requestbody,
+        requestHeaders
+      )) as AxiosResponse;
+
+      if (response.data && response.data.ok) {
+        isSaved.value = true;
+      } else {
+        isError.value = true;
+      }
+      isSaving.value = false;
+    }
+
     return {
       newEmotes,
       obsoleteEmotes,
       updatedEmotes,
+      emotesToSave,
+      isSaving,
+      isSaved,
+      isError,
+      save,
     };
   },
 });
